@@ -1,0 +1,313 @@
+/* MDX Content Styling */
+.mdx-content {
+  @apply text-foreground;
+}
+
+/* Light theme for blog pages */
+.blog-prose {
+  color: #111827 !important; /* gray-900 */
+}
+
+.blog-prose p {
+  color: #1f2937 !important; /* gray-800 */
+}
+
+.blog-prose h1,
+.blog-prose h2,
+.blog-prose h3,
+.blog-prose h4,
+.blog-prose h5,
+.blog-prose h6 {
+  color: #111827 !important; /* gray-900 */
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+.blog-prose a:not([class*="bg-card"]) {
+  color: #2563eb !important; /* blue-600 */
+}
+
+.blog-prose a:not([class*="bg-card"]):hover {
+  color: #1d4ed8 !important; /* blue-700 */
+}
+
+.blog-prose strong {
+  color: #111827 !important; /* gray-900 */
+}
+
+.blog-prose code {
+  background-color: #f3f4f6 !important; /* gray-100 */
+  color: #111827 !important; /* gray-900 */
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+.blog-prose pre {
+  background-color: #f3f4f6 !important; /* gray-100 */
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+.blog-prose pre code {
+  background-color: transparent !important;
+  color: #111827 !important; /* gray-900 */
+}
+
+.blog-prose blockquote {
+  border-left-color: #3b82f6 !important; /* blue-500 */
+  color: #374151 !important; /* gray-700 */
+}
+
+.blog-prose blockquote p {
+  color: #374151 !important; /* gray-700 */
+}
+
+.blog-prose hr {
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+/* Tables - explicit light mode styling */
+.blog-prose table {
+  color: #111827 !important; /* gray-900 */
+}
+
+.blog-prose table th {
+  background-color: #f9fafb !important; /* gray-50 */
+  color: #111827 !important; /* gray-900 */
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+.blog-prose table td {
+  color: #374151 !important; /* gray-700 */
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+.blog-prose table tr {
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+.blog-prose table tr:nth-child(even) {
+  background-color: #f9fafb !important; /* gray-50 */
+}
+
+.blog-prose ul,
+.blog-prose ol {
+  color: #1f2937 !important; /* gray-800 */
+}
+
+.blog-prose li {
+  color: #1f2937 !important; /* gray-800 */
+}
+
+/* Card components in blog posts - override theme variables */
+.blog-prose a.bg-card,
+.blog-prose .bg-card,
+.blog-prose a[class*="bg-card"] {
+  background-color: white !important;
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+.blog-prose a.bg-card h3,
+.blog-prose .bg-card h3,
+.blog-prose a[class*="bg-card"] h3,
+.blog-prose a[class*="border-border"] h3 {
+  color: #111827 !important; /* gray-900 */
+}
+
+.blog-prose a.bg-card p,
+.blog-prose .bg-card p,
+.blog-prose a[class*="bg-card"] p,
+.blog-prose a[class*="border-border"] p {
+  color: #4b5563 !important; /* gray-600 */
+}
+
+/* Override text-foreground and text-muted-foreground in blog prose */
+.blog-prose .text-foreground {
+  color: #111827 !important; /* gray-900 */
+}
+
+.blog-prose .text-muted-foreground {
+  color: #4b5563 !important; /* gray-600 */
+}
+
+/* Image borders in light theme */
+.blog-prose img {
+  border-color: #e5e7eb !important; /* gray-200 */
+}
+
+/* Prose overrides for dark mode compatibility */
+.prose {
+  --tw-prose-body: hsl(var(--foreground));
+  --tw-prose-headings: hsl(var(--foreground));
+  --tw-prose-lead: hsl(var(--muted-foreground));
+  --tw-prose-links: hsl(var(--primary));
+  --tw-prose-bold: hsl(var(--foreground));
+  --tw-prose-counters: hsl(var(--muted-foreground));
+  --tw-prose-bullets: hsl(var(--muted-foreground));
+  --tw-prose-hr: hsl(var(--border));
+  --tw-prose-quotes: hsl(var(--foreground));
+  --tw-prose-quote-borders: hsl(var(--primary) / 0.5);
+  --tw-prose-captions: hsl(var(--muted-foreground));
+  --tw-prose-code: hsl(var(--foreground));
+  --tw-prose-pre-code: hsl(var(--foreground));
+  --tw-prose-pre-bg: hsl(var(--muted));
+  --tw-prose-th-borders: hsl(var(--border));
+  --tw-prose-td-borders: hsl(var(--border));
+}
+
+/* Code block styling */
+.mdx-content pre {
+  @apply bg-muted border border-border rounded-lg overflow-x-auto;
+}
+
+.mdx-content pre code {
+  @apply bg-transparent p-0 text-sm leading-relaxed;
+}
+
+.mdx-content code {
+  @apply bg-muted text-foreground px-1.5 py-0.5 rounded text-sm font-mono;
+}
+
+/* Inline code should not have code block styling when inside pre */
+.mdx-content pre code {
+  @apply bg-transparent px-0 py-0 rounded-none;
+}
+
+/* Syntax highlighting - neutral theme */
+.mdx-content .token.comment,
+.mdx-content .token.prolog,
+.mdx-content .token.doctype,
+.mdx-content .token.cdata {
+  @apply text-muted-foreground italic;
+}
+
+.mdx-content .token.punctuation {
+  @apply text-foreground/70;
+}
+
+.mdx-content .token.property,
+.mdx-content .token.tag,
+.mdx-content .token.boolean,
+.mdx-content .token.number,
+.mdx-content .token.constant,
+.mdx-content .token.symbol {
+  @apply text-primary;
+}
+
+.mdx-content .token.selector,
+.mdx-content .token.attr-name,
+.mdx-content .token.string,
+.mdx-content .token.char,
+.mdx-content .token.builtin {
+  @apply text-emerald-500 dark:text-emerald-400;
+}
+
+.mdx-content .token.operator,
+.mdx-content .token.entity,
+.mdx-content .token.url,
+.mdx-content .language-css .token.string,
+.mdx-content .style .token.string {
+  @apply text-amber-600 dark:text-amber-400;
+}
+
+.mdx-content .token.atrule,
+.mdx-content .token.attr-value,
+.mdx-content .token.keyword {
+  @apply text-violet-600 dark:text-violet-400;
+}
+
+.mdx-content .token.function,
+.mdx-content .token.class-name {
+  @apply text-sky-600 dark:text-sky-400;
+}
+
+.mdx-content .token.regex,
+.mdx-content .token.important,
+.mdx-content .token.variable {
+  @apply text-orange-500 dark:text-orange-400;
+}
+
+/* Blockquote styling */
+.mdx-content blockquote {
+  @apply border-l-4 border-primary/50 pl-4 italic text-muted-foreground my-6;
+}
+
+.mdx-content blockquote p {
+  @apply my-0;
+}
+
+/* List styling */
+.mdx-content ul,
+.mdx-content ol {
+  @apply my-6 pl-6;
+}
+
+.mdx-content ul {
+  @apply list-disc;
+}
+
+.mdx-content ol {
+  @apply list-decimal;
+}
+
+.mdx-content li {
+  @apply my-2;
+}
+
+.mdx-content li > ul,
+.mdx-content li > ol {
+  @apply my-2;
+}
+
+/* Table styling */
+.mdx-content table {
+  @apply w-full border-collapse my-6;
+}
+
+.mdx-content th,
+.mdx-content td {
+  @apply border border-border px-4 py-2 text-left;
+}
+
+.mdx-content th {
+  @apply bg-muted font-semibold;
+}
+
+.mdx-content tr:nth-child(even) {
+  @apply bg-muted/30;
+}
+
+/* Image styling */
+.mdx-content img {
+  @apply rounded-lg border border-border my-6 max-w-full h-auto;
+}
+
+/* Horizontal rule */
+.mdx-content hr {
+  @apply border-border my-8;
+}
+
+/* Link styling */
+.mdx-content a {
+  @apply text-primary underline underline-offset-4 hover:text-primary/80 transition-colors;
+}
+
+/* Heading anchor links */
+.mdx-content h2,
+.mdx-content h3,
+.mdx-content h4 {
+  @apply scroll-mt-20;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+  .mdx-content pre {
+    @apply -mx-4 rounded-none border-x-0;
+  }
+
+  .mdx-content table {
+    @apply text-sm;
+  }
+
+  .mdx-content th,
+  .mdx-content td {
+    @apply px-2 py-1.5;
+  }
+}

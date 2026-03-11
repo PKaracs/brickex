@@ -1,0 +1,202 @@
+import "dotenv/config";
+import { GoogleGenAI } from "@google/genai";
+import * as fs from "fs";
+import * as path from "path";
+
+type AspectRatio = "16:9" | "4:5" | "1:1";
+
+interface ScenePrompt {
+  filename: string;
+  aspectRatio: AspectRatio;
+  alt: string;
+  caption: string;
+  prompt: string;
+}
+
+const MODEL = "gemini-3.1-flash-image-preview";
+const OUTPUT_DIR = path.join(
+  process.cwd(),
+  "public",
+  "blog",
+  "off-plan-real-estate-marketing",
+);
+const MAX_RETRIES = 2;
+const IMAGE_DELAY_MS = 2500;
+
+const SCENES: ScenePrompt[] = [
+  {
+    filename: "hero-off-plan-architecture-marketing.png",
+    aspectRatio: "16:9",
+    alt: "Off-plan real estate architecture marketing hero visual",
+    caption:
+      "Off-plan architecture marketing visual with premium development positioning and modern real estate branding.",
+    prompt:
+      "Photorealistic architectural marketing hero image for an off-plan luxury real estate development, full exterior of a contemporary waterfront residential tower with clean geometry, warm sunrise light, glass facade reflections, refined landscape forecourt, subtle branded sales gallery signage, cinematic composition, captured on Hasselblad X2D 100C with XCD 28mm lens, f/8, ISO 100, tripod, balanced vertical lines, no text overlay, no watermark, no people in foreground, magazine quality for a real estate marketing article.",
+  },
+  {
+    filename: "keyword-cluster-real-estate-seo.png",
+    aspectRatio: "16:9",
+    alt: "Real estate SEO keyword cluster and search intent visual",
+    caption:
+      "Search intent and keyword clustering for off-plan properties, architectural content, and high-intent real estate leads.",
+    prompt:
+      "High-end editorial style image showing a premium real estate marketing desk setup with a laptop dashboard displaying SEO charts, keyword maps, and organic growth lines, alongside architecture blueprints and property brochures, soft daylight from a large office window, polished wood, brushed metal accents, depth-of-field focus on analytics screen and floor plans, shot on Sony A7R V with FE 35mm f/1.4 GM at f/4 ISO 125, ultra realistic, no logos, no legible brand names, no people, clean commercial style.",
+  },
+  {
+    filename: "selling-off-plan-content-funnel.png",
+    aspectRatio: "16:9",
+    alt: "Selling off-plan content funnel for real estate leads",
+    caption:
+      "From discovery to inquiry: content funnels that help developers sell off-plan units faster with SEO and visuals.",
+    prompt:
+      "Photorealistic real estate sales experience scene inside a luxury project showroom for off-plan apartments, elegant scale model of a new residential development, large wall screens with unit plans and neighborhood map style visuals, warm architectural lighting, modern interior materials of oak, stone, and glass, subtle depth and leading lines, image framed for blog usage, captured on Canon EOS R5 with RF 24-70mm f/2.8L at 35mm, f/5.6 ISO 160, no visible faces, no text, no watermark, premium marketing mood.",
+  },
+  {
+    filename: "architectural-visual-storytelling.png",
+    aspectRatio: "16:9",
+    alt: "Architectural visual storytelling for property marketing",
+    caption:
+      "Architectural visual storytelling turns floor plans and elevations into persuasive assets for off-plan campaigns.",
+    prompt:
+      "Ultra detailed architectural storytelling image for property marketing: layered composition with printed elevations, material samples, 3D massing model, and tablet showing a realistic building facade render, natural side lighting, neutral editorial palette, shallow cinematic depth, photographed on Fuji GFX100S II with GF 45mm f/2.8 at f/7.1 ISO 100, high texture fidelity, premium studio realism, no text overlays, no watermark, no people.",
+  },
+  {
+    filename: "local-seo-off-plan-neighborhood.png",
+    aspectRatio: "16:9",
+    alt: "Local SEO strategy for off-plan neighborhood search visibility",
+    caption:
+      "Local SEO for off-plan real estate: neighborhood relevance, location pages, and map-driven search visibility.",
+    prompt:
+      "Photorealistic urban neighborhood context image for local SEO in real estate marketing, modern mixed-use district with new construction cranes in background, finished residential facade in foreground, walkable streetscape, street-level perspective, clear afternoon sky, accurate architectural details, photographed on Nikon Z8 with 24mm tilt-shift lens, f/8 ISO 100, straight corrected verticals, no people as subjects, no text, no watermark, crisp commercial quality.",
+  },
+  {
+    filename: "conversion-assets-real-estate-marketing.png",
+    aspectRatio: "16:9",
+    alt: "Real estate conversion assets for off-plan marketing campaigns",
+    caption:
+      "Conversion-focused assets for real estate marketing: render sets, floor-plan snippets, and inquiry-ready landing visuals.",
+    prompt:
+      "Premium conversion asset concept image for off-plan real estate marketing article, clean tabletop with stacked property brochures, printed floor plans, QR style placeholder card with no readable text, smartphone mockup showing a property listing style interface, warm directional key light with soft shadows, minimalist luxury aesthetic, shot on Phase One XF IQ4 150MP with 55mm lens, f/9 ISO 100, hyperreal textures, no brand logos, no watermarks, no people.",
+  },
+];
+
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+async function generateImage(
+  genai: GoogleGenAI,
+  scene: ScenePrompt,
+): Promise<Buffer | null> {
+  for (let attempt = 0; attempt <= MAX_RETRIES; attempt++) {
+    if (attempt > 0) {
+      console.log(
+        `[Gemini] Retry ${attempt}/${MAX_RETRIES} for ${scene.filename}`,
+      );
+      await sleep(2500 * attempt);
+    }
+
+    try {
+      const response = await genai.models.generateContent({
+        model: MODEL,
+        contents: [{ role: "user", parts: [{ text: scene.prompt }] }],
+        config: {
+          responseModalities: ["IMAGE", "TEXT"],
+          imageConfig: {
+            aspectRatio: scene.aspectRatio,
+            imageSize: "2K",
+          },
+        },
+      });
+
+      if (!response.candidates || response.candidates.length === 0) {
+        console.log(`[Gemini] Empty candidates for ${scene.filename}`);
+        continue;
+      }
+
+      const candidate = response.candidates[0];
+      if (candidate.finishReason === "SAFETY") {
+        console.log(`[Gemini] Safety blocked: ${scene.filename}`);
+        return null;
+      }
+
+      const parts = candidate.content?.parts;
+      if (!parts) {
+        console.log(`[Gemini] No content parts for ${scene.filename}`);
+        continue;
+      }
+
+      for (const part of parts) {
+        if ("inlineData" in part && part.inlineData?.data) {
+          return Buffer.from(part.inlineData.data, "base64");
+        }
+      }
+    } catch (error: any) {
+      const message = error?.message || String(error);
+      console.log(`[Gemini] Error for ${scene.filename}: ${message}`);
+      if (
+        message.includes("429") ||
+        message.includes("RESOURCE_EXHAUSTED")
+      ) {
+        await sleep(12000);
+      }
+    }
+  }
+
+  return null;
+}
+
+async function main() {
+  const apiKey = process.env.GOOGLE_GENAI_API_KEY;
+  if (!apiKey) {
+    console.error("Missing GOOGLE_GENAI_API_KEY in .env");
+    process.exit(1);
+  }
+
+  const genai = new GoogleGenAI({ apiKey });
+
+  fs.mkdirSync(OUTPUT_DIR, { recursive: true });
+  console.log(`Output dir: ${OUTPUT_DIR}`);
+
+  const promptsPath = path.join(OUTPUT_DIR, "prompts.json");
+  fs.writeFileSync(promptsPath, JSON.stringify(SCENES, null, 2), "utf-8");
+  console.log(`Saved prompts: ${promptsPath}`);
+
+  let successCount = 0;
+
+  for (let i = 0; i < SCENES.length; i++) {
+    const scene = SCENES[i];
+    const outPath = path.join(OUTPUT_DIR, scene.filename);
+    const progress = `[${i + 1}/${SCENES.length}]`;
+
+    if (fs.existsSync(outPath)) {
+      console.log(`${progress} Skip existing ${scene.filename}`);
+      successCount += 1;
+      continue;
+    }
+
+    console.log(`${progress} Generating ${scene.filename}`);
+    const imageBuffer = await generateImage(genai, scene);
+
+    if (!imageBuffer) {
+      console.log(`${progress} Failed ${scene.filename}`);
+    } else {
+      fs.writeFileSync(outPath, imageBuffer);
+      console.log(
+        `${progress} Saved ${scene.filename} (${(imageBuffer.length / 1024 / 1024).toFixed(1)} MB)`,
+      );
+      successCount += 1;
+    }
+
+    if (i < SCENES.length - 1) {
+      await sleep(IMAGE_DELAY_MS);
+    }
+  }
+
+  console.log(`Done: ${successCount}/${SCENES.length} images.`);
+}
+
+main().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

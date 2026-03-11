@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Teaser Upgrade Overlay Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              neutral: {
+                400: "#a3a3a3",
+                500: "#737373",
+                800: "#262626",
+                900: "#171717",
+              },
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      body {
+        background-color: #0c0c0c;
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      }
+      .blur-xl {
+        filter: blur(24px);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen flex items-center justify-center p-4">
+    <!-- Container simulating the canvas area -->
+    <div
+      class="relative w-full max-w-md aspect-square rounded-lg border border-neutral-800 bg-neutral-900/50 overflow-hidden"
+    >
+      <!-- Blurred image behind -->
+      <img
+        src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80"
+        alt="Blurred preview"
+        class="absolute inset-0 w-full h-full object-cover blur-xl"
+      />
+
+      <!-- The Overlay -->
+      <div class="absolute inset-0 flex items-center justify-center z-10 p-4">
+        <div
+          class="w-full max-w-xs p-4 rounded-xl bg-neutral-900 border border-neutral-800"
+        >
+          <div class="flex flex-col items-center text-center space-y-3">
+            <!-- Emotional headline -->
+            <div class="space-y-1">
+              <h3 class="text-base font-semibold text-white">
+                Your flex is waiting 🔥
+              </h3>
+              <p class="text-xs text-neutral-400">
+                This could be your feed right now
+              </p>
+            </div>
+
+            <!-- Countdown timer -->
+            <div
+              class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-500/10 border border-red-500/20"
+            >
+              <svg
+                class="w-3 h-3 text-red-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <circle cx="12" cy="12" r="10" stroke-width="2" />
+                <path stroke-width="2" d="M12 6v6l4 2" />
+              </svg>
+              <span
+                id="countdown"
+                class="text-xs font-mono font-medium text-red-400"
+              >
+                23:47:32
+              </span>
+              <span class="text-xs text-red-400/70">left at 30% off</span>
+            </div>
+
+            <!-- Social proof -->
+            <div class="flex items-center gap-1.5 text-xs text-neutral-400">
+              <svg
+                class="w-3 h-3"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-width="2"
+                  d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
+                />
+                <circle cx="9" cy="7" r="4" stroke-width="2" />
+                <path stroke-width="2" d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path stroke-width="2" d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+              <span>
+                <span class="text-white font-medium">2,847</span>
+                people flexed this week
+              </span>
+            </div>
+
+            <!-- Price + CTA -->
+            <div class="flex items-center gap-3 w-full">
+              <div class="flex items-baseline gap-0.5">
+                <span class="text-sm text-neutral-500 line-through mr-1">
+                  $9.90
+                </span>
+                <span class="text-lg font-bold text-white">$6.90</span>
+                <span class="text-neutral-500 text-xs">/week</span>
+              </div>
+              <button
+                class="flex-1 h-9 text-sm font-semibold bg-white text-black rounded-md hover:bg-gray-200 transition-colors"
+              >
+                Unlock Now
+              </button>
+            </div>
+
+            <!-- Trust signal -->
+            <p class="text-[10px] text-neutral-500">
+              Cancel anytime · No questions asked
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Live countdown timer
+      function updateCountdown() {
+        const now = new Date();
+        // Simulate 24 hours from "now" minus some time
+        const hours = 23 - (now.getHours() % 24);
+        const minutes = 59 - now.getMinutes();
+        const seconds = 59 - now.getSeconds();
+
+        const pad = (n) => n.toString().padStart(2, "0");
+        document.getElementById("countdown").textContent =
+          `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+      }
+
+      updateCountdown();
+      setInterval(updateCountdown, 1000);
+    </script>
+  </body>
+</html>
