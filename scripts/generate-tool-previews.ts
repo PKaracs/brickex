@@ -136,7 +136,7 @@ async function generateImage(prompt: string): Promise<Buffer | null> {
         contents: [{ role: "user", parts: [{ text: prompt }] }],
         config: {
           responseModalities: ["IMAGE", "TEXT"],
-          imageConfig: { aspectRatio: "5:3", imageSize: "2K" },
+          imageConfig: { aspectRatio: "3:2", imageSize: "2K" },
         },
       });
 
