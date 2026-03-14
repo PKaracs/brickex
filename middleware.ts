@@ -43,14 +43,14 @@ export default async function middleware(req: NextRequest) {
 
   // Get hostname of request (e.g. demo.vercel.pub, demo.localhost:3000)
   const rawHostname = req.headers.get("host") || "localhost:3000";
-  let hostname = rawHostname.replace(".localhost:3000", `.brickex.com`);
+  let hostname = rawHostname.replace(".localhost:3000", `.brickex.co`);
 
   // special case for Vercel preview deployment URLs
   if (
     hostname.includes("---") &&
     hostname.endsWith(`.${process.env.NEXT_PUBLIC_VERCEL_DEPLOYMENT_SUFFIX}`)
   ) {
-    hostname = `${hostname.split("---")[0]}.brickex.com`;
+    hostname = `${hostname.split("---")[0]}.brickex.co`;
   }
 
   const searchParams = req.nextUrl.searchParams.toString();
@@ -59,9 +59,9 @@ export default async function middleware(req: NextRequest) {
     searchParams.length > 0 ? `?${searchParams}` : ""
   }`;
 
-  // Check if this is the app subdomain (app.richflex.co or app.localhost:3000)
+  // Check if this is the app subdomain
   const isAppSubdomain =
-    hostname === "app.brickex.com" || rawHostname.startsWith("app.localhost");
+    hostname === "app.brickex.co" || rawHostname.startsWith("app.localhost");
 
   // Server actions posted from the app subdomain still need the /app rewrite.
   if (req.method === "POST" && req.headers.get("next-action") && !isAppSubdomain) {
@@ -92,7 +92,7 @@ export default async function middleware(req: NextRequest) {
   }
 
   // rewrite root application to `/home` folder
-  if (hostname === "localhost:3000" || hostname === "brickex.com") {
+  if (hostname === "localhost:3000" || hostname === "brickex.co") {
     return NextResponse.rewrite(
       new URL(`/landing${path === "/" ? "" : path}`, req.url)
     );
