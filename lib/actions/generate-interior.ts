@@ -7,6 +7,13 @@ import {
   GEMINI_IMAGE_MODEL_FALLBACK,
   ASPECT_RATIOS,
 } from "@/lib/google-genai";
+import {
+  ensureProjectSourceImageAsset,
+  finishProjectImageRunFailure,
+  finishProjectImageRunSuccess,
+  startProjectImageRun,
+  updateProjectImageRunPrompt,
+} from "@/lib/generation/project-image-runs";
 
 function getOpenAI(): OpenAI | null {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -222,6 +229,11 @@ async function buildFinalPrompt(
     settingsParts.push(`Lighting: ${settings.lighting}`);
   if (settings.furnitureDensity && settings.furnitureDensity !== "auto")
     settingsParts.push(`Furniture Density: ${settings.furnitureDensity}`);
+  if (settings.textures) {
+    const textureList = settings.textures.split(",").filter(Boolean).map((t) => t.replace(/-/g, " "));
+    if (textureList.length > 0)
+      settingsParts.push(`Material / Texture preferences: ${textureList.join(", ")}. Use these specific materials and finishes prominently throughout the room — on floors, walls, countertops, and/or furniture surfaces as appropriate.`);
+  }
   if (settings.customPrompt)
     settingsParts.push(`User instructions: ${settings.customPrompt}`);
 
@@ -397,6 +409,11 @@ function buildFallbackPrompt(settings: Record<string, string>): string {
     parts.push(`Lighting: ${settings.lighting}.`);
   if (settings.furnitureDensity && settings.furnitureDensity !== "auto")
     parts.push(`Furniture density: ${settings.furnitureDensity}.`);
+  if (settings.textures) {
+    const textureList = settings.textures.split(",").filter(Boolean).map((t) => t.replace(/-/g, " "));
+    if (textureList.length > 0)
+      parts.push(`Use these materials/textures prominently: ${textureList.join(", ")}.`);
+  }
   if (settings.customPrompt) parts.push(settings.customPrompt);
 
   parts.push(
@@ -422,84 +439,147 @@ export interface GenerateInteriorResult {
   error?: string;
 }
 
+export interface InteriorBatchSlotInput {
+  slotId: string;
+  settings: Record<string, string>;
+}
+
+export interface InteriorBatchSlotResult {
+  slotId: string;
+  outputUrl?: string;
+  error?: string;
+}
+
+// Single-slot generation (kept for backwards compat)
 export async function generateInterior(
+  projectId: string,
   imageBase64: string,
   mimeType: string,
   settings: Record<string, string>,
   objectFileData: ObjectFileData[] = [],
 ): Promise<GenerateInteriorResult> {
-  try {
-    console.log("[Interior] === Starting interior render ===");
-    console.log(`[Interior] Room image: ${Math.round(imageBase64.length / 1024)}KB`);
-    console.log(`[Interior] Preset objects: ${settings.objects || "none"}`);
-    console.log(`[Interior] Custom object images: ${objectFileData.length}`);
-    console.log(`[Interior] Style: ${settings.interiorStyle || "auto"}`);
+  const results = await generateInteriorBatch(
+    projectId, imageBase64, mimeType,
+    [{ slotId: "single", settings }],
+    objectFileData,
+  );
+  const r = results[0];
+  return { outputUrl: r?.outputUrl, error: r?.error };
+}
 
-    const openai = getOpenAI();
-    const presetObjects = settings.objects?.split(",").filter(Boolean) ?? [];
-    let finalPrompt: string;
+/**
+ * Batch interior generation: room analysis + object descriptions ONCE,
+ * then per-slot placement + final prompt + Gemini in parallel.
+ */
+export async function generateInteriorBatch(
+  projectId: string,
+  imageBase64: string,
+  mimeType: string,
+  slotsInput: InteriorBatchSlotInput[],
+  objectFileData: ObjectFileData[] = [],
+): Promise<InteriorBatchSlotResult[]> {
+  const sourceAsset = await ensureProjectSourceImageAsset({
+    projectId,
+    dataUrl: `data:${mimeType};base64,${imageBase64}`,
+  });
 
-    if (openai) {
-      // Full 4-step pipeline with GPT-5-mini
+  console.log(`[Interior] === Starting batch interior (${slotsInput.length} slots) ===`);
+  console.log(`[Interior] Room image: ${Math.round(imageBase64.length / 1024)}KB`);
 
-      // Step 1: Room analysis
-      const roomAnalysis = await analyzeRoom(openai, imageBase64, mimeType);
+  const openai = getOpenAI();
+  const firstSettings = slotsInput[0].settings;
 
-      // Step 2.5: Describe custom uploaded objects (parallel)
-      let customDescriptions: string[] = [];
-      if (objectFileData.length > 0) {
-        console.log(`[Interior] Describing ${objectFileData.length} custom objects...`);
-        customDescriptions = await Promise.all(
-          objectFileData.map((obj) =>
-            describeCustomObject(openai, obj.base64, obj.mimeType, obj.name)
-          )
+  // Shared Step 1: Room analysis (ONCE)
+  let roomAnalysis = "";
+  let customDescriptions: string[] = [];
+
+  if (openai) {
+    roomAnalysis = await analyzeRoom(openai, imageBase64, mimeType);
+
+    if (objectFileData.length > 0) {
+      console.log(`[Interior] Describing ${objectFileData.length} custom objects...`);
+      customDescriptions = await Promise.all(
+        objectFileData.map((obj) =>
+          describeCustomObject(openai, obj.base64, obj.mimeType, obj.name)
+        )
+      );
+    }
+  }
+
+  const geminiObjectImages = objectFileData.map((obj) => ({
+    base64: obj.base64,
+    mimeType: obj.mimeType,
+    label: obj.name,
+  }));
+
+  // Per-slot: placement plan + final prompt + Gemini — all in parallel
+  const slotPromises = slotsInput.map(async (slot): Promise<InteriorBatchSlotResult> => {
+    const run = await startProjectImageRun({
+      projectId,
+      type: "image_generation",
+      toolId: "interior-render",
+      model: GEMINI_IMAGE_MODEL,
+      settings: {
+        mode: "interior-render",
+        modeLabel: "Interior Render",
+        ...slot.settings,
+        customObjectCount: objectFileData.length,
+      },
+      inputAssetId: sourceAsset.assetId,
+    });
+
+    try {
+      const presetObjects = slot.settings.objects?.split(",").filter(Boolean) ?? [];
+      let finalPrompt: string;
+
+      if (openai && roomAnalysis) {
+        const placementPlan = await planObjectPlacement(
+          openai,
+          roomAnalysis,
+          presetObjects,
+          customDescriptions,
+          slot.settings.interiorStyle ?? "auto",
+          slot.settings.furnitureDensity ?? "balanced",
         );
-        console.log("[Interior] Custom object descriptions:", customDescriptions);
+        finalPrompt = await buildFinalPrompt(openai, roomAnalysis, placementPlan, slot.settings);
+      } else {
+        finalPrompt = buildFallbackPrompt(slot.settings);
       }
 
-      // Step 2: Object placement plan
-      const placementPlan = await planObjectPlacement(
-        openai,
-        roomAnalysis,
-        presetObjects,
-        customDescriptions,
-        settings.interiorStyle ?? "auto",
-        settings.furnitureDensity ?? "balanced",
+      console.log(`[Interior] [${slot.slotId}] Final prompt (${finalPrompt.length} chars)`);
+      await updateProjectImageRunPrompt(run.runId, finalPrompt);
+
+      const outputUrl = await generateWithGemini(
+        finalPrompt, imageBase64, mimeType, geminiObjectImages,
       );
 
-      // Step 3: Final prompt
-      finalPrompt = await buildFinalPrompt(openai, roomAnalysis, placementPlan, settings);
-    } else {
-      console.log("[Interior] No OpenAI key, using fallback prompt");
-      finalPrompt = buildFallbackPrompt(settings);
+      if (!outputUrl) {
+        await finishProjectImageRunFailure({ run, errorMessage: "Interior generation failed." });
+        return { slotId: slot.slotId, error: "Interior generation failed. Please try again." };
+      }
+
+      const persisted = await finishProjectImageRunSuccess({
+        run,
+        dataUrl: outputUrl,
+        sourceAssetId: sourceAsset.assetId,
+        pathKind: "interior-renders",
+        deliverableTitle: "Interior render",
+        deliverableMetadata: { mode: "interior-render", modeLabel: "Interior Render", kind: "generation" },
+      });
+
+      console.log(`[Interior] [${slot.slotId}] Render complete`);
+      return { slotId: slot.slotId, outputUrl: persisted.url };
+    } catch (error: any) {
+      console.error(`[Interior] [${slot.slotId}] Error:`, error?.message);
+      await finishProjectImageRunFailure({
+        run,
+        errorMessage: error?.message || "Something went wrong.",
+      });
+      return { slotId: slot.slotId, error: error?.message || "Something went wrong." };
     }
+  });
 
-    console.log(`[Interior] Final prompt (${finalPrompt.length} chars): ${finalPrompt.slice(0, 200)}...`);
-
-    // Step 4: Generate with Gemini
-    const geminiObjectImages = objectFileData.map((obj) => ({
-      base64: obj.base64,
-      mimeType: obj.mimeType,
-      label: obj.name,
-    }));
-
-    const outputUrl = await generateWithGemini(
-      finalPrompt,
-      imageBase64,
-      mimeType,
-      geminiObjectImages,
-    );
-
-    if (!outputUrl) {
-      return { error: "Interior generation failed. Please try again." };
-    }
-
-    console.log("[Interior] === Render complete ===");
-    return { outputUrl, prompt: finalPrompt };
-  } catch (error: any) {
-    console.error("[Interior] Pipeline error:", error?.message || error);
-    return {
-      error: error?.message || "Something went wrong. Please try again.",
-    };
-  }
+  const results = await Promise.all(slotPromises);
+  console.log(`[Interior] === Batch complete: ${results.filter((r) => r.outputUrl).length}/${slotsInput.length} succeeded ===`);
+  return results;
 }

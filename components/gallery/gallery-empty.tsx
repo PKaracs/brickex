@@ -21,7 +21,7 @@ export function GalleryEmpty() {
               No generations yet
             </h3>
             <p className="text-sm text-neutral-400 leading-relaxed">
-              Your generated renders will appear here. Start creating stunning
+              Your generated images will appear here. Start creating stunning
               architectural visualizations with BrickEx.
             </p>
           </div>
@@ -30,7 +30,7 @@ export function GalleryEmpty() {
           <Link href="/dashboard">
             <Button className="bg-white text-black hover:bg-neutral-200 font-semibold h-11 px-6">
               <Sparkles className="h-4 w-4 mr-2" />
-              Create Your First Render
+              Create Your First Image
             </Button>
           </Link>
         </div>

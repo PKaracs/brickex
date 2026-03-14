@@ -8,46 +8,47 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { BlurFade } from "@/components/ui/blur-fade";
 import Link from "next/link";
+import { assetUrl } from "@/lib/assets";
 
 const VILLA_IMAGES = [
   {
-    src: "/api/static/real-estate-presets/maldives-overwater.png",
+    src: assetUrl("real-estate-presets/maldives-overwater.png"),
     label: "Maldives Overwater Villa",
   },
   {
-    src: "/api/static/real-estate-presets/hollywood-hills-modern.png",
+    src: assetUrl("real-estate-presets/hollywood-hills-modern.png"),
     label: "Hollywood Hills Modern",
   },
   {
-    src: "/api/static/real-estate-presets/lake-como-palazzo.png",
+    src: assetUrl("real-estate-presets/lake-como-palazzo.png"),
     label: "Lake Como Palazzo",
   },
   {
-    src: "/api/static/real-estate-presets/mediterranean-villa.png",
+    src: assetUrl("real-estate-presets/mediterranean-villa.png"),
     label: "Mediterranean Villa",
   },
   {
-    src: "/api/static/real-estate-presets/swiss-chalet.png",
+    src: assetUrl("real-estate-presets/swiss-chalet.png"),
     label: "Swiss Chalet",
   },
   {
-    src: "/api/static/real-estate-presets/malibu-mansion.png",
+    src: assetUrl("real-estate-presets/malibu-mansion.png"),
     label: "Malibu Mansion",
   },
   {
-    src: "/api/static/real-estate-presets/japanese-zen-house.png",
+    src: assetUrl("real-estate-presets/japanese-zen-house.png"),
     label: "Japanese Zen House",
   },
   {
-    src: "/api/static/real-estate-presets/amalfi-coast-villa.png",
+    src: assetUrl("real-estate-presets/amalfi-coast-villa.png"),
     label: "Amalfi Coast Villa",
   },
   {
-    src: "/api/static/real-estate-presets/norwegian-fjord-glass.png",
+    src: assetUrl("real-estate-presets/norwegian-fjord-glass.png"),
     label: "Norwegian Fjord Glass",
   },
   {
-    src: "/api/static/real-estate-presets/bali-resort-villa.png",
+    src: assetUrl("real-estate-presets/bali-resort-villa.png"),
     label: "Bali Resort Villa",
   },
 ];

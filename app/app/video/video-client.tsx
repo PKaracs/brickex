@@ -11,7 +11,7 @@ import type { VideoScenePreset } from "@/lib/constants/video-presets";
 
 async function compressImageToBase64(
   file: File,
-  maxDim = 1920
+  maxDim = 1280
 ): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
@@ -27,7 +27,7 @@ async function compressImageToBase64(
       const ctx = canvas.getContext("2d");
       if (!ctx) return reject(new Error("Canvas unavailable"));
       ctx.drawImage(img, 0, 0, w, h);
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.85);
+      const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
       const rawBase64 = dataUrl.split(",")[1];
       resolve(rawBase64);
     };
@@ -39,49 +39,58 @@ async function compressImageToBase64(
   });
 }
 
-export function VideoClient() {
-  const [startFile, setStartFile] = useState<File | null>(null);
-  const [endFile, setEndFile] = useState<File | null>(null);
+async function urlToBase64(url: string, maxDim = 1280): Promise<string> {
+  const res = await fetch(url);
+  if (!res.ok) throw new Error("Failed to fetch gallery image");
+  const blob = await res.blob();
+  const file = new File([blob], "gallery-image.jpg", { type: blob.type || "image/jpeg" });
+  return compressImageToBase64(file, maxDim);
+}
 
-  const [isEndFrameMode, setIsEndFrameMode] = useState(false);
-  const [selectedPresetId, setSelectedPresetId] = useState<string | null>(
-    null
-  );
+export function VideoClient() {
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [galleryUrl, setGalleryUrl] = useState<string | null>(null);
+
+  const [selectedPresetId, setSelectedPresetId] = useState<string | null>(null);
   const [selectedScenePresetId, setSelectedScenePresetId] = useState<string | null>(null);
   const [prompt, setPrompt] = useState("");
   const [duration, setDuration] = useState(5);
-  const [enableAudio, setEnableAudio] = useState(true);
+  const [aspectRatio, setAspectRatio] = useState("16:9");
+  const [resolution, setResolution] = useState("720p");
 
   const [isGenerating, setIsGenerating] = useState(false);
   const [videoUrl, setVideoUrl] = useState<string | null>(null);
 
-  const canGenerate = !!startFile && !isGenerating;
+  const hasSource = !!imageFile || !!galleryUrl;
+  const canGenerate = hasSource && !isGenerating;
 
-  const handleModeToggle = useCallback((isEndFrame: boolean) => {
-    setIsEndFrameMode(isEndFrame);
-    if (!isEndFrame) {
-      setEndFile(null);
-    }
+  const handleFileSelect = useCallback((file: File) => {
+    setImageFile(file);
+    setGalleryUrl(null);
   }, []);
 
-  const handlePresetSelect = useCallback(
-    (id: string | null) => {
-      setSelectedPresetId(id);
-    },
-    []
-  );
+  const handleGallerySelect = useCallback((url: string) => {
+    setGalleryUrl(url);
+    setImageFile(null);
+  }, []);
 
-  const handleScenePresetSelect = useCallback(
-    (preset: VideoScenePreset | null) => {
-      setSelectedScenePresetId(preset?.id ?? null);
-    },
-    []
-  );
+  const handleClear = useCallback(() => {
+    setImageFile(null);
+    setGalleryUrl(null);
+  }, []);
+
+  const handlePresetSelect = useCallback((id: string | null) => {
+    setSelectedPresetId(id);
+  }, []);
+
+  const handleScenePresetSelect = useCallback((preset: VideoScenePreset | null) => {
+    setSelectedScenePresetId(preset?.id ?? null);
+  }, []);
 
   const handleGenerate = useCallback(async () => {
-    if (!startFile) {
+    if (!hasSource) {
       toast("Upload an image first", {
-        description: "Drag & drop or click to upload your source image.",
+        description: "Drag & drop, browse files, or pick from your gallery.",
         duration: 4000,
       });
       return;
@@ -91,25 +100,26 @@ export function VideoClient() {
     setVideoUrl(null);
 
     try {
-      const startBase64 = await compressImageToBase64(startFile);
-
-      let endBase64: string | undefined;
-      if (isEndFrameMode && endFile) {
-        endBase64 = await compressImageToBase64(endFile);
+      let imageBase64: string;
+      if (imageFile) {
+        imageBase64 = await compressImageToBase64(imageFile);
+      } else {
+        imageBase64 = await urlToBase64(galleryUrl!);
       }
+
+      console.log(`[Video] Sending request — image: ${imageBase64.length} chars, scene: ${selectedScenePresetId ?? "none"}, motion: ${selectedPresetId ?? "none"}, prompt: "${prompt.substring(0, 50)}"`);
 
       const response = await fetch("/api/video/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          startImageBase64: startBase64,
-          endImageBase64: endBase64,
+          imageBase64,
           prompt,
           presetId: selectedPresetId ?? undefined,
           scenePresetId: selectedScenePresetId ?? undefined,
           duration,
-          mode: "std",
-          enableAudio,
+          aspectRatio,
+          resolution,
         }),
       });
 
@@ -136,16 +146,7 @@ export function VideoClient() {
     } finally {
       setIsGenerating(false);
     }
-  }, [
-    startFile,
-    endFile,
-    isEndFrameMode,
-    prompt,
-    selectedPresetId,
-    selectedScenePresetId,
-    duration,
-    enableAudio,
-  ]);
+  }, [hasSource, imageFile, galleryUrl, prompt, selectedPresetId, selectedScenePresetId, duration, aspectRatio, resolution]);
 
   const handleDownload = useCallback(async () => {
     if (!videoUrl) return;
@@ -166,9 +167,11 @@ export function VideoClient() {
     }
   }, [videoUrl]);
 
+  const handleNewVideo = useCallback(() => {
+    setVideoUrl(null);
+  }, []);
+
   const sidebarProps = {
-    isEndFrameMode,
-    onModeToggle: handleModeToggle,
     selectedPresetId,
     onPresetSelect: handlePresetSelect,
     selectedScenePresetId,
@@ -177,11 +180,16 @@ export function VideoClient() {
     onPromptChange: setPrompt,
     duration,
     onDurationChange: setDuration,
-    enableAudio,
-    onAudioToggle: setEnableAudio,
+    aspectRatio,
+    onAspectRatioChange: setAspectRatio,
+    resolution,
+    onResolutionChange: setResolution,
     isGenerating,
     canGenerate,
     onGenerate: handleGenerate,
+    videoUrl,
+    onDownload: handleDownload,
+    onNewVideo: handleNewVideo,
   };
 
   return (
@@ -189,13 +197,11 @@ export function VideoClient() {
       <div className="flex-1 flex overflow-hidden min-h-0">
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden transition-all duration-500 p-2 sm:p-4 pb-24 md:pb-4">
           <VideoCanvas
-            isEndFrameMode={isEndFrameMode}
-            startFile={startFile}
-            endFile={endFile}
-            onStartFileSelect={setStartFile}
-            onEndFileSelect={setEndFile}
-            onStartFileClear={() => setStartFile(null)}
-            onEndFileClear={() => setEndFile(null)}
+            imageFile={imageFile}
+            previewUrl={galleryUrl}
+            onFileSelect={handleFileSelect}
+            onGallerySelect={handleGallerySelect}
+            onFileClear={handleClear}
             isGenerating={isGenerating}
             videoUrl={videoUrl}
             onDownload={handleDownload}

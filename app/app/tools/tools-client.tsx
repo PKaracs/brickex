@@ -5,6 +5,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { TOOLS, type Tool } from "@/lib/constants/tools";
 import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
 import { motion } from "motion/react";
 
 const TAG_FILTERS = [
@@ -32,61 +33,88 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
         onMouseLeave={() => setIsHovered(false)}
         className="group relative flex flex-col rounded-2xl overflow-hidden cursor-pointer h-full bg-neutral-900 border border-neutral-800/60 hover:border-neutral-600/60 transition-all duration-500"
       >
-        {/* Hero area with icon + gradient */}
+        {/* Hero area */}
         <div className="relative w-full aspect-[5/3] overflow-hidden">
-          {/* Layered gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-br from-neutral-800/80 via-neutral-900 to-black" />
-          <div
-            className={cn(
-              "absolute inset-0 transition-opacity duration-700",
-              isHovered ? "opacity-100" : "opacity-0"
-            )}
-            style={{
-              background:
-                "radial-gradient(ellipse at 50% 60%, rgba(255,255,255,0.04) 0%, transparent 70%)",
-            }}
-          />
-
-          {/* Subtle grid pattern */}
-          <div
-            className="absolute inset-0 opacity-[0.03]"
-            style={{
-              backgroundImage:
-                "linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px)",
-              backgroundSize: "40px 40px",
-            }}
-          />
-
-          {/* Icon */}
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div
-              className={cn(
-                "relative flex items-center justify-center transition-all duration-500",
-                isHovered ? "scale-105" : "scale-100"
-              )}
-            >
+          {tool.inputPreview && tool.outputPreview ? (
+            <>
+              {/* Input image (default) */}
+              <Image
+                src={tool.inputPreview}
+                alt={`${tool.label} input`}
+                fill
+                className={cn(
+                  "object-cover transition-opacity duration-500",
+                  isHovered ? "opacity-0" : "opacity-100"
+                )}
+              />
+              {/* Output image (on hover) */}
+              <Image
+                src={tool.outputPreview}
+                alt={`${tool.label} output`}
+                fill
+                className={cn(
+                  "object-cover transition-opacity duration-500",
+                  isHovered ? "opacity-100" : "opacity-0"
+                )}
+              />
+            </>
+          ) : (
+            <>
+              {/* Layered gradient background */}
+              <div className="absolute inset-0 bg-gradient-to-br from-neutral-800/80 via-neutral-900 to-black" />
               <div
                 className={cn(
-                  "absolute w-20 h-20 rounded-full transition-all duration-700",
-                  isHovered
-                    ? "bg-white/[0.06] scale-150"
-                    : "bg-white/[0.02] scale-100"
+                  "absolute inset-0 transition-opacity duration-700",
+                  isHovered ? "opacity-100" : "opacity-0"
                 )}
+                style={{
+                  background:
+                    "radial-gradient(ellipse at 50% 60%, rgba(255,255,255,0.04) 0%, transparent 70%)",
+                }}
               />
-              <Icon
-                className={cn(
-                  "w-9 h-9 relative z-10 transition-all duration-500",
-                  isHovered ? "text-white" : "text-neutral-500"
-                )}
-                strokeWidth={1.5}
+
+              {/* Subtle grid pattern */}
+              <div
+                className="absolute inset-0 opacity-[0.03]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(rgba(255,255,255,.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.5) 1px, transparent 1px)",
+                  backgroundSize: "40px 40px",
+                }}
               />
-            </div>
-          </div>
+
+              {/* Icon */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div
+                  className={cn(
+                    "relative flex items-center justify-center transition-all duration-500",
+                    isHovered ? "scale-105" : "scale-100"
+                  )}
+                >
+                  <div
+                    className={cn(
+                      "absolute w-20 h-20 rounded-full transition-all duration-700",
+                      isHovered
+                        ? "bg-white/[0.06] scale-150"
+                        : "bg-white/[0.02] scale-100"
+                    )}
+                  />
+                  <Icon
+                    className={cn(
+                      "w-9 h-9 relative z-10 transition-all duration-500",
+                      isHovered ? "text-white" : "text-neutral-500"
+                    )}
+                    strokeWidth={1.5}
+                  />
+                </div>
+              </div>
+            </>
+          )}
 
           {/* Arrow indicator on hover */}
           <div
             className={cn(
-              "absolute top-3.5 right-3.5 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300",
+              "absolute top-3.5 right-3.5 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 z-10",
               isHovered
                 ? "bg-white/10 opacity-100 translate-x-0"
                 : "bg-transparent opacity-0 translate-x-1"

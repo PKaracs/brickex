@@ -42,19 +42,32 @@ function ScenePresetCard({
           "from-neutral-800 to-neutral-900"
         )}
       >
-        <div className="absolute inset-0 bg-gradient-to-br opacity-60" style={{
-          backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`
-        }} />
-        <div
-          className={cn(
-            "relative w-14 h-14 rounded-2xl flex items-center justify-center transition-colors",
-            isSelected
-              ? "bg-white/15 text-white"
-              : "bg-neutral-700/50 text-neutral-500 group-hover:text-neutral-400 group-hover:bg-neutral-700/70"
-          )}
-        >
-          <Icon className="w-7 h-7" />
-        </div>
+        {preset.previewUrl ? (
+          <video
+            src={preset.previewUrl}
+            muted
+            loop
+            playsInline
+            autoPlay
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <>
+            <div className="absolute inset-0 bg-gradient-to-br opacity-60" style={{
+              backgroundImage: `linear-gradient(to bottom right, var(--tw-gradient-stops))`
+            }} />
+            <div
+              className={cn(
+                "relative w-14 h-14 rounded-2xl flex items-center justify-center transition-colors",
+                isSelected
+                  ? "bg-white/15 text-white"
+                  : "bg-neutral-700/50 text-neutral-500 group-hover:text-neutral-400 group-hover:bg-neutral-700/70"
+              )}
+            >
+              <Icon className="w-7 h-7" />
+            </div>
+          </>
+        )}
 
         {isSelected && (
           <div className="absolute top-2.5 right-2.5 w-5 h-5 rounded-full bg-white flex items-center justify-center shadow-[0_0_12px_rgba(255,255,255,0.3)]">
@@ -67,14 +80,6 @@ function ScenePresetCard({
                 strokeLinejoin="round"
               />
             </svg>
-          </div>
-        )}
-
-        {preset.previewUrl && (
-          <div className="absolute bottom-2 right-2 px-1.5 py-0.5 rounded-md bg-black/50 backdrop-blur-sm">
-            <span className="text-[9px] text-neutral-400 font-medium uppercase tracking-wider">
-              Preview
-            </span>
           </div>
         )}
       </div>

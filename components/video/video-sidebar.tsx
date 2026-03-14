@@ -5,14 +5,14 @@ import { cn } from "@/lib/utils";
 import {
   Loader2,
   Settings2,
-  Volume2,
-  VolumeX,
   Sparkles,
   ChevronUp,
   ChevronDown,
   ChevronRight,
   Wand2,
   Film,
+  Download,
+  RotateCcw,
 } from "lucide-react";
 import {
   VIDEO_PRESETS,
@@ -26,9 +26,7 @@ import {
 } from "@/components/ui/sheet";
 import { SelectVideoPresetModal } from "@/components/modals/select-video-preset-modal";
 
-interface VideoSidebarProps {
-  isEndFrameMode: boolean;
-  onModeToggle: (isEndFrame: boolean) => void;
+export interface VideoSidebarProps {
   selectedPresetId: string | null;
   onPresetSelect: (id: string | null) => void;
   selectedScenePresetId: string | null;
@@ -37,14 +35,32 @@ interface VideoSidebarProps {
   onPromptChange: (prompt: string) => void;
   duration: number;
   onDurationChange: (duration: number) => void;
-  enableAudio: boolean;
-  onAudioToggle: (enabled: boolean) => void;
+  aspectRatio: string;
+  onAspectRatioChange: (ratio: string) => void;
+  resolution: string;
+  onResolutionChange: (res: string) => void;
   isGenerating: boolean;
   canGenerate: boolean;
   onGenerate: () => void;
+  videoUrl: string | null;
+  onDownload: () => void;
+  onNewVideo: () => void;
 }
 
 const DURATIONS = [3, 5, 7, 10, 15];
+
+const ASPECT_RATIOS = [
+  { value: "16:9", label: "16:9" },
+  { value: "9:16", label: "9:16" },
+  { value: "1:1", label: "1:1" },
+  { value: "4:3", label: "4:3" },
+  { value: "3:4", label: "3:4" },
+];
+
+const RESOLUTIONS = [
+  { value: "480p", label: "480p" },
+  { value: "720p", label: "720p" },
+];
 
 const CARD_H = 72;
 const GAP = 6;
@@ -320,8 +336,6 @@ function ScenePresetSelectorCard({
 }
 
 function SidebarContent({
-  isEndFrameMode,
-  onModeToggle,
   selectedPresetId,
   onPresetSelect,
   selectedScenePresetId,
@@ -330,41 +344,20 @@ function SidebarContent({
   onPromptChange,
   duration,
   onDurationChange,
-  enableAudio,
-  onAudioToggle,
+  aspectRatio,
+  onAspectRatioChange,
+  resolution,
+  onResolutionChange,
   isGenerating,
   canGenerate,
   onGenerate,
+  videoUrl,
+  onDownload,
+  onNewVideo,
 }: VideoSidebarProps) {
   return (
     <div className="flex flex-col h-full">
       <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none p-5 space-y-5">
-        <div>
-          <label className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-2.5 block">
-            Mode
-          </label>
-          <div className="flex rounded-xl bg-neutral-800/50 border border-neutral-700/30 p-1">
-            <button
-              onClick={() => onModeToggle(false)}
-              className={cn(
-                "flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all",
-                !isEndFrameMode ? "bg-white/10 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-300"
-              )}
-            >
-              Image to Video
-            </button>
-            <button
-              onClick={() => onModeToggle(true)}
-              className={cn(
-                "flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all",
-                isEndFrameMode ? "bg-white/10 text-white shadow-sm" : "text-neutral-500 hover:text-neutral-300"
-              )}
-            >
-              Start & End Frame
-            </button>
-          </div>
-        </div>
-
         <ScenePresetSelectorCard
           selectedScenePresetId={selectedScenePresetId}
           onScenePresetSelect={onScenePresetSelect}
@@ -414,46 +407,88 @@ function SidebarContent({
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-neutral-400">Audio</span>
-            <button
-              onClick={() => onAudioToggle(!enableAudio)}
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-medium transition-colors",
-                enableAudio
-                  ? "bg-white/10 text-white border border-neutral-700/50"
-                  : "text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800"
-              )}
-            >
-              {enableAudio ? <Volume2 className="w-3 h-3" /> : <VolumeX className="w-3 h-3" />}
-              {enableAudio ? "On" : "Off"}
-            </button>
+            <span className="text-xs text-neutral-400">Aspect Ratio</span>
+            <div className="flex gap-1">
+              {ASPECT_RATIOS.map((r) => (
+                <button
+                  key={r.value}
+                  onClick={() => onAspectRatioChange(r.value)}
+                  className={cn(
+                    "px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors",
+                    aspectRatio === r.value
+                      ? "bg-white/10 text-white border border-neutral-700/50"
+                      : "text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800"
+                  )}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-neutral-400">Resolution</span>
+            <div className="flex gap-1">
+              {RESOLUTIONS.map((r) => (
+                <button
+                  key={r.value}
+                  onClick={() => onResolutionChange(r.value)}
+                  className={cn(
+                    "px-2.5 py-1.5 rounded-lg text-[11px] font-medium transition-colors",
+                    resolution === r.value
+                      ? "bg-white/10 text-white border border-neutral-700/50"
+                      : "text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800"
+                  )}
+                >
+                  {r.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
       </div>
 
       <div className="flex-shrink-0 p-5 pt-3 border-t border-neutral-800/50">
-        <button
-          onClick={onGenerate}
-          disabled={!canGenerate || isGenerating}
-          className={cn(
-            "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all",
-            canGenerate && !isGenerating
-              ? "bg-white text-black hover:bg-neutral-200 active:scale-[0.98]"
-              : "bg-neutral-800 text-neutral-500 cursor-not-allowed"
-          )}
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-4 h-4" />
-              Generate Video
-            </>
-          )}
-        </button>
+        {videoUrl ? (
+          <div className="space-y-2">
+            <button
+              onClick={onDownload}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all"
+            >
+              <Download className="w-4 h-4" />
+              Download Video
+            </button>
+            <button
+              onClick={onNewVideo}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-neutral-800 text-white border border-neutral-700 hover:bg-neutral-700 active:scale-[0.98] transition-all"
+            >
+              <RotateCcw className="w-4 h-4" />
+              New Video
+            </button>
+          </div>
+        ) : (
+          <button
+            onClick={onGenerate}
+            disabled={!canGenerate || isGenerating}
+            className={cn(
+              "w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all",
+              canGenerate && !isGenerating
+                ? "bg-white text-black hover:bg-neutral-200 active:scale-[0.98]"
+                : "bg-neutral-800 text-neutral-500 cursor-not-allowed"
+            )}
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Generate Video
+              </>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );
@@ -469,7 +504,7 @@ export function VideoSidebar(props: VideoSidebarProps) {
 
 export const VideoMobileBottomBar = memo(function VideoMobileBottomBar(props: VideoSidebarProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const { isGenerating, canGenerate, onGenerate } = props;
+  const { isGenerating, canGenerate, onGenerate, videoUrl, onDownload, onNewVideo } = props;
 
   return (
     <div className="md:hidden fixed bottom-2 left-3 right-3 z-40 bg-neutral-900 border border-neutral-800 rounded-2xl px-3 py-3">
@@ -484,28 +519,46 @@ export const VideoMobileBottomBar = memo(function VideoMobileBottomBar(props: Vi
             <SidebarContent {...props} />
           </SheetContent>
         </Sheet>
-        <button
-          onClick={onGenerate}
-          disabled={!canGenerate || isGenerating}
-          className={cn(
-            "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all",
-            canGenerate && !isGenerating
-              ? "bg-white text-black hover:bg-neutral-200 active:scale-[0.98]"
-              : "bg-neutral-800 text-neutral-500 cursor-not-allowed"
-          )}
-        >
-          {isGenerating ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Generating...
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-4 h-4" />
-              Generate Video
-            </>
-          )}
-        </button>
+        {videoUrl ? (
+          <>
+            <button
+              onClick={onDownload}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all"
+            >
+              <Download className="w-4 h-4" />
+              Download
+            </button>
+            <button
+              onClick={onNewVideo}
+              className="w-10 h-10 flex items-center justify-center rounded-xl bg-neutral-800 text-neutral-300 hover:bg-neutral-700 border border-neutral-700 transition-colors"
+            >
+              <RotateCcw className="w-4 h-4" />
+            </button>
+          </>
+        ) : (
+          <button
+            onClick={onGenerate}
+            disabled={!canGenerate || isGenerating}
+            className={cn(
+              "flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all",
+              canGenerate && !isGenerating
+                ? "bg-white text-black hover:bg-neutral-200 active:scale-[0.98]"
+                : "bg-neutral-800 text-neutral-500 cursor-not-allowed"
+            )}
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Generate Video
+              </>
+            )}
+          </button>
+        )}
       </div>
     </div>
   );

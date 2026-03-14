@@ -13,6 +13,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
+import { assetUrl } from "@/lib/assets";
 
 type VariationKey = "original" | "night" | "morning" | "overcast" | "lifestyle";
 
@@ -50,14 +51,14 @@ function getImagePath(property: PropertyData, variation: VariationKey): string {
   const base = property.baseDir || "real-estate-full";
   const vars = property.variationsDir || "real-estate-full-variations";
   if (variation === "original") {
-    return `/api/static/${base}/${property.slug}.png`;
+    return assetUrl(`${base}/${property.slug}.png`);
   }
-  return `/api/static/${vars}/${property.slug}/${variation}.png`;
+  return assetUrl(`${vars}/${property.slug}/${variation}.png`);
 }
 
 function getThumbnailPath(property: PropertyData): string {
   const base = property.baseDir || "real-estate-full";
-  return `/api/static/${base}/${property.slug}.png`;
+  return assetUrl(`${base}/${property.slug}.png`);
 }
 
 export default function PropertyShowcase() {

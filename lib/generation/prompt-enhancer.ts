@@ -66,7 +66,6 @@ export async function enhancePrompt(rawPrompt: string): Promise<string> {
           content: `Enhance this image generation prompt with professional camera specs, lighting, color grading, and composition details. Keep all existing scene/subject instructions intact:\n\n${rawPrompt}`,
         },
       ],
-      temperature: 0.7,
       max_completion_tokens: 1000,
     });
 

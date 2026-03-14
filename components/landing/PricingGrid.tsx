@@ -16,7 +16,7 @@ export default function PricingGrid() {
       price: 0,
       currency: "$",
       features: [
-        "1 render to try BrickEx",
+        "100 bricks to try BrickEx",
         "Exterior render mode",
         "2K resolution output",
         "SketchUp, AutoCAD & PDF support",
@@ -26,38 +26,53 @@ export default function PricingGrid() {
       onClick: navigate,
     },
     {
+      id: "starter",
+      name: "Starter",
+      price: "29",
+      subText: "/month",
+      currency: "$",
+      features: [
+        "4,000 bricks per month",
+        "Exterior + Interior modes",
+        "All architecture styles",
+        "All lighting & weather variations",
+        "4K exports, no watermarks",
+        "30-second generation",
+      ],
+      additionalFeatures: ["Everything in Free"],
+      buttonText: "Get Started",
+      onClick: navigate,
+    },
+    {
       id: "pro",
       name: "Pro",
-      price: "8.90",
-      subText: "/week",
+      price: "49",
+      subText: "/month",
       currency: "$",
       featured: true,
       features: [
-        "Unlimited AI renders",
-        "Exterior + Interior modes",
-        "All lighting & weather variations",
+        "12,000 bricks per month",
         "Video generation (walkthroughs, timelapses)",
         "Region editing & refinement",
-        "4K exports, no watermarks",
-        "30-second generation",
         "Priority processing",
+        "All tools included",
       ],
-      additionalFeatures: ["Everything in Free"],
+      additionalFeatures: ["Everything in Starter"],
       buttonText: "Start Creating",
       onClick: navigate,
     },
     {
       id: "studio",
       name: "Studio",
-      price: "29",
-      subText: "/week",
+      price: "99",
+      subText: "/month",
       currency: "$",
       features: [
+        "30,000 bricks per month",
         "Team collaboration (up to 5 seats)",
         "Batch rendering (up to 20 at once)",
         "Custom brand presets",
         "API access for integrations",
-        "Dedicated account manager",
         "White-label exports",
       ],
       additionalFeatures: ["Everything in Pro"],
@@ -77,7 +92,7 @@ export default function PricingGrid() {
               </span>
             </h2>
             <p className="text-zinc-500 mt-3 text-sm sm:text-base max-w-lg mx-auto">
-              Start free with one render. Upgrade when your clients start asking
+              Start free with 100 bricks. Upgrade when your clients start asking
               "who's your 3D studio?"
             </p>
           </div>
@@ -86,7 +101,7 @@ export default function PricingGrid() {
         <BlurFade inView delay={0.2}>
           <div className={cn(
             "mx-auto grid grid-cols-1 gap-4",
-            "max-w-7xl md:grid-cols-2 xl:grid-cols-3",
+            "max-w-7xl md:grid-cols-2 xl:grid-cols-4",
           )}>
             {plans.map((plan) => (
               <PricingCard key={plan.id} plan={plan} onClick={plan.onClick} />

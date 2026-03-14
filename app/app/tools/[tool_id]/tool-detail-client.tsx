@@ -389,7 +389,7 @@ export function ToolDetailClient() {
                 <p className="text-xs text-neutral-500 text-center">
                   Your request will cost{" "}
                   <span className="text-amber-400/90 font-medium">
-                    {tool.creditCost} credits
+                    {tool.creditCost} bricks
                   </span>
                 </p>
 

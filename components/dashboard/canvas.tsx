@@ -35,6 +35,8 @@ import { GalleryListImage } from "@/components/gallery/gallery-list-card";
 import { getUserOutputsPaginated } from "@/lib/actions/get-user-outputs";
 import Image from "next/image";
 
+import type { AngleSlot } from "@/lib/constants/render-modes";
+
 const ACCEPTED_TYPES = [
   "image/jpeg",
   "image/png",
@@ -121,7 +123,7 @@ function PickFromGalleryModal({
       <DialogContent className="max-w-2xl w-full max-h-[80vh] bg-neutral-950 border-neutral-800 text-white">
         <DialogHeader>
           <DialogTitle className="text-lg font-semibold">
-            Pick from your renders
+            Pick from your gallery
           </DialogTitle>
         </DialogHeader>
         <div className="overflow-y-auto scrollbar-none">
@@ -134,7 +136,7 @@ function PickFromGalleryModal({
           ) : images.length === 0 ? (
             <div className="py-12 text-center">
               <ImageIcon className="w-10 h-10 text-neutral-600 mx-auto mb-3" />
-              <p className="text-sm text-neutral-500">No renders yet. Generate some first!</p>
+              <p className="text-sm text-neutral-500">No images yet. Generate some first!</p>
             </div>
           ) : (
             <div className="grid grid-cols-3 gap-2 p-1">
@@ -179,6 +181,7 @@ interface CanvasProps {
   onRegionEditSubmit?: (annotatedImageBase64: string, prompt: string) => void;
   originalImageUrl?: string | null;
   isComparing?: boolean;
+  canCompare?: boolean;
   onToggleCompare?: () => void;
   onSelectionChange?: (hasSelection: boolean) => void;
   editHistory?: string[];
@@ -186,6 +189,9 @@ interface CanvasProps {
   onHistorySelect?: (index: number) => void;
   onDownload?: () => void;
   sourcePreviewUrl?: string | null;
+  slots?: AngleSlot[];
+  activeSlotIndex?: number;
+  onActiveSlotChange?: (index: number) => void;
 }
 
 interface SelectionRect {
@@ -218,6 +224,7 @@ export const Canvas = memo(function Canvas({
   onRegionEditSubmit,
   originalImageUrl,
   isComparing = false,
+  canCompare = false,
   onToggleCompare,
   onSelectionChange,
   editHistory = [],
@@ -225,6 +232,9 @@ export const Canvas = memo(function Canvas({
   onHistorySelect,
   onDownload,
   sourcePreviewUrl,
+  slots = [],
+  activeSlotIndex = 0,
+  onActiveSlotChange,
 }: CanvasProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [currentFileIndex, setCurrentFileIndex] = useState(0);
@@ -246,8 +256,10 @@ export const Canvas = memo(function Canvas({
   const hasSource = uploadedFiles.length > 0 || sourceUrl;
 
   useEffect(() => {
-    if (generatedImageUrl) setImageLoaded(false);
-  }, [generatedImageUrl]);
+    if (generatedImageUrl || originalImageUrl) {
+      setImageLoaded(false);
+    }
+  }, [generatedImageUrl, originalImageUrl, isComparing]);
 
   useEffect(() => {
     if (currentFileIndex >= uploadedFiles.length && uploadedFiles.length > 0) {
@@ -451,14 +463,66 @@ export const Canvas = memo(function Canvas({
     setRegionPrompt("");
   }, []);
 
-  // Generated image display
+  // Multi-slot grid view: when multiple slots exist and at least one has output
+  const multiSlotOutputs = slots.filter((s) => s.status === "done" || s.status === "generating" || s.status === "error");
+  const hasMultiSlotOutputs = slots.length > 1 && multiSlotOutputs.length > 0;
+
+  // Generated image display (single active image with edit tools)
   if (generatedImageUrl) {
-    const showOriginal = isComparing && originalImageUrl;
+    const showOriginal = canCompare && isComparing && originalImageUrl;
     const displayUrl = showOriginal ? originalImageUrl : generatedImageUrl;
     const promptNorm = selection ? normalizeRect(selection) : null;
 
     return (
       <Card className="flex-1 min-h-0 rounded-xl border-2 bg-neutral-900/30 overflow-hidden relative">
+        {/* Multi-slot strip at top */}
+        {hasMultiSlotOutputs && (
+          <div className="absolute top-3 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5 px-2 py-1.5 bg-black/70 backdrop-blur-sm rounded-xl">
+            {slots.map((slot, idx) => (
+              <button
+                key={slot.id}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onActiveSlotChange?.(idx);
+                }}
+                title={slot.label}
+                className={cn(
+                  "relative w-12 h-12 rounded-lg overflow-hidden border-2 transition-all shrink-0",
+                  idx === activeSlotIndex
+                    ? "border-white shadow-lg scale-105"
+                    : "border-transparent opacity-60 hover:opacity-100"
+                )}
+              >
+                {slot.status === "done" && slot.outputUrl ? (
+                  <img
+                    src={slot.outputUrl}
+                    alt={slot.label}
+                    className="w-full h-full object-cover"
+                    crossOrigin="anonymous"
+                  />
+                ) : slot.status === "generating" ? (
+                  <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
+                    <Loader2 className="w-4 h-4 text-neutral-400 animate-spin" />
+                  </div>
+                ) : slot.status === "error" ? (
+                  <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
+                    <X className="w-4 h-4 text-red-400" />
+                  </div>
+                ) : (
+                  <div className="w-full h-full bg-neutral-800 flex items-center justify-center">
+                    <span className="text-[9px] text-neutral-500">{idx + 1}</span>
+                  </div>
+                )}
+                <div className="absolute inset-0 flex items-end justify-center pb-0.5">
+                  <span className="text-[7px] font-bold text-white drop-shadow-lg leading-none">
+                    {idx + 1}
+                  </span>
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+
         <div className="w-full h-full rounded-lg border border-neutral-700 bg-neutral-900/50 flex items-center justify-center overflow-hidden">
           <div className="w-full h-full flex flex-col min-h-0 overflow-hidden">
             <div
@@ -502,7 +566,7 @@ export const Canvas = memo(function Canvas({
 
               {/* Edit generating spinner */}
               {isEditGenerating && (
-                <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/40 backdrop-blur-sm rounded-lg">
+                <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/25 rounded-lg">
                   <div className="flex flex-col items-center gap-3">
                     <Loader2 className="w-8 h-8 text-white animate-spin" />
                     <p className="text-sm text-white/80">Applying edit...</p>
@@ -533,7 +597,7 @@ export const Canvas = memo(function Canvas({
                         }
                         if (e.key === "Escape") handleClearSelection();
                       }}
-                      placeholder="Suggest change (1 credit)"
+                      placeholder="Suggest change (1 brick)"
                       className="flex-1 bg-transparent text-sm text-neutral-800 placeholder:text-neutral-400 outline-none min-w-0"
                       autoFocus
                       disabled={isEditGenerating}
@@ -550,7 +614,7 @@ export const Canvas = memo(function Canvas({
               )}
 
               {/* Compare label */}
-              {isComparing && (
+              {showOriginal && (
                 <div className="absolute top-6 left-6 z-20 px-3 py-1 bg-black/70 rounded-full text-xs text-white/80">
                   Original
                 </div>
@@ -666,11 +730,14 @@ export const Canvas = memo(function Canvas({
             <Monitor className="w-4 h-4" />
           </button>
           <button
-            onClick={(e) => { e.stopPropagation(); onToggleCompare?.(); }}
+            onClick={(e) => { e.stopPropagation(); if (canCompare) onToggleCompare?.(); }}
+            disabled={!canCompare}
             title="Compare with original"
             className={cn(
-              "w-9 h-9 flex items-center justify-center rounded-lg transition-colors",
-              isComparing ? "bg-white text-black" : "text-neutral-400 hover:text-white hover:bg-neutral-800"
+              "w-9 h-9 flex items-center justify-center rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
+              isComparing && canCompare
+                ? "bg-white text-black"
+                : "text-neutral-400 hover:text-white hover:bg-neutral-800"
             )}
           >
             <SplitSquareHorizontal className="w-4 h-4" />
@@ -689,6 +756,28 @@ export const Canvas = memo(function Canvas({
 
   // Generating state
   if (isGenerating) {
+    if (slots.length > 1) {
+      const gridCols = slots.length <= 2 ? "grid-cols-2" : slots.length <= 4 ? "grid-cols-2" : "grid-cols-3";
+      return (
+        <Card className="flex-1 min-h-0 rounded-xl border-2 bg-neutral-900/30 overflow-hidden">
+          <div className={cn("w-full h-full grid gap-2 p-2", gridCols)}>
+            {slots.map((slot, idx) => (
+              <div
+                key={slot.id}
+                className="relative rounded-lg border border-neutral-700 bg-neutral-900/50 flex flex-col items-center justify-center overflow-hidden"
+              >
+                <div className="relative">
+                  <div className="w-10 h-10 rounded-full border-2 border-neutral-800" />
+                  <div className="absolute inset-0 w-10 h-10 rounded-full border-2 border-transparent border-t-white/60 animate-spin" />
+                </div>
+                <p className="text-xs text-neutral-500 mt-3">{slot.label}</p>
+              </div>
+            ))}
+          </div>
+        </Card>
+      );
+    }
+
     return (
       <Card className="flex-1 min-h-0 rounded-xl border-2 bg-neutral-900/30 overflow-hidden">
         <div className="w-full h-full rounded-lg border border-neutral-700 bg-neutral-900/50 flex flex-col items-center justify-center overflow-hidden">

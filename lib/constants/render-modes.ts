@@ -7,6 +7,21 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
+const SUPABASE_PUBLIC =
+  `${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/objects`;
+
+function shotImg(file: string) {
+  return `${SUPABASE_PUBLIC}/shots/${file}`;
+}
+
+function styleImg(file: string) {
+  return `${SUPABASE_PUBLIC}/styles/${file}`;
+}
+
+function objectImg(file: string) {
+  return `${SUPABASE_PUBLIC}/objects/${file}`;
+}
+
 export interface RenderMode {
   id: string;
   label: string;
@@ -24,7 +39,7 @@ export interface ModeSettingOption {
 export interface ModeSettingGroup {
   key: string;
   title: string;
-  type: "select" | "toggle" | "dropdown" | "select-with-upload" | "object-picker";
+  type: "select" | "toggle" | "dropdown" | "select-with-upload" | "object-picker" | "texture-picker";
   columns?: 2 | 3;
   options: ModeSettingOption[];
 }
@@ -81,15 +96,15 @@ const EXTERIOR_SETTINGS: ModeSettingGroup[] = [
     title: "Shot Type",
     type: "dropdown",
     options: [
-      { value: "auto", label: "Auto", image: "/shots/auto.jpg" },
-      { value: "street-level", label: "Street Level", image: "/shots/street-level.jpg" },
-      { value: "wide-angle", label: "Wide Angle", image: "/shots/wide-angle.jpg" },
-      { value: "aerial", label: "Aerial", image: "/shots/aerial.jpg" },
-      { value: "rooftop", label: "Rooftop", image: "/shots/rooftop.jpg" },
-      { value: "corner-view", label: "Corner View", image: "/shots/corner-view.jpg" },
-      { value: "close-up", label: "Detail Close-Up", image: "/shots/close-up.jpg" },
-      { value: "drone-low", label: "Low Drone", image: "/shots/drone-low.jpg" },
-      { value: "entrance", label: "Entrance View", image: "/shots/entrance.jpg" },
+      AUTO,
+      { value: "street-level", label: "Street Level", image: shotImg("street-level.jpg") },
+      { value: "wide-angle", label: "Wide Angle", image: shotImg("wide-angle.jpg") },
+      { value: "aerial", label: "Aerial", image: shotImg("aerial.jpg") },
+      { value: "rooftop", label: "Rooftop", image: shotImg("rooftop.jpg") },
+      { value: "corner-view", label: "Corner View", image: shotImg("corner-view.jpg") },
+      { value: "close-up", label: "Detail Close-Up", image: shotImg("close-up.jpg") },
+      { value: "drone-low", label: "Low Drone", image: shotImg("drone-low.jpg") },
+      { value: "entrance", label: "Entrance View", image: shotImg("entrance.jpg") },
     ],
   },
   {
@@ -97,22 +112,22 @@ const EXTERIOR_SETTINGS: ModeSettingGroup[] = [
     title: "Architecture Style",
     type: "dropdown",
     options: [
-      { value: "auto", label: "Auto", image: "/styles/auto.jpg" },
-      { value: "modern", label: "Modern", image: "/styles/modern.jpg" },
-      { value: "mediterranean", label: "Mediterranean", image: "/styles/mediterranean.jpg" },
-      { value: "minimal", label: "Minimal", image: "/styles/minimal.jpg" },
-      { value: "luxury", label: "Luxury", image: "/styles/luxury.jpg" },
-      { value: "brutalist", label: "Brutalist", image: "/styles/brutalist.jpg" },
-      { value: "art-deco", label: "Art Deco", image: "/styles/art-deco.jpg" },
-      { value: "industrial", label: "Industrial", image: "/styles/industrial.jpg" },
-      { value: "tropical", label: "Tropical", image: "/styles/tropical.jpg" },
-      { value: "japanese", label: "Japanese", image: "/styles/japanese.jpg" },
-      { value: "scandinavian", label: "Scandinavian", image: "/styles/scandinavian.jpg" },
-      { value: "colonial", label: "Colonial", image: "/styles/colonial.jpg" },
-      { value: "parametric", label: "Parametric", image: "/styles/parametric.jpg" },
-      { value: "neo-classical", label: "Neo-Classical", image: "/styles/neo-classical.jpg" },
-      { value: "farmhouse", label: "Farmhouse", image: "/styles/farmhouse.jpg" },
-      { value: "contemporary", label: "Contemporary", image: "/styles/contemporary.jpg" },
+      AUTO,
+      { value: "modern", label: "Modern", image: styleImg("modern.jpg") },
+      { value: "mediterranean", label: "Mediterranean", image: styleImg("mediterranean.jpg") },
+      { value: "minimal", label: "Minimal", image: styleImg("minimal.jpg") },
+      { value: "luxury", label: "Luxury", image: styleImg("luxury.jpg") },
+      { value: "brutalist", label: "Brutalist", image: styleImg("brutalist.jpg") },
+      { value: "art-deco", label: "Art Deco", image: styleImg("art-deco.jpg") },
+      { value: "industrial", label: "Industrial", image: styleImg("industrial.jpg") },
+      { value: "tropical", label: "Tropical", image: styleImg("tropical.jpg") },
+      { value: "japanese", label: "Japanese", image: styleImg("japanese.jpg") },
+      { value: "scandinavian", label: "Scandinavian", image: styleImg("scandinavian.jpg") },
+      { value: "colonial", label: "Colonial", image: styleImg("colonial.jpg") },
+      { value: "parametric", label: "Parametric", image: styleImg("parametric.jpg") },
+      { value: "neo-classical", label: "Neo-Classical", image: styleImg("neo-classical.jpg") },
+      { value: "farmhouse", label: "Farmhouse", image: styleImg("farmhouse.jpg") },
+      { value: "contemporary", label: "Contemporary", image: styleImg("contemporary.jpg") },
     ],
   },
   {
@@ -160,13 +175,13 @@ const INTERIOR_SETTINGS: ModeSettingGroup[] = [
     title: "Shot Type",
     type: "dropdown",
     options: [
-      { value: "auto", label: "Auto", image: "/shots/int-auto.jpg" },
-      { value: "wide-room", label: "Wide Room", image: "/shots/wide-room.jpg" },
-      { value: "corner-angle", label: "Corner Angle", image: "/shots/corner-angle.jpg" },
-      { value: "straight-on", label: "Straight On", image: "/shots/straight-on.jpg" },
-      { value: "detail", label: "Detail Shot", image: "/shots/detail.jpg" },
-      { value: "overhead", label: "Overhead", image: "/shots/overhead.jpg" },
-      { value: "window-view", label: "Window View", image: "/shots/window-view.jpg" },
+      { value: "auto", label: "Auto", image: shotImg("int-auto.jpg") },
+      { value: "wide-room", label: "Wide Room", image: shotImg("wide-room.jpg") },
+      { value: "corner-angle", label: "Corner Angle", image: shotImg("corner-angle.jpg") },
+      { value: "straight-on", label: "Straight On", image: shotImg("straight-on.jpg") },
+      { value: "detail", label: "Detail Shot", image: shotImg("detail.jpg") },
+      { value: "overhead", label: "Overhead", image: shotImg("overhead.jpg") },
+      { value: "window-view", label: "Window View", image: shotImg("window-view.jpg") },
     ],
   },
   {
@@ -187,18 +202,18 @@ const INTERIOR_SETTINGS: ModeSettingGroup[] = [
     title: "Interior Style",
     type: "dropdown",
     options: [
-      { value: "auto", label: "Auto", image: "/styles/int-auto.jpg" },
-      { value: "scandinavian", label: "Scandinavian", image: "/styles/scandinavian.jpg" },
-      { value: "modern", label: "Modern", image: "/styles/modern-int.jpg" },
-      { value: "luxury", label: "Luxury", image: "/styles/luxury-int.jpg" },
-      { value: "minimal", label: "Minimal", image: "/styles/minimal-int.jpg" },
-      { value: "industrial", label: "Industrial", image: "/styles/industrial-int.jpg" },
-      { value: "bohemian", label: "Bohemian", image: "/styles/bohemian.jpg" },
-      { value: "japandi", label: "Japandi", image: "/styles/japandi.jpg" },
-      { value: "mid-century", label: "Mid-Century", image: "/styles/mid-century.jpg" },
-      { value: "art-deco", label: "Art Deco", image: "/styles/art-deco-int.jpg" },
-      { value: "coastal", label: "Coastal", image: "/styles/coastal-int.jpg" },
-      { value: "rustic", label: "Rustic", image: "/styles/rustic.jpg" },
+      { value: "auto", label: "Auto", image: styleImg("int-auto.jpg") },
+      { value: "scandinavian", label: "Scandinavian", image: styleImg("scandinavian.jpg") },
+      { value: "modern", label: "Modern", image: styleImg("modern-int.jpg") },
+      { value: "luxury", label: "Luxury", image: styleImg("luxury-int.jpg") },
+      { value: "minimal", label: "Minimal", image: styleImg("minimal-int.jpg") },
+      { value: "industrial", label: "Industrial", image: styleImg("industrial-int.jpg") },
+      { value: "bohemian", label: "Bohemian", image: styleImg("bohemian.jpg") },
+      { value: "japandi", label: "Japandi", image: styleImg("japandi.jpg") },
+      { value: "mid-century", label: "Mid-Century", image: styleImg("mid-century.jpg") },
+      { value: "art-deco", label: "Art Deco", image: styleImg("art-deco-int.jpg") },
+      { value: "coastal", label: "Coastal", image: styleImg("coastal-int.jpg") },
+      { value: "rustic", label: "Rustic", image: styleImg("rustic.jpg") },
     ],
   },
   {
@@ -206,24 +221,24 @@ const INTERIOR_SETTINGS: ModeSettingGroup[] = [
     title: "Objects",
     type: "object-picker",
     options: [
-      { value: "sofa", label: "Sofa", image: "/objects/sofa.jpg" },
-      { value: "dining-table", label: "Dining Table", image: "/objects/dining-table.jpg" },
-      { value: "coffee-table", label: "Coffee Table", image: "/objects/coffee-table.jpg" },
-      { value: "armchair", label: "Armchair", image: "/objects/armchair.jpg" },
-      { value: "bookshelf", label: "Bookshelf", image: "/objects/bookshelf.jpg" },
-      { value: "floor-lamp", label: "Floor Lamp", image: "/objects/floor-lamp.jpg" },
-      { value: "pendant-light", label: "Pendant Light", image: "/objects/pendant-light.jpg" },
-      { value: "rug", label: "Rug", image: "/objects/rug.jpg" },
-      { value: "indoor-plant", label: "Indoor Plant", image: "/objects/indoor-plant.jpg" },
-      { value: "artwork", label: "Wall Art", image: "/objects/artwork.jpg" },
-      { value: "mirror", label: "Mirror", image: "/objects/mirror.jpg" },
-      { value: "tv-unit", label: "TV Unit", image: "/objects/tv-unit.jpg" },
-      { value: "bed", label: "Bed", image: "/objects/bed.jpg" },
-      { value: "wardrobe", label: "Wardrobe", image: "/objects/wardrobe.jpg" },
-      { value: "kitchen-island", label: "Kitchen Island", image: "/objects/kitchen-island.jpg" },
-      { value: "bar-stools", label: "Bar Stools", image: "/objects/bar-stools.jpg" },
-      { value: "bathtub", label: "Bathtub", image: "/objects/bathtub.jpg" },
-      { value: "vanity", label: "Vanity", image: "/objects/vanity.jpg" },
+      { value: "sofa", label: "Sofa", image: objectImg("sofa.jpg") },
+      { value: "dining-table", label: "Dining Table", image: objectImg("dining-table.jpg") },
+      { value: "coffee-table", label: "Coffee Table", image: objectImg("coffee-table.jpg") },
+      { value: "armchair", label: "Armchair", image: objectImg("armchair.jpg") },
+      { value: "bookshelf", label: "Bookshelf", image: objectImg("bookshelf.jpg") },
+      { value: "floor-lamp", label: "Floor Lamp", image: objectImg("floor-lamp.jpg") },
+      { value: "pendant-light", label: "Pendant Light", image: objectImg("pendant-light.jpg") },
+      { value: "rug", label: "Rug", image: objectImg("rug.jpg") },
+      { value: "indoor-plant", label: "Indoor Plant", image: objectImg("indoor-plant.jpg") },
+      { value: "artwork", label: "Wall Art", image: objectImg("artwork.jpg") },
+      { value: "mirror", label: "Mirror", image: objectImg("mirror.jpg") },
+      { value: "tv-unit", label: "TV Unit", image: objectImg("tv-unit.jpg") },
+      { value: "bed", label: "Bed", image: objectImg("bed.jpg") },
+      { value: "wardrobe", label: "Wardrobe", image: objectImg("wardrobe.jpg") },
+      { value: "kitchen-island", label: "Kitchen Island", image: objectImg("kitchen-island.jpg") },
+      { value: "bar-stools", label: "Bar Stools", image: objectImg("bar-stools.jpg") },
+      { value: "bathtub", label: "Bathtub", image: objectImg("bathtub.jpg") },
+      { value: "vanity", label: "Vanity", image: objectImg("vanity.jpg") },
     ],
   },
   {
@@ -236,6 +251,25 @@ const INTERIOR_SETTINGS: ModeSettingGroup[] = [
       { value: "minimal", label: "Minimal" },
       { value: "balanced", label: "Balanced" },
       { value: "full", label: "Full Staging" },
+    ],
+  },
+  {
+    key: "textures",
+    title: "Textures",
+    type: "texture-picker",
+    options: [
+      { value: "marble", label: "Marble", image: "/textures/marble.png" },
+      { value: "concrete-polished", label: "Polished Concrete", image: "/textures/concrete-polished.png" },
+      { value: "concrete-rough", label: "Rough Concrete", image: "/textures/concrete-rough.png" },
+      { value: "oakwood", label: "Oak Wood", image: "/textures/oakwood.png" },
+      { value: "brick", label: "Brick", image: "/textures/brick.png" },
+      { value: "polished-metal", label: "Polished Metal", image: "/textures/polished-metal.png" },
+      { value: "terracotta", label: "Terracotta", image: "/textures/terracotta.png" },
+      { value: "stone-gravel", label: "Stone Gravel", image: "/textures/stone-gravel.png" },
+      { value: "white-plaster", label: "White Plaster", image: "/textures/white-plaster.png" },
+      { value: "grey-paver", label: "Grey Paver", image: "/textures/grey-paver.png" },
+      { value: "moss-stone", label: "Moss Stone", image: "/textures/moss-stone.png" },
+      { value: "rust-metal", label: "Rust Metal", image: "/textures/rust-metal.png" },
     ],
   },
   {
@@ -258,20 +292,20 @@ const STYLE_TRANSFORM_SETTINGS: ModeSettingGroup[] = [
     title: "Target Style",
     type: "dropdown",
     options: [
-      { value: "auto", label: "Auto", image: "/styles/auto.jpg" },
-      { value: "modern", label: "Modern", image: "/styles/modern.jpg" },
-      { value: "mediterranean", label: "Mediterranean", image: "/styles/mediterranean.jpg" },
-      { value: "industrial", label: "Industrial", image: "/styles/industrial.jpg" },
-      { value: "minimal", label: "Minimal", image: "/styles/minimal.jpg" },
-      { value: "luxury", label: "Luxury", image: "/styles/luxury.jpg" },
-      { value: "art-deco", label: "Art Deco", image: "/styles/art-deco.jpg" },
-      { value: "brutalist", label: "Brutalist", image: "/styles/brutalist.jpg" },
-      { value: "tropical", label: "Tropical", image: "/styles/tropical.jpg" },
-      { value: "japanese", label: "Japanese", image: "/styles/japanese.jpg" },
-      { value: "scandinavian", label: "Scandinavian", image: "/styles/scandinavian.jpg" },
-      { value: "parametric", label: "Parametric", image: "/styles/parametric.jpg" },
-      { value: "neo-classical", label: "Neo-Classical", image: "/styles/neo-classical.jpg" },
-      { value: "contemporary", label: "Contemporary", image: "/styles/contemporary.jpg" },
+      { value: "auto", label: "Auto", image: styleImg("auto.jpg") },
+      { value: "modern", label: "Modern", image: styleImg("modern.jpg") },
+      { value: "mediterranean", label: "Mediterranean", image: styleImg("mediterranean.jpg") },
+      { value: "industrial", label: "Industrial", image: styleImg("industrial.jpg") },
+      { value: "minimal", label: "Minimal", image: styleImg("minimal.jpg") },
+      { value: "luxury", label: "Luxury", image: styleImg("luxury.jpg") },
+      { value: "art-deco", label: "Art Deco", image: styleImg("art-deco.jpg") },
+      { value: "brutalist", label: "Brutalist", image: styleImg("brutalist.jpg") },
+      { value: "tropical", label: "Tropical", image: styleImg("tropical.jpg") },
+      { value: "japanese", label: "Japanese", image: styleImg("japanese.jpg") },
+      { value: "scandinavian", label: "Scandinavian", image: styleImg("scandinavian.jpg") },
+      { value: "parametric", label: "Parametric", image: styleImg("parametric.jpg") },
+      { value: "neo-classical", label: "Neo-Classical", image: styleImg("neo-classical.jpg") },
+      { value: "contemporary", label: "Contemporary", image: styleImg("contemporary.jpg") },
     ],
   },
   {
@@ -346,11 +380,11 @@ const SCENE_COMPOSITION_SETTINGS: ModeSettingGroup[] = [
     title: "Shot Type",
     type: "dropdown",
     options: [
-      { value: "auto", label: "Auto", image: "/shots/auto.jpg" },
-      { value: "wide-establishing", label: "Wide Establishing", image: "/shots/wide-establishing.jpg" },
-      { value: "eye-level", label: "Eye Level", image: "/shots/eye-level.jpg" },
-      { value: "aerial", label: "Aerial", image: "/shots/aerial.jpg" },
-      { value: "street-view", label: "Street View", image: "/shots/street-view.jpg" },
+      { value: "auto", label: "Auto", image: shotImg("auto.jpg") },
+      { value: "wide-establishing", label: "Wide Establishing", image: shotImg("wide-angle.jpg") },
+      { value: "eye-level", label: "Eye Level", image: shotImg("street-level.jpg") },
+      { value: "aerial", label: "Aerial", image: shotImg("aerial.jpg") },
+      { value: "street-view", label: "Street View", image: shotImg("street-level.jpg") },
     ],
   },
   {
@@ -410,7 +444,7 @@ export function getDefaultModeValues(modeId: string): Record<string, string> {
   for (const group of settings) {
     if (group.type === "toggle") {
       defaults[group.key] = group.options[0]?.value ?? "";
-    } else if (group.type === "object-picker") {
+    } else if (group.type === "object-picker" || group.type === "texture-picker") {
       defaults[group.key] = "";
     } else {
       defaults[group.key] = "auto";
@@ -418,4 +452,47 @@ export function getDefaultModeValues(modeId: string): Record<string, string> {
   }
   defaults.customPrompt = "";
   return defaults;
+}
+
+// Keys that each angle slot can override (everything else is global)
+export const SLOT_OVERRIDABLE_KEYS: Record<string, string[]> = {
+  "exterior-render": ["shotType", "lighting", "environment", "facadeMaterial"],
+  "interior-render": ["shotType", "lighting", "textures", "furnitureDensity"],
+};
+
+export function getOverridableSettings(modeId: string): ModeSettingGroup[] {
+  const keys = SLOT_OVERRIDABLE_KEYS[modeId] ?? [];
+  return getModeSettings(modeId).filter((g) => keys.includes(g.key));
+}
+
+export function getGlobalOnlySettings(modeId: string): ModeSettingGroup[] {
+  const keys = SLOT_OVERRIDABLE_KEYS[modeId] ?? [];
+  return getModeSettings(modeId).filter((g) => !keys.includes(g.key));
+}
+
+export interface AngleSlot {
+  id: string;
+  label: string;
+  overrides: Record<string, string>;
+  status: "idle" | "generating" | "done" | "error";
+  outputUrl: string | null;
+  error: string | null;
+}
+
+export function createAngleSlot(index: number): AngleSlot {
+  return {
+    id: `slot-${index}`,
+    label: `Angle ${index + 1}`,
+    overrides: {},
+    status: "idle",
+    outputUrl: null,
+    error: null,
+  };
+}
+
+export function resolveSlotSettings(
+  globalValues: Record<string, string>,
+  slotOverrides: Record<string, string>,
+): Record<string, string> {
+  return { ...globalValues, ...slotOverrides };
 }

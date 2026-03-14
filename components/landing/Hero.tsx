@@ -9,36 +9,37 @@ import { Marquee } from "@/components/ui/marquee";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { getSignupUrl } from "@/lib/app-url";
 import { useRef } from "react";
+import { assetUrl } from "@/lib/assets";
 
-const HERO_BG = "/api/static/real-estate-presets/hollywood-hills-modern.png";
+const HERO_BG = assetUrl("real-estate-presets/hollywood-hills-modern.png");
 
 const SHOWCASE_PAIRS = [
   {
-    sketch: "/api/static/real-estate-sketch/modern-white-villa-sketch.png",
-    render: "/api/static/real-estate-front/modern-white-villa.png",
+    sketch: assetUrl("real-estate-sketch/modern-white-villa-sketch.png"),
+    render: assetUrl("real-estate-front/modern-white-villa.png"),
     label: "Modern White Villa",
   },
   {
-    sketch: "/api/static/real-estate-sketch/alpine-chalet-front-sketch.png",
-    render: "/api/static/real-estate-front/alpine-chalet-front.png",
+    sketch: assetUrl("real-estate-sketch/alpine-chalet-front-sketch.png"),
+    render: assetUrl("real-estate-front/alpine-chalet-front.png"),
     label: "Alpine Chalet",
   },
   {
-    sketch: "/api/static/real-estate-sketch/tropical-villa-pool-sketch.png",
-    render: "/api/static/real-estate-front/tropical-villa-pool.png",
+    sketch: assetUrl("real-estate-sketch/tropical-villa-pool-sketch.png"),
+    render: assetUrl("real-estate-front/tropical-villa-pool.png"),
     label: "Tropical Villa",
   },
 ];
 
 const GALLERY_IMAGES = [
-  { src: "/api/static/real-estate-presets/hollywood-hills-modern.png", label: "Hollywood Hills" },
-  { src: "/api/static/real-estate-presets/maldives-overwater.png", label: "Maldives Villa" },
-  { src: "/api/static/real-estate-presets/mediterranean-villa.png", label: "Mediterranean" },
-  { src: "/api/static/real-estate-full/classic-white-mansion.png", label: "Neoclassical" },
-  { src: "/api/static/real-estate-full/luxury-glass-skyscraper.png", label: "Glass Tower" },
-  { src: "/api/static/real-estate-full/desert-modern-house.png", label: "Desert Modern" },
-  { src: "/api/static/real-estate-presets/japanese-zen-house.png", label: "Zen House" },
-  { src: "/api/static/real-estate-full/miami-condo-tower.png", label: "Miami Tower" },
+  { src: assetUrl("real-estate-presets/hollywood-hills-modern.png"), label: "Hollywood Hills" },
+  { src: assetUrl("real-estate-presets/maldives-overwater.png"), label: "Maldives Villa" },
+  { src: assetUrl("real-estate-presets/mediterranean-villa.png"), label: "Mediterranean" },
+  { src: assetUrl("real-estate-full/classic-white-mansion.png"), label: "Neoclassical" },
+  { src: assetUrl("real-estate-full/luxury-glass-skyscraper.png"), label: "Glass Tower" },
+  { src: assetUrl("real-estate-full/desert-modern-house.png"), label: "Desert Modern" },
+  { src: assetUrl("real-estate-presets/japanese-zen-house.png"), label: "Zen House" },
+  { src: assetUrl("real-estate-full/miami-condo-tower.png"), label: "Miami Tower" },
 ];
 
 const MOCK_SETTINGS = [

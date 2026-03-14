@@ -187,13 +187,13 @@ export default function WelcomeClient({ subscription, isPreview }: WelcomeClient
   const [goal, setGoal] = useState<OnboardingGoal | null>(null);
   const [contentTypes, setContentTypes] = useState<OnboardingContentType[]>([]);
   const [creatorType, setCreatorType] = useState<OnboardingCreatorType | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<"weekly" | "monthly">("weekly");
+  const [selectedPlan, setSelectedPlan] = useState<"starter" | "pro">("starter");
   const [isCheckoutLoading, setIsCheckoutLoading] = useState(false);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
-  const weeklyPlan = SUBSCRIPTION_PLANS.PRO_WEEKLY;
-  const monthlyPlan = SUBSCRIPTION_PLANS.PRO_MONTHLY;
+  const starterPlan = SUBSCRIPTION_PLANS.STARTER;
+  const proPlan = SUBSCRIPTION_PLANS.PRO;
   const progress = ((step + 1) / TOTAL_STEPS) * 100;
 
   const goNext = useCallback(() => { setDirection(1); setStep((s) => Math.min(s + 1, TOTAL_STEPS - 1)); }, []);
@@ -242,11 +242,11 @@ export default function WelcomeClient({ subscription, isPreview }: WelcomeClient
     } finally { setIsSaving(false); }
   }, [goal, contentTypes, creatorType, step, router, isPreview]);
 
-  const handleUpgrade = async (plan: "weekly" | "monthly") => {
+  const handleUpgrade = async (plan: "starter" | "pro") => {
     if (isPreview) { toast.success(`Preview — would start ${plan} checkout`); return; }
     setIsCheckoutLoading(true);
     try {
-      const cfg = plan === "monthly" ? monthlyPlan : weeklyPlan;
+      const cfg = plan === "pro" ? proPlan : starterPlan;
       const initId = generateEventId(); const purchId = generateEventId();
       const td = captureMetaTrackingData();
       await updateMetaTracking({ ...td, purchaseEventId: purchId }).catch(() => {});
@@ -448,54 +448,53 @@ export default function WelcomeClient({ subscription, isPreview }: WelcomeClient
 
                     {/* Toggle */}
                     <div className="flex gap-1 p-1 bg-neutral-800/60 rounded-xl mx-auto max-w-[260px] mb-5 border border-neutral-700/30">
-                      <button onClick={() => setSelectedPlan("weekly")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all ${selectedPlan === "weekly" ? "bg-white text-black shadow-sm" : "text-neutral-400 hover:text-white"}`}>Weekly</button>
-                      <button onClick={() => setSelectedPlan("monthly")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all relative ${selectedPlan === "monthly" ? "bg-white text-black shadow-sm" : "text-neutral-400 hover:text-white"}`}>
-                        Monthly
-                        <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold leading-none">SAVE</span>
+                      <button onClick={() => setSelectedPlan("starter")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all ${selectedPlan === "starter" ? "bg-white text-black shadow-sm" : "text-neutral-400 hover:text-white"}`}>Starter</button>
+                      <button onClick={() => setSelectedPlan("pro")} className={`flex-1 px-3 py-2 rounded-lg text-xs font-medium transition-all relative ${selectedPlan === "pro" ? "bg-white text-black shadow-sm" : "text-neutral-400 hover:text-white"}`}>
+                        Pro
+                        <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[8px] px-1.5 py-0.5 rounded-full font-bold leading-none">BEST</span>
                       </button>
                     </div>
 
                     {/* Plan cards */}
                     <div className="space-y-2.5 mb-5">
-                      <button onClick={() => setSelectedPlan("weekly")} className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${selectedPlan === "weekly" ? "bg-white/[0.04] border-white/15 ring-1 ring-white/[0.06]" : "bg-white/[0.02] border-neutral-800/60 hover:border-neutral-700"}`}>
+                      <button onClick={() => setSelectedPlan("starter")} className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${selectedPlan === "starter" ? "bg-white/[0.04] border-white/15 ring-1 ring-white/[0.06]" : "bg-white/[0.02] border-neutral-800/60 hover:border-neutral-700"}`}>
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="flex items-center gap-2"><span className="text-white font-semibold text-sm">Weekly</span><span className="text-[9px] px-1.5 py-0.5 rounded-full bg-white/[0.08] text-neutral-300 font-medium">Popular</span></div>
-                            <p className="text-neutral-500 text-xs mt-1">{weeklyPlan.creationLimit} creations/week</p>
+                            <div className="flex items-center gap-2"><span className="text-white font-semibold text-sm">Starter</span></div>
+                            <p className="text-neutral-500 text-xs mt-1">{starterPlan.bricks.toLocaleString()} bricks/month</p>
                           </div>
                           <div className="text-right">
-                            <div className="flex items-baseline gap-1.5"><span className="text-neutral-600 text-xs line-through">$12.90</span><span className="text-white text-xl font-bold">${weeklyPlan.price}</span></div>
-                            <p className="text-neutral-600 text-[10px]">/week</p>
+                            <span className="text-white text-xl font-bold">${starterPlan.price}</span>
+                            <p className="text-neutral-600 text-[10px]">/month</p>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-800/40">
-                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${selectedPlan === "weekly" ? "border-white bg-white" : "border-neutral-600"}`}>{selectedPlan === "weekly" && <Check className="w-2.5 h-2.5 text-black" />}</div>
+                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${selectedPlan === "starter" ? "border-white bg-white" : "border-neutral-600"}`}>{selectedPlan === "starter" && <Check className="w-2.5 h-2.5 text-black" />}</div>
                           <span className="text-neutral-500 text-xs flex-1">Cancel anytime</span>
-                          <span className="text-emerald-400 text-[10px] font-semibold">Save 30%</span>
                         </div>
                       </button>
 
-                      <button onClick={() => setSelectedPlan("monthly")} className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${selectedPlan === "monthly" ? "bg-emerald-500/[0.04] border-emerald-500/20 ring-1 ring-emerald-500/[0.08]" : "bg-white/[0.02] border-neutral-800/60 hover:border-neutral-700"}`}>
+                      <button onClick={() => setSelectedPlan("pro")} className={`w-full text-left p-4 rounded-xl border transition-all duration-200 ${selectedPlan === "pro" ? "bg-emerald-500/[0.04] border-emerald-500/20 ring-1 ring-emerald-500/[0.08]" : "bg-white/[0.02] border-neutral-800/60 hover:border-neutral-700"}`}>
                         <div className="flex items-center justify-between">
                           <div>
-                            <div className="flex items-center gap-2"><span className="text-white font-semibold text-sm">Monthly</span><span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-medium border border-emerald-500/15">Best Value</span></div>
-                            <p className="text-neutral-500 text-xs mt-1">{monthlyPlan.creationLimit} creations/month</p>
+                            <div className="flex items-center gap-2"><span className="text-white font-semibold text-sm">Pro</span><span className="text-[9px] px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 font-medium border border-emerald-500/15">Best Value</span></div>
+                            <p className="text-neutral-500 text-xs mt-1">{proPlan.bricks.toLocaleString()} bricks/month</p>
                           </div>
-                          <div className="text-right"><span className="text-white text-xl font-bold">${monthlyPlan.price}</span><p className="text-neutral-600 text-[10px]">/month</p></div>
+                          <div className="text-right"><span className="text-white text-xl font-bold">${proPlan.price}</span><p className="text-neutral-600 text-[10px]">/month</p></div>
                         </div>
                         <div className="flex items-center gap-2 mt-3 pt-3 border-t border-neutral-800/40">
-                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${selectedPlan === "monthly" ? "border-emerald-500 bg-emerald-500" : "border-neutral-600"}`}>{selectedPlan === "monthly" && <Check className="w-2.5 h-2.5 text-white" />}</div>
-                          <span className="text-neutral-500 text-xs">Cancel anytime · 5x more creations</span>
+                          <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${selectedPlan === "pro" ? "border-emerald-500 bg-emerald-500" : "border-neutral-600"}`}>{selectedPlan === "pro" && <Check className="w-2.5 h-2.5 text-white" />}</div>
+                          <span className="text-neutral-500 text-xs">Cancel anytime · 3x more bricks</span>
                         </div>
                       </button>
                     </div>
 
                     {/* CTA */}
                     <button onClick={() => handleUpgrade(selectedPlan)} disabled={isCheckoutLoading} className="w-full py-3.5 rounded-xl bg-white text-black font-semibold text-sm transition-all hover:bg-neutral-200 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_30px_rgba(255,255,255,0.08)] flex items-center justify-center gap-2">
-                      {isCheckoutLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (<>Continue<span className="text-neutral-500 font-normal">${selectedPlan === "weekly" ? weeklyPlan.price : monthlyPlan.price}/{selectedPlan === "weekly" ? "week" : "month"}</span></>)}
+                      {isCheckoutLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : (<>Continue<span className="text-neutral-500 font-normal">${selectedPlan === "starter" ? starterPlan.price : proPlan.price}/month</span></>)}
                     </button>
                     <button onClick={handleSaveAndContinue} disabled={isSaving} className="w-full text-center mt-3 text-neutral-600 text-xs hover:text-neutral-400 transition-colors py-2">
-                      {isSaving ? "Saving..." : "Skip for now — start with 1 free creation"}
+                      {isSaving ? "Saving..." : "Skip for now — start with 100 free bricks"}
                     </button>
                     <p className="text-center text-neutral-700 text-[10px] mt-1">Secure payment via Stripe · Cancel anytime</p>
                   </div>

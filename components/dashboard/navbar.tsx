@@ -26,7 +26,7 @@ import {
   HelpCircle,
   MessageCircle,
   Compass,
-  Zap,
+  BrickWall,
   Wrench,
 } from "lucide-react";
 import {
@@ -190,23 +190,20 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
           <Menu className="w-5 h-5 text-neutral-300" />
         </button>
 
-        {/* Generations Remaining */}
+        {/* Bricks Remaining */}
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 onClick={handleGenerationsClick}
-                className="flex items-center gap-1 sm:gap-1.5 select-none transition-all hover:opacity-80 active:scale-95"
+                className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-neutral-800/60 border border-neutral-700/40 select-none transition-all hover:bg-neutral-800 active:scale-95"
               >
-                <Zap
-                  className="w-4 h-4 sm:w-[18px] sm:h-[18px] text-amber-400 fill-amber-400"
-                  strokeWidth={2.5}
+                <BrickWall
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-white/60"
+                  strokeWidth={2}
                 />
-                <span
-                  className="text-[13px] sm:text-[15px] font-bold text-amber-400 tracking-tight"
-                  style={{ textShadow: "0 0 8px rgba(251, 191, 36, 0.3)" }}
-                >
-                  {generationsRemaining}
+                <span className="text-[13px] sm:text-sm font-semibold text-white tabular-nums">
+                  {generationsRemaining.toLocaleString()}
                 </span>
               </button>
             </TooltipTrigger>
@@ -214,11 +211,11 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
               side="bottom"
               className="bg-neutral-900 border-neutral-700 text-white rounded-lg shadow-[0_4px_12px_rgba(0,0,0,0.3)] px-3 py-2"
             >
-              <p className="text-xs text-neutral-400">Renders Remaining</p>
+              <p className="text-xs text-neutral-400">Bricks Remaining</p>
               <p className="text-sm font-medium">
                 {isFreeUser
                   ? "Upgrade to get more"
-                  : `${generationsRemaining} left this period`}
+                  : `${generationsRemaining.toLocaleString()} bricks left`}
               </p>
             </TooltipContent>
           </Tooltip>
@@ -271,7 +268,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
               <span>Subscription</span>
               <span className="ml-auto text-xs text-emerald-400">
                 {subscription?.plan && subscription.plan !== "free"
-                  ? "Pro Plan"
+                  ? `${subscription.plan.charAt(0).toUpperCase()}${subscription.plan.slice(1)} Plan`
                   : "Free Plan"}
               </span>
             </DropdownMenuItem>

@@ -4,23 +4,24 @@ import { requireAuth } from "@/lib/auth-guard";
 import {
   submitVideoGeneration,
   pollForVideoResult,
-  type KlingVideoParams,
-} from "@/lib/generation/kling";
-import { getPresetById } from "@/lib/constants/video-presets";
+  type GrokVideoParams,
+} from "@/lib/generation/grok-video";
+import { getPresetById, getScenePresetById } from "@/lib/constants/video-presets";
+import { generateVideoPrompt } from "@/lib/generation/video-prompt";
 
 export interface GenerateVideoInput {
-  startImageBase64: string;
-  endImageBase64?: string;
+  imageBase64: string;
   prompt: string;
   presetId?: string;
+  scenePresetId?: string;
   duration: number;
-  mode: "std" | "pro";
-  enableAudio: boolean;
+  aspectRatio?: "1:1" | "16:9" | "9:16" | "4:3" | "3:4" | "3:2" | "2:3";
+  resolution?: "480p" | "720p";
 }
 
 export interface GenerateVideoResult {
   videoUrl?: string;
-  taskId?: string;
+  requestId?: string;
   error?: string;
 }
 
@@ -30,45 +31,53 @@ export async function generateVideo(
   try {
     await requireAuth();
 
-    console.log("[BrickEx:Video] === Starting video generation ===");
-    console.log(
-      `[BrickEx:Video] Mode: ${input.mode}, Duration: ${input.duration}s, Preset: ${input.presetId ?? "none"}`
-    );
-
-    const preset = input.presetId
+    const motionPreset = input.presetId
       ? getPresetById(input.presetId)
       : undefined;
+    const scenePreset = input.scenePresetId
+      ? getScenePresetById(input.scenePresetId)
+      : undefined;
 
-    let finalPrompt = "";
-    if (input.prompt && preset) {
-      finalPrompt = `${input.prompt}. ${preset.prompt}`;
+    console.log(
+      `[BrickEx:Video] Duration: ${input.duration}s, Motion: ${input.presetId ?? "none"}, Scene: ${input.scenePresetId ?? "none"}`
+    );
+
+    let finalPrompt: string;
+
+    if (scenePreset) {
+      console.log(`[BrickEx:Video] Using scene preset "${scenePreset.label}" — generating prompt with GPT...`);
+      finalPrompt = await generateVideoPrompt(
+        scenePreset.prompt,
+        scenePreset.label,
+        input.imageBase64,
+        input.prompt || undefined,
+        motionPreset?.prompt,
+      );
+    } else if (input.prompt && motionPreset) {
+      finalPrompt = `${input.prompt}. ${motionPreset.prompt}`;
     } else if (input.prompt) {
       finalPrompt = input.prompt;
-    } else if (preset) {
-      finalPrompt = preset.prompt;
+    } else if (motionPreset) {
+      finalPrompt = motionPreset.prompt;
     } else {
       finalPrompt =
         "Smooth cinematic camera movement, high quality, photorealistic, professional cinematography";
     }
 
-    const params: KlingVideoParams = {
-      image: input.startImageBase64,
+    const imageUrl = `data:image/jpeg;base64,${input.imageBase64}`;
+
+    const params: GrokVideoParams = {
       prompt: finalPrompt,
+      imageUrl,
       duration: input.duration,
-      mode: input.mode,
+      aspectRatio: input.aspectRatio ?? "16:9",
+      resolution: input.resolution ?? "720p",
     };
 
-    if (input.endImageBase64) {
-      params.imageTail = input.endImageBase64;
-    }
+    const requestId = await submitVideoGeneration(params);
+    const videoUrl = await pollForVideoResult(requestId);
 
-    const taskId = await submitVideoGeneration(params);
-    console.log(`[BrickEx:Video] Task submitted: ${taskId}`);
-
-    const videoUrl = await pollForVideoResult(taskId);
-    console.log(`[BrickEx:Video] === Video complete ===`);
-
-    return { videoUrl, taskId };
+    return { videoUrl, requestId };
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "Something went wrong";

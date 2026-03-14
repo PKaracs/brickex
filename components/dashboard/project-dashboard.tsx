@@ -11,15 +11,19 @@ import type { SubscriptionData } from "@/lib/actions/get-user-subscription";
 import { addWatermark } from "@/lib/watermark";
 import { toast } from "sonner";
 import { fireFirstGenConfetti } from "@/components/ui/confetti";
-import { generateRender } from "@/lib/actions/generate-render";
+import { generateRender, generateRenderBatch } from "@/lib/actions/generate-render";
 import {
   generateInterior,
+  generateInteriorBatch,
   type ObjectFileData,
 } from "@/lib/actions/generate-interior";
 import {
   type RenderMode,
+  type AngleSlot,
   getDefaultModeValues,
   RENDER_MODES,
+  createAngleSlot,
+  resolveSlotSettings,
 } from "@/lib/constants/render-modes";
 import {
   editRenderRegion,
@@ -41,6 +45,8 @@ function haptic(type: "light" | "medium" | "success" | "error") {
     // Silently fail
   }
 }
+
+const MAX_SLOTS = 5;
 
 interface ProjectDashboardProps {
   project: Project;
@@ -66,7 +72,7 @@ export function ProjectDashboard({
 
   // Render mode
   const [currentMode, setCurrentMode] = useState<RenderMode | null>(null);
-  const [modeValues, setModeValues] = useState<Record<string, string>>(() =>
+  const [globalValues, setGlobalValues] = useState<Record<string, string>>(() =>
     getDefaultModeValues(RENDER_MODES[0].id)
   );
   const [referenceFiles, setReferenceFiles] = useState<
@@ -74,34 +80,43 @@ export function ProjectDashboard({
   >({});
   const [objectFiles, setObjectFiles] = useState<Record<string, File[]>>({});
 
+  // Multi-slot state
+  const [slots, setSlots] = useState<AngleSlot[]>([createAngleSlot(0)]);
+  const [activeSlotIndex, setActiveSlotIndex] = useState(0);
+
   // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(
-    initialOutputUrl ?? null
-  );
   const [subscription, setSubscription] = useState<SubscriptionData | null>(
     initialSubscription ?? null
   );
 
+  // Per-slot edit state
+  const [editHistories, setEditHistories] = useState<Record<string, string[]>>(
+    initialOutputUrl ? { "slot-0": [initialOutputUrl] } : {}
+  );
+  const [editHistoryIndexes, setEditHistoryIndexes] = useState<Record<string, number>>(
+    initialOutputUrl ? { "slot-0": 0 } : {}
+  );
+
   // Edit state
   const [isEditGenerating, setIsEditGenerating] = useState(false);
-  const [editHistory, setEditHistory] = useState<string[]>(
-    initialOutputUrl ? [initialOutputUrl] : []
-  );
-  const [editHistoryIndex, setEditHistoryIndex] = useState(
-    initialOutputUrl ? 0 : -1
-  );
-  const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(
-    initialOutputUrl ?? null
-  );
-  const [globalPrompt, setGlobalPrompt] = useState("");
+  const [editPrompt, setEditPrompt] = useState("");
   const [hasSelection, setHasSelection] = useState(false);
   const [isComparing, setIsComparing] = useState(false);
   const [sourcePreviewUrl, setSourcePreviewUrl] = useState<string | null>(null);
 
+  // Derived: active slot
+  const activeSlot = slots[activeSlotIndex] ?? slots[0];
+  const activeSlotId = activeSlot?.id ?? "slot-0";
+  const activeEditHistory = editHistories[activeSlotId] ?? [];
+  const activeEditHistoryIndex = editHistoryIndexes[activeSlotId] ?? -1;
+  const generatedImageUrl = activeSlot?.outputUrl ?? null;
+  const hasAnyOutput = slots.some((s) => s.status === "done" && s.outputUrl);
+  const originalImageUrl = activeEditHistory[0] ?? null;
+
   const canGenerate = uploadedFiles.length > 0 || !!sourceUrl;
 
-  // Keep a stable preview URL for the source image (for version history strip)
+  // Keep a stable preview URL for the source image
   useEffect(() => {
     if (sourceUrl) {
       setSourcePreviewUrl(sourceUrl);
@@ -123,6 +138,12 @@ export function ProjectDashboard({
   useEffect(() => {
     if (initialSubscription) setSubscription(initialSubscription);
   }, [initialSubscription]);
+
+  useEffect(() => {
+    if (activeEditHistory.length < 2 && isComparing) {
+      setIsComparing(false);
+    }
+  }, [activeEditHistory.length, isComparing]);
 
   useEffect(() => {
     if (isGenerating) {
@@ -162,14 +183,54 @@ export function ProjectDashboard({
 
   const handleModeChange = useCallback((mode: RenderMode) => {
     setCurrentMode(mode);
-    setModeValues(getDefaultModeValues(mode.id));
+    setGlobalValues(getDefaultModeValues(mode.id));
     setReferenceFiles({});
     setObjectFiles({});
+    setSlots([createAngleSlot(0)]);
+    setActiveSlotIndex(0);
+    setEditHistories({});
+    setEditHistoryIndexes({});
   }, []);
 
-  const handleModeValueChange = useCallback((key: string, value: string) => {
-    setModeValues((prev) => ({ ...prev, [key]: value }));
+  const handleGlobalValueChange = useCallback((key: string, value: string) => {
+    setGlobalValues((prev) => ({ ...prev, [key]: value }));
   }, []);
+
+  const handleSlotOverrideChange = useCallback((slotId: string, key: string, value: string) => {
+    setSlots((prev) =>
+      prev.map((s) =>
+        s.id === slotId
+          ? { ...s, overrides: { ...s.overrides, [key]: value } }
+          : s
+      )
+    );
+  }, []);
+
+  const handleSlotOverrideReset = useCallback((slotId: string, key: string) => {
+    setSlots((prev) =>
+      prev.map((s) => {
+        if (s.id !== slotId) return s;
+        const { [key]: _, ...rest } = s.overrides;
+        return { ...s, overrides: rest };
+      })
+    );
+  }, []);
+
+  const handleAddSlot = useCallback(() => {
+    setSlots((prev) => {
+      if (prev.length >= MAX_SLOTS) return prev;
+      return [...prev, createAngleSlot(prev.length)];
+    });
+  }, []);
+
+  const handleRemoveSlot = useCallback((slotId: string) => {
+    setSlots((prev) => {
+      if (prev.length <= 1) return prev;
+      const filtered = filtered_slots(prev, slotId);
+      return filtered;
+    });
+    setActiveSlotIndex((prev) => Math.min(prev, slots.length - 2));
+  }, [slots.length]);
 
   const handleReferenceFileChange = useCallback(
     (key: string, file: File | null) => {
@@ -223,6 +284,11 @@ export function ProjectDashboard({
 
     setIsGenerating(true);
 
+    // Mark all slots as generating
+    setSlots((prev) =>
+      prev.map((s) => ({ ...s, status: "generating" as const, outputUrl: null, error: null }))
+    );
+
     try {
       let imageBase64: string;
       let mimeType: string;
@@ -249,10 +315,10 @@ export function ProjectDashboard({
       }
 
       const activeMode = currentMode ?? RENDER_MODES[0];
-      let result: { outputUrl?: string; error?: string };
 
+      // Prepare object files for interior
+      let objFileData: ObjectFileData[] = [];
       if (activeMode.id === "interior-render") {
-        const objFileData: ObjectFileData[] = [];
         const allObjFiles = objectFiles["objects"] ?? [];
         for (const file of allObjFiles) {
           const converted = await fileToBase64(file);
@@ -262,35 +328,61 @@ export function ProjectDashboard({
             name: file.name.replace(/\.[^.]+$/, "").replace(/[-_]/g, " "),
           });
         }
-        result = await generateInterior(imageBase64, mimeType, modeValues, objFileData);
+      }
+
+      // Build slot inputs with resolved settings
+      const slotInputs = slots.map((slot) => ({
+        slotId: slot.id,
+        settings: resolveSlotSettings(globalValues, slot.overrides),
+      }));
+
+      // Single batch call — GPT analysis runs ONCE, then all slots run in parallel
+      let batchResults: Array<{ slotId: string; outputUrl?: string; error?: string }>;
+
+      if (activeMode.id === "interior-render") {
+        batchResults = await generateInteriorBatch(
+          project.id, imageBase64, mimeType, slotInputs, objFileData,
+        );
       } else {
-        result = await generateRender(imageBase64, mimeType, activeMode.label, modeValues);
+        batchResults = await generateRenderBatch(
+          project.id, imageBase64, mimeType,
+          activeMode.id, activeMode.label, slotInputs,
+        );
       }
 
-      if (result.error) {
-        haptic("error");
-        toast.error(result.error);
-        setIsGenerating(false);
-        return;
-      }
+      let anySuccess = false;
+      const newEditHistories: Record<string, string[]> = {};
+      const newEditHistoryIndexes: Record<string, number> = {};
 
-      if (result.outputUrl) {
-        setGeneratedImageUrl(result.outputUrl);
-        setOriginalImageUrl(result.outputUrl);
-        setEditHistory([result.outputUrl]);
-        setEditHistoryIndex(0);
-        setGlobalPrompt("");
+      setSlots((prev) =>
+        prev.map((slot) => {
+          const r = batchResults.find((br) => br.slotId === slot.id);
+          if (r?.outputUrl) {
+            anySuccess = true;
+            newEditHistories[slot.id] = [r.outputUrl];
+            newEditHistoryIndexes[slot.id] = 0;
+            return { ...slot, status: "done" as const, outputUrl: r.outputUrl, error: null };
+          }
+          return { ...slot, status: "error" as const, error: r?.error ?? "Generation failed.", outputUrl: null };
+        })
+      );
+
+      setEditHistories(newEditHistories);
+      setEditHistoryIndexes(newEditHistoryIndexes);
+
+      if (anySuccess) {
         haptic("success");
-
-        try {
-          fireFirstGenConfetti();
-        } catch {
-          // Non-critical
-        }
+        try { fireFirstGenConfetti(); } catch { /* Non-critical */ }
+      } else {
+        haptic("error");
+        toast.error("All generations failed. Please try again.");
       }
     } catch (error: any) {
       haptic("error");
       console.error("Generation failed:", error);
+      setSlots((prev) =>
+        prev.map((s) => ({ ...s, status: "error" as const, error: "Generation failed." }))
+      );
       if (!navigator.onLine) {
         toast.error("No internet connection. Please check and try again.");
       } else {
@@ -299,27 +391,39 @@ export function ProjectDashboard({
     } finally {
       setIsGenerating(false);
     }
-  }, [canGenerate, uploadedFiles, sourceUrl, currentMode, modeValues, objectFiles]);
+  }, [canGenerate, uploadedFiles, sourceUrl, currentMode, globalValues, objectFiles, slots, project.id]);
 
   // ============================================================
-  // EDIT HANDLERS
+  // EDIT HANDLERS (per active slot)
   // ============================================================
 
   const pushToHistory = useCallback(
     (url: string) => {
-      const newHistory = [...editHistory.slice(0, editHistoryIndex + 1), url];
-      setEditHistory(newHistory);
-      setEditHistoryIndex(newHistory.length - 1);
-      setGeneratedImageUrl(url);
+      const slotId = activeSlotId;
+      setEditHistories((prev) => {
+        const history = prev[slotId] ?? [];
+        const idx = editHistoryIndexes[slotId] ?? -1;
+        const newHistory = [...history.slice(0, idx + 1), url];
+        return { ...prev, [slotId]: newHistory };
+      });
+      setEditHistoryIndexes((prev) => {
+        const history = editHistories[slotId] ?? [];
+        const idx = prev[slotId] ?? -1;
+        return { ...prev, [slotId]: Math.min(idx + 1, history.length) };
+      });
+      setSlots((prev) =>
+        prev.map((s) => (s.id === slotId ? { ...s, outputUrl: url } : s))
+      );
+      setIsComparing(false);
     },
-    [editHistory, editHistoryIndex]
+    [activeSlotId, editHistories, editHistoryIndexes]
   );
 
   const handleRegionEditSubmit = useCallback(
     async (annotatedImageBase64: string, prompt: string) => {
       setIsEditGenerating(true);
       try {
-        const result = await editRenderRegion(annotatedImageBase64, prompt);
+        const result = await editRenderRegion(project.id, annotatedImageBase64, prompt);
         if (result.error) {
           haptic("error");
           toast.error(result.error);
@@ -336,15 +440,14 @@ export function ProjectDashboard({
         setIsEditGenerating(false);
       }
     },
-    [pushToHistory]
+    [pushToHistory, project.id]
   );
 
   const handleGlobalEditSubmit = useCallback(async () => {
-    if (!globalPrompt.trim() || !generatedImageUrl) return;
+    if (!editPrompt.trim() || !generatedImageUrl) return;
 
     setIsEditGenerating(true);
     try {
-      // Compress to JPEG at 1024px max to stay within body limits
       const img = document.querySelector(
         'img[alt="Generated render"]'
       ) as HTMLImageElement;
@@ -371,7 +474,11 @@ export function ProjectDashboard({
       ctx.drawImage(img, 0, 0, outW, outH);
       const currentBase64 = offscreen.toDataURL("image/jpeg", 0.85).split(",")[1];
 
-      const result = await editRenderGlobal(currentBase64, globalPrompt.trim());
+      const result = await editRenderGlobal(
+        project.id,
+        currentBase64,
+        editPrompt.trim(),
+      );
       if (result.error) {
         haptic("error");
         toast.error(result.error);
@@ -379,7 +486,7 @@ export function ProjectDashboard({
       }
       if (result.outputUrl) {
         pushToHistory(result.outputUrl);
-        setGlobalPrompt("");
+        setEditPrompt("");
         haptic("success");
       }
     } catch (error: any) {
@@ -388,15 +495,19 @@ export function ProjectDashboard({
     } finally {
       setIsEditGenerating(false);
     }
-  }, [globalPrompt, generatedImageUrl, pushToHistory]);
+  }, [editPrompt, generatedImageUrl, pushToHistory, project.id]);
 
   const handleHistorySelect = useCallback(
     (index: number) => {
-      if (index < 0 || index >= editHistory.length) return;
-      setEditHistoryIndex(index);
-      setGeneratedImageUrl(editHistory[index]);
+      const slotId = activeSlotId;
+      const history = editHistories[slotId] ?? [];
+      if (index < 0 || index >= history.length) return;
+      setEditHistoryIndexes((prev) => ({ ...prev, [slotId]: index }));
+      setSlots((prev) =>
+        prev.map((s) => (s.id === slotId ? { ...s, outputUrl: history[index] } : s))
+      );
     },
-    [editHistory]
+    [activeSlotId, editHistories]
   );
 
   const handleToggleCompare = useCallback(() => {
@@ -405,6 +516,11 @@ export function ProjectDashboard({
 
   const handleSelectionChange = useCallback((has: boolean) => {
     setHasSelection(has);
+  }, []);
+
+  const handleActiveSlotChange = useCallback((index: number) => {
+    setActiveSlotIndex(index);
+    setIsComparing(false);
   }, []);
 
   // ============================================================
@@ -434,7 +550,7 @@ export function ProjectDashboard({
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `brickex-render.png`;
+      a.download = `brickex-render-${activeSlotIndex + 1}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -442,7 +558,7 @@ export function ProjectDashboard({
     } catch (error) {
       console.error("Download failed:", error);
     }
-  }, [generatedImageUrl, subscription?.plan]);
+  }, [generatedImageUrl, subscription?.plan, activeSlotIndex]);
 
   const handleShare = useCallback(async () => {
     if (!generatedImageUrl) return;
@@ -483,13 +599,17 @@ export function ProjectDashboard({
               onRegionEditSubmit={handleRegionEditSubmit}
               originalImageUrl={originalImageUrl}
               isComparing={isComparing}
+              canCompare={activeEditHistory.length > 1}
               onSelectionChange={handleSelectionChange}
-              editHistory={editHistory}
-              editHistoryIndex={editHistoryIndex}
+              editHistory={activeEditHistory}
+              editHistoryIndex={activeEditHistoryIndex}
               onHistorySelect={handleHistorySelect}
               onToggleCompare={handleToggleCompare}
               onDownload={handleDownload}
               sourcePreviewUrl={sourcePreviewUrl}
+              slots={slots}
+              activeSlotIndex={activeSlotIndex}
+              onActiveSlotChange={handleActiveSlotChange}
             />
           </div>
 
@@ -501,22 +621,30 @@ export function ProjectDashboard({
               onDownload={handleDownload}
               isGenerating={isGenerating}
               canGenerate={canGenerate}
-              hasGeneratedImage={!!generatedImageUrl}
+              hasGeneratedImage={hasAnyOutput}
               subscription={subscription}
               currentMode={currentMode}
               onModeChange={handleModeChange}
-              modeValues={modeValues}
-              onModeValueChange={handleModeValueChange}
+              globalValues={globalValues}
+              onGlobalValueChange={handleGlobalValueChange}
               referenceFiles={referenceFiles}
               onReferenceFileChange={handleReferenceFileChange}
               objectFiles={objectFiles}
               onObjectFileAdd={handleObjectFileAdd}
               onObjectFileRemove={handleObjectFileRemove}
-              globalPrompt={globalPrompt}
-              onGlobalPromptChange={setGlobalPrompt}
+              slots={slots}
+              activeSlotIndex={activeSlotIndex}
+              onActiveSlotChange={handleActiveSlotChange}
+              onSlotOverrideChange={handleSlotOverrideChange}
+              onSlotOverrideReset={handleSlotOverrideReset}
+              onAddSlot={handleAddSlot}
+              onRemoveSlot={handleRemoveSlot}
+              editPrompt={editPrompt}
+              onEditPromptChange={setEditPrompt}
               onGlobalEditSubmit={handleGlobalEditSubmit}
               isEditGenerating={isEditGenerating}
               hasSelection={hasSelection}
+              canCompare={activeEditHistory.length > 1}
               onToggleCompare={handleToggleCompare}
               isComparing={isComparing}
             />
@@ -531,17 +659,23 @@ export function ProjectDashboard({
           onShare={handleShare}
           isGenerating={isGenerating}
           canGenerate={canGenerate}
-          hasGeneratedImage={!!generatedImageUrl}
+          hasGeneratedImage={hasAnyOutput}
           subscription={subscription}
           currentMode={currentMode}
-          modeValues={modeValues}
-          onModeValueChange={handleModeValueChange}
-          globalPrompt={globalPrompt}
-          onGlobalPromptChange={setGlobalPrompt}
+          globalValues={globalValues}
+          onGlobalValueChange={handleGlobalValueChange}
+          editPrompt={editPrompt}
+          onEditPromptChange={setEditPrompt}
           onGlobalEditSubmit={handleGlobalEditSubmit}
           isEditGenerating={isEditGenerating}
         />
       </div>
     </TooltipProvider>
   );
+}
+
+function filtered_slots(prev: AngleSlot[], slotId: string): AngleSlot[] {
+  return prev
+    .filter((s) => s.id !== slotId)
+    .map((s, i) => ({ ...s, id: `slot-${i}`, label: `Angle ${i + 1}` }));
 }

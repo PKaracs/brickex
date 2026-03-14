@@ -1,47 +1,69 @@
 /**
- * Subscription plan constants for RichFlex
+ * Subscription plan constants for BrickEx
  * Centralized configuration for all subscription tiers
+ *
+ * Currency: "bricks" (displayed as a coin-like unit in the UI)
  */
 
 export const SUBSCRIPTION_PLANS = {
   FREE: {
     slug: "free",
     name: "Free",
-    creationLimit: 1,
+    creationLimit: 100,
+    bricks: 100,
     price: 0,
     billingPeriod: null,
     resetPeriod: null,
   },
-  PRO_WEEKLY: {
-    slug: "pro",
-    name: "Pro (Weekly)",
-    creationLimit: 50,
-    price: 8.99,
-    billingPeriod: "week" as const,
-    productId: "656b0fb0-9bb2-4b87-b654-5145da063d0d", // Current Polar product ID
-    resetPeriod: "weekly" as const,
+  STARTER: {
+    slug: "starter",
+    name: "Starter",
+    creationLimit: 4000,
+    bricks: 4000,
+    price: 29,
+    billingPeriod: "month" as const,
+    productId: "656b0fb0-9bb2-4b87-b654-5145da063d0d",
+    resetPeriod: "monthly" as const,
   },
-  PRO_MONTHLY: {
-    slug: "unlimited-flex-pro",
-    name: "Unlimited Flex Pro",
-    creationLimit: 250, // 5x weekly (250 per month)
-    price: 28.99,
+  PRO: {
+    slug: "pro",
+    name: "Pro",
+    creationLimit: 12000,
+    bricks: 12000,
+    price: 49,
     billingPeriod: "month" as const,
     productId: "2c6e7350-bd42-4ed2-ac9e-02caf675afa1",
     resetPeriod: "monthly" as const,
     perks: [
-      "250 creations per month",
-      "Request any item or template for free",
-      "Direct access to founder",
-      "Priority support",
+      "12,000 bricks per month",
+      "All render modes & styles",
+      "Video generation",
+      "Priority processing",
+    ],
+  },
+  STUDIO: {
+    slug: "studio",
+    name: "Studio",
+    creationLimit: 30000,
+    bricks: 30000,
+    price: 99,
+    billingPeriod: "month" as const,
+    productId: "", // TODO: Set Polar product ID when created
+    resetPeriod: "monthly" as const,
+    perks: [
+      "30,000 bricks per month",
+      "Everything in Pro",
+      "Batch rendering",
+      "API access",
+      "Dedicated account manager",
     ],
   },
 } as const;
 
-export type PlanSlug = "free" | "pro" | "unlimited-flex-pro";
+export type PlanSlug = "free" | "starter" | "pro" | "studio";
 
-// Keep previous weekly product IDs valid so existing paid users retain access.
-const LEGACY_WEEKLY_PRODUCT_IDS = [
+// Keep previous product IDs valid so existing paid users retain access.
+const LEGACY_PRODUCT_IDS = [
   "96094503-2b61-405c-a32b-364219ee21ba",
   "397c0bc4-f749-4110-b794-82960f2e437f",
 ] as const;
@@ -57,21 +79,23 @@ export function getUserPlan(
     return { plan: "free", config: SUBSCRIPTION_PLANS.FREE };
   }
 
-  // Check product ID to differentiate between weekly and monthly plans
-  if (subscriptionProductId === SUBSCRIPTION_PLANS.PRO_MONTHLY.productId) {
-    return { plan: "unlimited-flex-pro", config: SUBSCRIPTION_PLANS.PRO_MONTHLY };
+  if (subscriptionProductId === SUBSCRIPTION_PLANS.STUDIO.productId && SUBSCRIPTION_PLANS.STUDIO.productId) {
+    return { plan: "studio", config: SUBSCRIPTION_PLANS.STUDIO };
   }
 
-  // Accept both current and legacy weekly product IDs.
+  if (subscriptionProductId === SUBSCRIPTION_PLANS.PRO.productId) {
+    return { plan: "pro", config: SUBSCRIPTION_PLANS.PRO };
+  }
+
   if (
-    subscriptionProductId === SUBSCRIPTION_PLANS.PRO_WEEKLY.productId ||
-    LEGACY_WEEKLY_PRODUCT_IDS.includes(subscriptionProductId as (typeof LEGACY_WEEKLY_PRODUCT_IDS)[number])
+    subscriptionProductId === SUBSCRIPTION_PLANS.STARTER.productId ||
+    LEGACY_PRODUCT_IDS.includes(subscriptionProductId as (typeof LEGACY_PRODUCT_IDS)[number])
   ) {
-    return { plan: "pro", config: SUBSCRIPTION_PLANS.PRO_WEEKLY };
+    return { plan: "starter", config: SUBSCRIPTION_PLANS.STARTER };
   }
 
-  // Default to weekly (includes legacy subscriptions before monthly was added)
-  return { plan: "pro", config: SUBSCRIPTION_PLANS.PRO_WEEKLY };
+  // Default to starter (includes legacy subscriptions)
+  return { plan: "starter", config: SUBSCRIPTION_PLANS.STARTER };
 }
 
 /**

@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { ImageCompare } from "@/components/ui/image-compare";
 import { Paintbrush, Gem, Armchair, Factory } from "lucide-react";
+import { assetUrl } from "@/lib/assets";
 
 interface Style {
   key: string;
@@ -14,13 +15,13 @@ interface Style {
   image: string;
 }
 
-const EMPTY_ROOM = "/api/static/interior-variations/empty-room.png";
+const EMPTY_ROOM = assetUrl("interior-variations/empty-room.png");
 
 const STYLES: Style[] = [
-  { key: "modern", label: "Modern Minimal", icon: Paintbrush, image: "/api/static/interior-variations/modern-minimalist.png" },
-  { key: "artdeco", label: "Art Deco", icon: Gem, image: "/api/static/interior-variations/art-deco.png" },
-  { key: "scandi", label: "Scandinavian", icon: Armchair, image: "/api/static/interior-variations/scandinavian.png" },
-  { key: "industrial", label: "Industrial", icon: Factory, image: "/api/static/interior-variations/industrial.png" },
+  { key: "modern", label: "Modern Minimal", icon: Paintbrush, image: assetUrl("interior-variations/modern-minimalist.png") },
+  { key: "artdeco", label: "Art Deco", icon: Gem, image: assetUrl("interior-variations/art-deco.png") },
+  { key: "scandi", label: "Scandinavian", icon: Armchair, image: assetUrl("interior-variations/scandinavian.png") },
+  { key: "industrial", label: "Industrial", icon: Factory, image: assetUrl("interior-variations/industrial.png") },
 ];
 
 export default function InteriorShowcase() {

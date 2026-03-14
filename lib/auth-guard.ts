@@ -1,32 +1,60 @@
-const MOCK_USER_ID = "mock-user-dev";
+import "server-only";
 
-const MOCK_SESSION = {
-  user: {
-    id: MOCK_USER_ID,
-    name: "Dev User",
-    email: "dev@brickex.com",
-    image: null,
-    emailVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  session: {
-    id: "mock-session",
-    userId: MOCK_USER_ID,
-    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-    ipAddress: "127.0.0.1",
-    userAgent: "dev",
-  },
-};
+import { eq } from "drizzle-orm";
+
+import * as schema from "@/db/schema";
+import { db } from "@/lib/db";
+import { getSession } from "@/lib/auth-session";
 
 export async function requireAuth(): Promise<string> {
-  return MOCK_USER_ID;
+  const session = await getSession();
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  return session.user.id;
 }
 
 export async function getOptionalAuth(): Promise<string | null> {
-  return MOCK_USER_ID;
+  const session = await getSession();
+  return session?.user?.id ?? null;
 }
 
 export async function requireAuthWithSession() {
-  return MOCK_SESSION;
+  const session = await getSession();
+
+  if (!session?.user?.id) {
+    throw new Error("Unauthorized");
+  }
+
+  return session;
+}
+
+export async function requireWorkspaceContext() {
+  const session = await requireAuthWithSession();
+
+  let organizationId =
+    session.session.activeOrganizationId ?? session.user.defaultOrganizationId ?? null;
+
+  if (!organizationId) {
+    const membership = await db.query.members.findFirst({
+      where: eq(schema.members.userId, session.user.id),
+      columns: {
+        organizationId: true,
+      },
+    });
+
+    organizationId = membership?.organizationId ?? null;
+  }
+
+  if (!organizationId) {
+    throw new Error("No active workspace found");
+  }
+
+  return {
+    organizationId,
+    userId: session.user.id,
+    session,
+  };
 }

@@ -1,6 +1,10 @@
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
+
 import AppShellClient from "./app-shell-client";
 import { Skeleton } from "@/components/ui/skeleton";
+import { getSession } from "@/lib/auth-session";
 
 function LayoutSkeleton() {
   return (
@@ -18,7 +22,30 @@ function LayoutSkeleton() {
   );
 }
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+function isAuthRoute(pathname: string | null) {
+  if (!pathname) return false;
+
+  return (
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname === "/forgot-password" ||
+    pathname.startsWith("/reset-password")
+  );
+}
+
+export default async function AppLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const requestHeaders = await headers();
+  const pathname = requestHeaders.get("x-pathname");
+  const session = await getSession();
+
+  if (!isAuthRoute(pathname) && !session?.user?.id) {
+    redirect("/login");
+  }
+
   return (
     <Suspense fallback={<LayoutSkeleton />}>
       <AppShellClient>{children}</AppShellClient>

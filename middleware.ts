@@ -36,11 +36,6 @@ export default async function middleware(req: NextRequest) {
     return new NextResponse("Access Denied", { status: 403 });
   }
 
-  // Skip server actions (POST with Next-Action header) to avoid body size issues
-  if (req.method === "POST" && req.headers.get("next-action")) {
-    return NextResponse.next();
-  }
-
   // IMPORTANT: Skip ALL API routes - let them pass through without any rewriting
   if (url.pathname.startsWith("/api/")) {
     return NextResponse.next();
@@ -68,6 +63,11 @@ export default async function middleware(req: NextRequest) {
   const isAppSubdomain =
     hostname === "app.brickex.com" || rawHostname.startsWith("app.localhost");
 
+  // Server actions posted from the app subdomain still need the /app rewrite.
+  if (req.method === "POST" && req.headers.get("next-action") && !isAppSubdomain) {
+    return NextResponse.next();
+  }
+
   // is maintenance mode
   if (isAppSubdomain && process.env.MAINTENANCE_MODE === "true") {
     return NextResponse.rewrite(new URL("/app/maintenance", req.url));
@@ -80,9 +80,14 @@ export default async function middleware(req: NextRequest) {
       ? path
       : `/app${path === "/" ? "" : path}`;
 
-    const response = NextResponse.rewrite(new URL(normalizedPath, req.url));
-    // Set custom header with the original path for layout to detect auth routes
-    response.headers.set("x-pathname", url.pathname);
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-pathname", url.pathname);
+
+    const response = NextResponse.rewrite(new URL(normalizedPath, req.url), {
+      request: {
+        headers: requestHeaders,
+      },
+    });
     return response;
   }
 

@@ -1,30 +1,20 @@
+import "server-only";
+
 import { cache } from "react";
+import { headers } from "next/headers";
 
-const MOCK_USER_ID = "mock-user-dev";
-
-const MOCK_SESSION = {
-  user: {
-    id: MOCK_USER_ID,
-    name: "Dev User",
-    email: "dev@brickex.com",
-    image: null,
-    emailVerified: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  session: {
-    id: "mock-session",
-    userId: MOCK_USER_ID,
-    expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-    ipAddress: "127.0.0.1",
-    userAgent: "dev",
-  },
-};
+import { auth } from "@/lib/auth";
 
 export const getSession = cache(async () => {
-  return MOCK_SESSION;
+  const requestHeaders = await headers();
+  const session = await auth.api.getSession({
+    headers: requestHeaders,
+  });
+
+  return session ?? null;
 });
 
 export async function getAuthUserId(): Promise<string | null> {
-  return MOCK_USER_ID;
+  const session = await getSession();
+  return session?.user.id ?? null;
 }

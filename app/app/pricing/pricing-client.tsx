@@ -80,17 +80,17 @@ export default function PricingPageClient({
 }: PricingPageClientProps) {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<"weekly" | "monthly">("weekly");
+  const [selectedPlan, setSelectedPlan] = useState<"starter" | "pro">("starter");
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
-  const weeklyPlan = SUBSCRIPTION_PLANS.PRO_WEEKLY;
-  const monthlyPlan = SUBSCRIPTION_PLANS.PRO_MONTHLY;
+  const starterPlan = SUBSCRIPTION_PLANS.STARTER;
+  const proPlan = SUBSCRIPTION_PLANS.PRO;
 
   useSyncVariant(variant);
 
   useEffect(() => {
     if (searchParams.get("reason") === "credits") {
-      toast("You've used your free generation. Upgrade to keep creating!", {
+      toast("You've used all your free bricks. Upgrade to keep creating!", {
         icon: "⚡",
         duration: 5000,
       });
@@ -102,20 +102,20 @@ export default function PricingPageClient({
       content_name: "pricing_page",
       content_type: "subscription",
       currency: "USD",
-      value: weeklyPlan.price,
+      value: starterPlan.price,
     });
 
     posthog.capture("pricing_page_viewed", {
       ab_variant: variant,
       source: variant === "B" ? "forced_redirect" : "direct",
     });
-  }, [variant, weeklyPlan.price]);
+  }, [variant, starterPlan.price]);
 
-  const handleUpgrade = async (plan: "weekly" | "monthly") => {
+  const handleUpgrade = async (plan: "starter" | "pro") => {
     setIsLoading(true);
 
     try {
-      const selectedPlanConfig = plan === "monthly" ? monthlyPlan : weeklyPlan;
+      const selectedPlanConfig = plan === "pro" ? proPlan : starterPlan;
       const initiateCheckoutEventId = generateEventId();
       const purchaseEventId = generateEventId();
 
@@ -212,79 +212,68 @@ export default function PricingPageClient({
         {/* Mobile: Plan Toggle */}
         <div className="md:hidden flex gap-2 p-1 bg-neutral-800 rounded-lg max-w-xs mx-auto mb-6">
           <button
-            onClick={() => setSelectedPlan("weekly")}
+            onClick={() => setSelectedPlan("starter")}
             className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all ${
-              selectedPlan === "weekly"
+              selectedPlan === "starter"
                 ? "bg-white text-black"
                 : "text-neutral-400 hover:text-white"
             }`}
           >
-            Weekly
+            Starter — $29
           </button>
           <button
-            onClick={() => setSelectedPlan("monthly")}
+            onClick={() => setSelectedPlan("pro")}
             className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all relative ${
-              selectedPlan === "monthly"
+              selectedPlan === "pro"
                 ? "bg-white text-black"
                 : "text-neutral-400 hover:text-white"
             }`}
           >
-            Monthly
+            Pro — $49
             <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[9px] px-1 py-0.5 rounded-full font-bold">
-              SAVE
+              BEST
             </span>
           </button>
         </div>
 
         {/* Pricing Cards */}
         <div className="max-w-3xl mx-auto grid md:grid-cols-2 gap-4 md:gap-6 mb-6">
-          {/* Weekly Card */}
-          <div className={`relative ${selectedPlan !== "weekly" ? "hidden md:block" : ""}`}>
+          {/* Starter Card */}
+          <div className={`relative ${selectedPlan !== "starter" ? "hidden md:block" : ""}`}>
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
               <div className="inline-block px-3 py-1 rounded-full bg-white text-black text-xs font-medium">
-                Limited Time Offer
+                Great for Getting Started
               </div>
             </div>
 
             <div className={`relative h-full bg-neutral-900 rounded-xl border transition-all ${
-              selectedPlan === "weekly" ? "border-white/20" : "border-neutral-800/80"
+              selectedPlan === "starter" ? "border-white/20" : "border-neutral-800/80"
             } shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.03)] overflow-hidden`}>
               <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-neutral-700/50 to-transparent" />
               
               <div className="p-6 pt-8 flex flex-col gap-4 h-full">
                 <div className="text-center">
-                  <p className="text-sm font-medium text-neutral-400 mb-3">Weekly</p>
+                  <p className="text-sm font-medium text-neutral-400 mb-3">Starter</p>
                   <div className="flex items-baseline justify-center gap-2">
-                    <span className="text-lg text-zinc-500 line-through decoration-red-500/70 decoration-2">
-                      $12.90
-                    </span>
                     <span className="text-4xl font-bold bg-gradient-to-b from-white to-zinc-300 bg-clip-text text-transparent">
-                      ${weeklyPlan.price}
+                      ${starterPlan.price}
                     </span>
-                    <span className="text-zinc-500 text-sm">/week</span>
-                  </div>
-                  <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-                    <span className="text-[10px] font-semibold text-emerald-400">
-                      Save 30%
-                    </span>
+                    <span className="text-zinc-500 text-sm">/month</span>
                   </div>
                   <p className="text-zinc-500 text-xs mt-2">
-                    {weeklyPlan.creationLimit} creations/week · Cancel anytime
-                  </p>
-                  <p className="text-zinc-600 text-xs mt-1">
-                    Less than one coffee
+                    {starterPlan.bricks.toLocaleString()} bricks/month · Cancel anytime
                   </p>
                 </div>
 
                 <button
-                  onClick={() => handleUpgrade("weekly")}
+                  onClick={() => handleUpgrade("starter")}
                   disabled={isLoading}
                   className="flex w-full py-3 min-h-[48px] rounded-lg bg-white text-black font-semibold text-center text-sm transition-all hover:bg-zinc-200 hover:scale-[1.02] active:scale-[0.98] active:bg-zinc-300 shadow-lg shadow-white/10 items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading && selectedPlan === "weekly" ? (
+                  {isLoading && selectedPlan === "starter" ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    "Upgrade my photos"
+                    "Get Started"
                   )}
                 </button>
 
@@ -292,10 +281,10 @@ export default function PricingPageClient({
 
                 <ul className="space-y-2 flex-1">
                   {[
-                    "Stronger first impression",
-                    "Travel anywhere in the world",
-                    "Create realistic couple images",
-                    "All luxury templates & objects",
+                    `${starterPlan.bricks.toLocaleString()} bricks per month`,
+                    "Exterior + Interior modes",
+                    "All architecture styles",
+                    "4K exports, no watermarks",
                   ].map((benefit) => (
                     <li
                       key={benefit}
@@ -310,8 +299,8 @@ export default function PricingPageClient({
             </div>
           </div>
 
-          {/* Monthly Card */}
-          <div className={`relative ${selectedPlan !== "monthly" ? "hidden md:block" : ""}`}>
+          {/* Pro Card */}
+          <div className={`relative ${selectedPlan !== "pro" ? "hidden md:block" : ""}`}>
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
               <div className="inline-block px-3 py-1 rounded-full bg-green-500 text-white text-xs font-medium">
                 Best Value
@@ -319,41 +308,38 @@ export default function PricingPageClient({
             </div>
 
             <div className={`relative h-full bg-neutral-900 rounded-xl border transition-all ${
-              selectedPlan === "monthly" ? "border-green-500/40 md:border-green-500/40" : "border-neutral-800/80 md:border-green-500/40"
+              selectedPlan === "pro" ? "border-green-500/40 md:border-green-500/40" : "border-neutral-800/80 md:border-green-500/40"
             } shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.03)] overflow-hidden`}>
               <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent" />
               
               <div className="p-6 pt-8 flex flex-col gap-4 h-full">
                 <div className="text-center">
-                  <p className="text-sm font-medium text-green-400 mb-3">Monthly</p>
+                  <p className="text-sm font-medium text-green-400 mb-3">Pro</p>
                   <div className="flex items-baseline justify-center gap-2">
                     <span className="text-4xl font-bold bg-gradient-to-b from-white to-zinc-300 bg-clip-text text-transparent">
-                      ${monthlyPlan.price}
+                      ${proPlan.price}
                     </span>
                     <span className="text-zinc-500 text-sm">/month</span>
                   </div>
                   <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-500/10 border border-green-500/20">
                     <span className="text-[10px] font-semibold text-green-400">
-                      5x more creations
+                      3x more bricks
                     </span>
                   </div>
                   <p className="text-zinc-500 text-xs mt-2">
-                    {monthlyPlan.creationLimit} creations/month · Cancel anytime
-                  </p>
-                  <p className="text-zinc-600 text-xs mt-1">
-                    One good photo is worth more than this
+                    {proPlan.bricks.toLocaleString()} bricks/month · Cancel anytime
                   </p>
                 </div>
 
                 <button
-                  onClick={() => handleUpgrade("monthly")}
+                  onClick={() => handleUpgrade("pro")}
                   disabled={isLoading}
                   className="flex w-full py-3 min-h-[48px] rounded-lg bg-green-500 text-white font-semibold text-center text-sm transition-all hover:bg-green-400 hover:scale-[1.02] active:scale-[0.98] active:bg-green-600 shadow-lg shadow-green-500/20 items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  {isLoading && selectedPlan === "monthly" ? (
+                  {isLoading && selectedPlan === "pro" ? (
                     <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
-                    "Upgrade my photos"
+                    "Upgrade to Pro"
                   )}
                 </button>
 
@@ -361,13 +347,11 @@ export default function PricingPageClient({
 
                 <ul className="space-y-2 flex-1">
                   {[
-                    `${monthlyPlan.creationLimit} creations/month (5x!)`,
-                    "Stronger first impression",
-                    "Travel anywhere in the world",
-                    "Create realistic couple images",
-                    "All luxury templates & objects",
-                    "Request items/templates free",
-                    "Direct access to founder",
+                    `${proPlan.bricks.toLocaleString()} bricks/month (3x Starter!)`,
+                    "Video generation",
+                    "Region editing & refinement",
+                    "Priority processing",
+                    "All tools included",
                   ].map((benefit) => (
                     <li
                       key={benefit}
@@ -525,7 +509,7 @@ export default function PricingPageClient({
               )}
             </button>
             <p className="text-xs text-neutral-500 mt-3">
-              Starting at ${weeklyPlan.price}/week
+              Starting at ${starterPlan.price}/month
             </p>
           </div>
         </div>
@@ -547,7 +531,7 @@ export default function PricingPageClient({
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <>
-                Get Started — ${selectedPlan === "weekly" ? weeklyPlan.price : monthlyPlan.price}/{selectedPlan === "weekly" ? "week" : "month"}
+                Get Started — ${selectedPlan === "starter" ? starterPlan.price : proPlan.price}/month
                 <ArrowRight className="w-4 h-4" />
               </>
             )}

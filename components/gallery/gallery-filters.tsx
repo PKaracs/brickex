@@ -20,6 +20,7 @@ interface GalleryFiltersProps {
   viewMode: ViewMode;
   onViewModeChange: (mode: ViewMode) => void;
   totalCount: number;
+  totalRenderCount?: number;
 }
 
 export function GalleryFilters({
@@ -28,12 +29,19 @@ export function GalleryFilters({
   viewMode,
   onViewModeChange,
   totalCount,
+  totalRenderCount,
 }: GalleryFiltersProps) {
   return (
     <div className="flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-3 sm:py-4 border-b border-neutral-800">
       {/* Left Side - Count */}
       <span className="text-xs sm:text-sm text-neutral-500">
-        {totalCount} {totalCount === 1 ? "render" : "renders"}
+        {totalCount} {totalCount === 1 ? "project" : "projects"}
+        {typeof totalRenderCount === "number" && (
+          <span className="text-neutral-600">
+            {" "}
+            · {totalRenderCount} {totalRenderCount === 1 ? "image" : "images"}
+          </span>
+        )}
       </span>
 
       {/* Right Side - Filters & View Toggle */}

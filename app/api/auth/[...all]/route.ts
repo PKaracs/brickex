@@ -1,17 +1,5 @@
-import { NextResponse } from "next/server";
+import { authHandler } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
-export const GET = async (req: Request) => {
-  return NextResponse.json(
-    { message: "Auth disabled in development" },
-    { status: 200 }
-  );
-};
-
-export const POST = async (req: Request) => {
-  return NextResponse.json(
-    { message: "Auth disabled in development" },
-    { status: 200 }
-  );
-};
+export const { GET, POST, PATCH, PUT, DELETE } = authHandler;

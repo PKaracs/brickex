@@ -1,10 +1,10 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { BlurFade } from "@/components/ui/blur-fade";
-import { Play, Building2, Sunrise, Plane, Snowflake } from "lucide-react";
+import { Building2, Sunrise, Plane, Snowflake } from "lucide-react";
 
 interface VideoPreset {
   key: string;
@@ -12,8 +12,10 @@ interface VideoPreset {
   tagline: string;
   description: string;
   icon: typeof Building2;
-  image: string;
+  video: string;
 }
+
+const SUPABASE_VIDEOS = "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/videos";
 
 const PRESETS: VideoPreset[] = [
   {
@@ -22,7 +24,7 @@ const PRESETS: VideoPreset[] = [
     tagline: "From plot to skyline",
     description: "Watch the entire construction process unfold — foundation, framing, facade, landscaping — compressed into a cinematic timelapse.",
     icon: Building2,
-    image: "/api/static/real-estate-full/luxury-glass-skyscraper.png",
+    video: `${SUPABASE_VIDEOS}/construction.mp4`,
   },
   {
     key: "day-to-night",
@@ -30,7 +32,7 @@ const PRESETS: VideoPreset[] = [
     tagline: "Golden hour to city lights",
     description: "Transition seamlessly from warm afternoon light through golden hour into a dramatic nighttime scene with architectural lighting.",
     icon: Sunrise,
-    image: "/api/static/real-estate-full-variations/miami-condo-tower/night.png",
+    video: `${SUPABASE_VIDEOS}/timelapse.mp4`,
   },
   {
     key: "flyover",
@@ -38,7 +40,7 @@ const PRESETS: VideoPreset[] = [
     tagline: "Bird's-eye cinematic reveal",
     description: "A drone-style aerial sweep that reveals the full property, surrounding landscape, and architectural context from above.",
     icon: Plane,
-    image: "/api/static/real-estate-full/classic-white-mansion.png",
+    video: `${SUPABASE_VIDEOS}/flyover.mp4`,
   },
   {
     key: "seasons",
@@ -46,17 +48,25 @@ const PRESETS: VideoPreset[] = [
     tagline: "Spring bloom to winter frost",
     description: "Experience your project across all four seasons — cherry blossoms, summer sun, autumn leaves, and a blanket of snow.",
     icon: Snowflake,
-    image: "/api/static/real-estate-full-variations/desert-modern-house/morning.png",
+    video: `${SUPABASE_VIDEOS}/fourseasons.mp4`,
   },
 ];
 
 export default function VideoShowcase() {
   const [activePreset, setActivePreset] = useState(0);
   const preset = PRESETS[activePreset];
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   const selectPreset = useCallback((index: number) => {
     setActivePreset(index);
   }, []);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.load();
+    video.play().catch(() => {});
+  }, [activePreset]);
 
   return (
     <section className="relative py-20 sm:py-28 lg:py-36 overflow-hidden">
@@ -79,9 +89,9 @@ export default function VideoShowcase() {
 
         <BlurFade inView delay={0.2}>
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
-            {/* Video preview — large */}
+            {/* Video player — large */}
             <div className="lg:col-span-3">
-              <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-zinc-900/50 shadow-[0_8px_60px_rgba(0,0,0,0.5)] group cursor-pointer">
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-zinc-900/50 shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
                 <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent z-10" />
 
                 <div className="relative aspect-[16/9] w-full">
@@ -94,26 +104,20 @@ export default function VideoShowcase() {
                       transition={{ duration: 0.6 }}
                       className="absolute inset-0"
                     >
-                      <img
-                        src={preset.image}
-                        alt={preset.label}
+                      <video
+                        ref={videoRef}
+                        src={preset.video}
+                        autoPlay
+                        loop
+                        muted
+                        playsInline
                         className="absolute inset-0 w-full h-full object-cover"
                       />
                     </motion.div>
                   </AnimatePresence>
 
-                  {/* Dark overlay */}
-                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/20 transition-colors z-[1]" />
-
-                  {/* Play button */}
-                  <div className="absolute inset-0 flex items-center justify-center z-[2]">
-                    <div className="flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-full bg-white/15 backdrop-blur-sm border border-white/20 group-hover:bg-white/25 group-hover:scale-110 transition-all duration-300">
-                      <Play className="h-7 w-7 sm:h-8 sm:w-8 text-white ml-1" fill="white" />
-                    </div>
-                  </div>
-
                   {/* Bottom info */}
-                  <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 z-[2] bg-gradient-to-t from-black/60 to-transparent">
+                  <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 z-[2] bg-gradient-to-t from-black/60 to-transparent pointer-events-none">
                     <AnimatePresence mode="wait">
                       <motion.div
                         key={preset.key}

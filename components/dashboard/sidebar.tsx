@@ -25,23 +25,28 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { Textarea } from "@/components/ui/textarea";
 import type { SubscriptionData } from "@/lib/actions/get-user-subscription";
 import { ModeSelectorCard } from "@/components/dashboard/mode-selector-card";
 import { ModeSettingsForm } from "@/components/dashboard/mode-settings-form";
-import type { RenderMode } from "@/lib/constants/render-modes";
-import { getModeSettings, RENDER_MODES } from "@/lib/constants/render-modes";
+import { AngleSlotAccordion } from "@/components/dashboard/angle-slot-accordion";
+import type { RenderMode, AngleSlot } from "@/lib/constants/render-modes";
+import { getGlobalOnlySettings, RENDER_MODES } from "@/lib/constants/render-modes";
 import { cn } from "@/lib/utils";
+
+const MAX_SLOTS = 5;
 
 // ============================================================
 // EDIT SIDEBAR (shown when a generated image exists)
 // ============================================================
 
 interface EditSidebarProps {
-  globalPrompt: string;
-  onGlobalPromptChange: (value: string) => void;
+  editPrompt: string;
+  onEditPromptChange: (value: string) => void;
   onGlobalEditSubmit: () => void;
   isEditGenerating: boolean;
   hasSelection: boolean;
+  canCompare: boolean;
   onToggleCompare: () => void;
   isComparing: boolean;
   onDownload: () => void;
@@ -50,11 +55,12 @@ interface EditSidebarProps {
 }
 
 const EditSidebar = memo(function EditSidebar({
-  globalPrompt,
-  onGlobalPromptChange,
+  editPrompt,
+  onEditPromptChange,
   onGlobalEditSubmit,
   isEditGenerating,
   hasSelection,
+  canCompare,
   onToggleCompare,
   isComparing,
   onDownload,
@@ -63,7 +69,6 @@ const EditSidebar = memo(function EditSidebar({
   return (
     <div className="w-96 border-l border-neutral-800/50 bg-neutral-950 flex flex-col overflow-hidden">
       <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none p-5 space-y-5">
-        {/* Header */}
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Pencil className="w-4 h-4 text-neutral-400" />
@@ -75,7 +80,6 @@ const EditSidebar = memo(function EditSidebar({
           </p>
         </div>
 
-        {/* Region edit hint */}
         <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-neutral-800/50 border border-neutral-700/50">
           <BoxSelect className="w-4 h-4 text-green-400 shrink-0" />
           <span className="text-xs text-neutral-300">
@@ -85,17 +89,16 @@ const EditSidebar = memo(function EditSidebar({
           </span>
         </div>
 
-        {/* Global edit prompt */}
         <div className="space-y-2">
           <label className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
             Global Edit
           </label>
           <div className="relative">
             <textarea
-              value={globalPrompt}
-              onChange={(e) => onGlobalPromptChange(e.target.value)}
+              value={editPrompt}
+              onChange={(e) => onEditPromptChange(e.target.value)}
               onKeyDown={(e) => {
-                if (e.key === "Enter" && !e.shiftKey && globalPrompt.trim()) {
+                if (e.key === "Enter" && !e.shiftKey && editPrompt.trim()) {
                   e.preventDefault();
                   onGlobalEditSubmit();
                 }
@@ -108,7 +111,7 @@ const EditSidebar = memo(function EditSidebar({
           </div>
           <Button
             onClick={onGlobalEditSubmit}
-            disabled={!globalPrompt.trim() || isEditGenerating}
+            disabled={!editPrompt.trim() || isEditGenerating}
             variant="default"
             className="w-full"
           >
@@ -126,22 +129,21 @@ const EditSidebar = memo(function EditSidebar({
           </Button>
         </div>
 
-        {/* Compare */}
         <button
           onClick={onToggleCompare}
+          disabled={!canCompare}
           className={cn(
-            "w-full h-9 flex items-center justify-center gap-2 rounded-lg text-sm border transition-colors",
-            isComparing
+            "w-full h-9 flex items-center justify-center gap-2 rounded-lg text-sm border transition-colors disabled:opacity-40 disabled:cursor-not-allowed",
+            isComparing && canCompare
               ? "bg-white text-black border-white"
               : "text-neutral-400 hover:text-white bg-neutral-800/50 border-neutral-700/50 hover:bg-neutral-800",
           )}
         >
           <SplitSquareHorizontal className="w-3.5 h-3.5" />
-          {isComparing ? "Viewing Original" : "Compare with Original"}
+          {isComparing && canCompare ? "Viewing Original" : "Compare with Original"}
         </button>
       </div>
 
-      {/* Bottom actions */}
       <div className="flex-shrink-0 p-5 pt-3 border-t border-neutral-800/50">
         <div className="flex flex-col gap-2">
           <Button
@@ -182,19 +184,28 @@ interface SidebarProps {
   subscription?: SubscriptionData | null;
   currentMode: RenderMode | null;
   onModeChange: (mode: RenderMode) => void;
-  modeValues: Record<string, string>;
-  onModeValueChange: (key: string, value: string) => void;
+  globalValues: Record<string, string>;
+  onGlobalValueChange: (key: string, value: string) => void;
   referenceFiles?: Record<string, File | null>;
   onReferenceFileChange?: (key: string, file: File | null) => void;
   objectFiles?: Record<string, File[]>;
   onObjectFileAdd?: (key: string, file: File) => void;
   onObjectFileRemove?: (key: string, index: number) => void;
+  // Multi-slot
+  slots: AngleSlot[];
+  activeSlotIndex: number;
+  onActiveSlotChange: (index: number) => void;
+  onSlotOverrideChange: (slotId: string, key: string, value: string) => void;
+  onSlotOverrideReset: (slotId: string, key: string) => void;
+  onAddSlot: () => void;
+  onRemoveSlot: (slotId: string) => void;
   // Edit mode props
-  globalPrompt?: string;
-  onGlobalPromptChange?: (value: string) => void;
+  editPrompt?: string;
+  onEditPromptChange?: (value: string) => void;
   onGlobalEditSubmit?: () => void;
   isEditGenerating?: boolean;
   hasSelection?: boolean;
+  canCompare?: boolean;
   onToggleCompare?: () => void;
   isComparing?: boolean;
 }
@@ -209,34 +220,42 @@ export const Sidebar = memo(function Sidebar({
   subscription,
   currentMode,
   onModeChange,
-  modeValues,
-  onModeValueChange,
+  globalValues,
+  onGlobalValueChange,
   referenceFiles,
   onReferenceFileChange,
   objectFiles,
   onObjectFileAdd,
   onObjectFileRemove,
-  // Edit mode props
-  globalPrompt = "",
-  onGlobalPromptChange,
+  slots,
+  activeSlotIndex,
+  onActiveSlotChange,
+  onSlotOverrideChange,
+  onSlotOverrideReset,
+  onAddSlot,
+  onRemoveSlot,
+  editPrompt = "",
+  onEditPromptChange,
   onGlobalEditSubmit,
   isEditGenerating = false,
   hasSelection = false,
+  canCompare = false,
   onToggleCompare,
   isComparing = false,
 }: SidebarProps) {
   const isDisabled = isGenerating || !canGenerate;
   const activeMode = currentMode ?? RENDER_MODES[0];
-  const settings = getModeSettings(activeMode.id);
+  const globalSettings = getGlobalOnlySettings(activeMode.id);
 
   if (hasGeneratedImage) {
     return (
       <EditSidebar
-        globalPrompt={globalPrompt}
-        onGlobalPromptChange={onGlobalPromptChange ?? (() => {})}
+        editPrompt={editPrompt}
+        onEditPromptChange={onEditPromptChange ?? (() => {})}
         onGlobalEditSubmit={onGlobalEditSubmit ?? (() => {})}
         isEditGenerating={isEditGenerating}
         hasSelection={hasSelection}
+        canCompare={canCompare}
         onToggleCompare={onToggleCompare ?? (() => {})}
         isComparing={isComparing}
         onDownload={onDownload}
@@ -248,29 +267,75 @@ export const Sidebar = memo(function Sidebar({
 
   return (
     <div className="w-96 border-l border-neutral-800/50 bg-neutral-950 flex flex-col overflow-hidden">
-      {/* Scrollable settings area */}
       <div className="flex-1 min-h-0 overflow-y-auto scrollbar-none p-5 space-y-4">
+        {/* 1. Exterior / Interior switch */}
         <ModeSelectorCard
           currentMode={currentMode}
           onModeChange={onModeChange}
         />
 
-        {settings.length > 0 && (
+        {/* 2. Global prompt */}
+        <div className="space-y-2">
+          <h4 className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
+            Prompt
+          </h4>
+          <Textarea
+            placeholder="Describe what you want to generate..."
+            value={globalValues.customPrompt ?? ""}
+            onChange={(e) => onGlobalValueChange("customPrompt", e.target.value)}
+            disabled={isGenerating}
+            className="bg-neutral-800/50 border-neutral-700/40 text-white placeholder:text-neutral-600 resize-none h-20 text-xs focus:border-neutral-600 rounded-xl disabled:cursor-not-allowed"
+          />
+        </div>
+
+        {/* 3. Global settings (non-overridable settings) */}
+        {globalSettings.length > 0 && (
           <ModeSettingsForm
-            settings={settings}
-            values={modeValues}
-            onChange={onModeValueChange}
+            settings={globalSettings}
+            values={globalValues}
+            onChange={onGlobalValueChange}
             disabled={isGenerating}
             referenceFiles={referenceFiles}
             onReferenceFileChange={onReferenceFileChange}
             objectFiles={objectFiles}
             onObjectFileAdd={onObjectFileAdd}
             onObjectFileRemove={onObjectFileRemove}
+            isOverrideMode
           />
+        )}
+
+        {/* 4. Angle slots */}
+        <AngleSlotAccordion
+          slots={slots}
+          modeId={activeMode.id}
+          globalValues={globalValues}
+          activeSlotIndex={activeSlotIndex}
+          onActiveSlotChange={onActiveSlotChange}
+          onSlotOverrideChange={onSlotOverrideChange}
+          onSlotOverrideReset={onSlotOverrideReset}
+          onRemoveSlot={onRemoveSlot}
+          disabled={isGenerating}
+        />
+
+        {/* 5. Add angle button */}
+        {slots.length < MAX_SLOTS && (
+          <button
+            onClick={onAddSlot}
+            disabled={isGenerating}
+            className={cn(
+              "w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-dashed transition-all",
+              "border-neutral-700/50 text-neutral-500 text-xs font-medium",
+              "hover:border-neutral-600 hover:text-neutral-400 hover:bg-neutral-800/30",
+              isGenerating && "opacity-50 cursor-not-allowed"
+            )}
+          >
+            <Plus className="w-3 h-3" />
+            Add Angle ({slots.length}/{MAX_SLOTS})
+          </button>
         )}
       </div>
 
-      {/* Bottom pinned: Generate button */}
+      {/* 6. Generate All button */}
       <div className="flex-shrink-0 p-5 pt-3 border-t border-neutral-800/50">
         <div className="flex flex-col gap-2">
           <Tooltip>
@@ -289,7 +354,9 @@ export const Sidebar = memo(function Sidebar({
                   ) : (
                     <Sparkles className="h-4 w-4" />
                   )}
-                  {isGenerating ? "Generating..." : "Generate"}
+                  {isGenerating
+                    ? "Generating..."
+                    : `Generate${slots.length > 1 ? ` All (${slots.length})` : ""}`}
                 </Button>
               </div>
             </TooltipTrigger>
@@ -305,7 +372,7 @@ export const Sidebar = memo(function Sidebar({
           {subscription?.plan === "free" && (
             <p className="text-[10px] text-neutral-500 text-center">
               {(subscription?.creationsUsed ?? 0) === 0
-                ? "1 free render included · Upgrade anytime"
+                ? "100 free bricks included · Upgrade anytime"
                 : "Upgrade to create more"}
             </p>
           )}
@@ -329,11 +396,10 @@ interface MobileBottomBarProps {
   hasGeneratedImage?: boolean;
   subscription?: SubscriptionData | null;
   currentMode: RenderMode | null;
-  modeValues: Record<string, string>;
-  onModeValueChange: (key: string, value: string) => void;
-  // Edit mode
-  globalPrompt?: string;
-  onGlobalPromptChange?: (value: string) => void;
+  globalValues: Record<string, string>;
+  onGlobalValueChange: (key: string, value: string) => void;
+  editPrompt?: string;
+  onEditPromptChange?: (value: string) => void;
   onGlobalEditSubmit?: () => void;
   isEditGenerating?: boolean;
 }
@@ -348,29 +414,28 @@ export const MobileBottomBar = memo(function MobileBottomBar({
   hasGeneratedImage = false,
   subscription,
   currentMode,
-  modeValues,
-  onModeValueChange,
-  globalPrompt = "",
-  onGlobalPromptChange,
+  globalValues,
+  onGlobalValueChange,
+  editPrompt = "",
+  onEditPromptChange,
   onGlobalEditSubmit,
   isEditGenerating = false,
 }: MobileBottomBarProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const isDisabled = isGenerating || !canGenerate;
   const activeMode = currentMode ?? RENDER_MODES[0];
-  const settings = getModeSettings(activeMode.id);
+  const globalSettings = getGlobalOnlySettings(activeMode.id);
 
   if (hasGeneratedImage) {
     return (
       <div className="md:hidden fixed bottom-2 left-3 right-3 z-40 bg-neutral-900 border border-neutral-800 rounded-2xl px-3 py-3 space-y-2">
-        {/* Global edit prompt */}
         <div className="flex items-center gap-1.5">
           <input
             type="text"
-            value={globalPrompt}
-            onChange={(e) => onGlobalPromptChange?.(e.target.value)}
+            value={editPrompt}
+            onChange={(e) => onEditPromptChange?.(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter" && globalPrompt.trim()) {
+              if (e.key === "Enter" && editPrompt.trim()) {
                 onGlobalEditSubmit?.();
               }
             }}
@@ -380,7 +445,7 @@ export const MobileBottomBar = memo(function MobileBottomBar({
           />
           <button
             onClick={onGlobalEditSubmit}
-            disabled={!globalPrompt.trim() || isEditGenerating}
+            disabled={!editPrompt.trim() || isEditGenerating}
             className="w-9 h-9 flex items-center justify-center rounded-lg bg-white text-black hover:bg-neutral-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
           >
             {isEditGenerating ? (
@@ -390,8 +455,6 @@ export const MobileBottomBar = memo(function MobileBottomBar({
             )}
           </button>
         </div>
-
-        {/* Action row */}
         <div className="flex items-center gap-1.5">
           <div className="flex-1" />
           {onShare && (
@@ -454,14 +517,13 @@ export const MobileBottomBar = memo(function MobileBottomBar({
           {subscription?.plan === "free" && (
             <p className="text-[10px] text-neutral-500 text-center">
               {(subscription?.creationsUsed ?? 0) === 0
-                ? "1 free render included · Upgrade anytime"
+                ? "100 free bricks included · Upgrade anytime"
                 : "Upgrade to create more"}
             </p>
           )}
         </div>
       </div>
 
-      {/* Settings Bottom Sheet */}
       <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
         <SheetContent
           side="bottom"
@@ -477,9 +539,9 @@ export const MobileBottomBar = memo(function MobileBottomBar({
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-4 pb-6">
             <ModeSettingsForm
-              settings={settings}
-              values={modeValues}
-              onChange={onModeValueChange}
+              settings={globalSettings}
+              values={globalValues}
+              onChange={onGlobalValueChange}
               disabled={isGenerating}
             />
           </div>

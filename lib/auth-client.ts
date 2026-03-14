@@ -1,7 +1,12 @@
 "use client";
 
 import { createAuthClient } from "better-auth/react";
-import { magicLinkClient } from "better-auth/client/plugins";
+import {
+  magicLinkClient,
+  organizationClient,
+  twoFactorClient,
+  usernameClient,
+} from "better-auth/client/plugins";
 import { polarClient } from "@polar-sh/better-auth";
 
 const resolveBaseUrl = () => {
@@ -21,7 +26,14 @@ const resolveBaseUrl = () => {
 };
 
 export const authClient = createAuthClient({
-  // Use the runtime origin so sign-in requests hit the same host the app was loaded from.
   baseURL: resolveBaseUrl(),
-  plugins: [magicLinkClient(), polarClient()],
+  plugins: [
+    usernameClient(),
+    organizationClient(),
+    twoFactorClient(),
+    polarClient(),
+    ...(process.env.NEXT_PUBLIC_AUTH_MAGIC_LINK_ENABLED === "false"
+      ? []
+      : [magicLinkClient()]),
+  ],
 });

@@ -36,12 +36,12 @@ export function SubscriptionModal({
 }: SubscriptionModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<"weekly" | "monthly">("weekly");
+  const [selectedPlan, setSelectedPlan] = useState<"starter" | "pro">("starter");
 
-  const isPro = subscription?.plan === "pro" || subscription?.plan === "unlimited-flex-pro";
+  const isPro = subscription?.plan === "starter" || subscription?.plan === "pro" || subscription?.plan === "studio";
   
-  const weeklyPlan = SUBSCRIPTION_PLANS.PRO_WEEKLY;
-  const monthlyPlan = SUBSCRIPTION_PLANS.PRO_MONTHLY;
+  const starterPlan = SUBSCRIPTION_PLANS.STARTER;
+  const proPlan = SUBSCRIPTION_PLANS.PRO;
   const usagePercent = subscription
     ? Math.min(
         100,
@@ -56,7 +56,7 @@ export function SubscriptionModal({
         content_name: "subscription_modal",
         content_type: "subscription",
         currency: "USD",
-        value: 8.90,
+        value: 29,
       });
 
       // Track for PostHog A/B test analytics (Variant A users see this modal)
@@ -71,7 +71,7 @@ export function SubscriptionModal({
     setIsLoading(true);
     setError(null);
     try {
-      const plan = selectedPlan === "monthly" ? monthlyPlan : weeklyPlan;
+      const plan = selectedPlan === "pro" ? proPlan : starterPlan;
       
       // Store project ID for return after checkout
       if (projectId) {
@@ -189,10 +189,10 @@ export function SubscriptionModal({
         <DialogContent className="max-w-md w-full md:w-[90vw] bg-neutral-900 border-neutral-800 flex flex-col p-4 md:p-6 overflow-hidden">
           <DialogHeader className="flex-shrink-0">
             <DialogTitle className="text-lg md:text-xl text-white flex items-center justify-between pr-10 md:pr-0">
-              <span>Pro Plan</span>
+              <span>Your Plan</span>
               <span className="text-xs md:text-sm font-normal text-neutral-400">
                 {subscription?.creationsUsed ?? 0} /{" "}
-                {subscription?.creationsLimit ?? 50} used
+                {subscription?.creationsLimit ?? 4000} bricks used
               </span>
             </DialogTitle>
           </DialogHeader>
@@ -208,8 +208,8 @@ export function SubscriptionModal({
               </div>
               <p className="text-sm text-neutral-400">
                 {subscription?.creationsRemaining === 0
-                  ? "No creations remaining this period"
-                  : `${subscription?.creationsRemaining} creation${subscription?.creationsRemaining !== 1 ? "s" : ""} remaining`}
+                  ? "No bricks remaining this period"
+                  : `${subscription?.creationsRemaining} brick${subscription?.creationsRemaining !== 1 ? "s" : ""} remaining`}
               </p>
             </div>
 
@@ -267,80 +267,80 @@ export function SubscriptionModal({
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
       <DialogContent className="max-w-md w-full md:w-[90vw] bg-neutral-900 border-neutral-800 p-4 md:p-6 max-h-[90vh] flex flex-col">
         {/* Visually hidden title for accessibility */}
-        <DialogTitle className="sr-only">Upgrade to Pro</DialogTitle>
+        <DialogTitle className="sr-only">Upgrade Your Plan</DialogTitle>
         <div className="flex-1 overflow-y-auto flex flex-col items-center text-center space-y-4 -mx-4 px-4">
           {/* Title */}
           <h2 className="text-lg md:text-xl font-medium text-white leading-tight pt-2">
-            Continue generating photos of you
+            Get more bricks to keep creating
           </h2>
 
-          {/* Outcome reminder - THE MOST IMPORTANT LINE */}
+          {/* Outcome reminder */}
           <p className="text-xs md:text-sm text-neutral-400">
-            Use them for dating, Instagram, or your personal brand.
+            Turn your designs into stunning architectural renders.
           </p>
 
           {/* Plan Toggle */}
           <div className="w-full space-y-2">
             <div className="flex gap-2 p-1 bg-neutral-800 rounded-lg">
               <button
-                onClick={() => setSelectedPlan("weekly")}
+                onClick={() => setSelectedPlan("starter")}
                 className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all ${
-                  selectedPlan === "weekly"
+                  selectedPlan === "starter"
                     ? "bg-white text-black"
                     : "text-neutral-400 hover:text-white"
                 }`}
               >
-                Weekly
+                Starter
               </button>
               <button
-                onClick={() => setSelectedPlan("monthly")}
+                onClick={() => setSelectedPlan("pro")}
                 className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all relative ${
-                  selectedPlan === "monthly"
+                  selectedPlan === "pro"
                     ? "bg-white text-black"
                     : "text-neutral-400 hover:text-white"
                 }`}
               >
-                Monthly
+                Pro
                 <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[9px] px-1 py-0.5 rounded-full font-bold">
-                  SAVE
+                  BEST
                 </span>
               </button>
             </div>
           </div>
 
-          {/* Price - dynamically based on selection */}
+          {/* Price */}
           <div className="space-y-0.5">
-            {selectedPlan === "weekly" ? (
+            {selectedPlan === "starter" ? (
               <>
                 <p className="text-base md:text-lg text-white font-semibold">
-                  ${weeklyPlan.price}/week{" "}
+                  ${starterPlan.price}/month{" "}
                   <span className="text-xs md:text-sm font-normal text-neutral-400">
                     · Cancel anytime
                   </span>
                 </p>
                 <p className="text-xs text-neutral-500">
-                  {weeklyPlan.creationLimit} creations/week
+                  {starterPlan.bricks.toLocaleString()} bricks/month
                 </p>
               </>
             ) : (
               <>
                 <p className="text-base md:text-lg text-white font-semibold">
-                  ${monthlyPlan.price}/month{" "}
+                  ${proPlan.price}/month{" "}
                   <span className="text-xs md:text-sm font-normal text-neutral-400">
                     · Cancel anytime
                   </span>
                 </p>
                 <p className="text-xs text-neutral-500">
-                  {monthlyPlan.creationLimit} creations/month
+                  {proPlan.bricks.toLocaleString()} bricks/month
                 </p>
               </>
             )}
           </div>
 
-          {/* Preview complete section with progress bar */}
+          {/* Bricks usage section */}
           <div className="w-full space-y-1.5">
             <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-medium text-left">
-              Preview limit reached
+              Free bricks used up
             </p>
             {/* Progress bar - full */}
             <div className="relative h-1.5 bg-neutral-800 rounded-full overflow-hidden">
@@ -351,24 +351,24 @@ export function SubscriptionModal({
             </div>
           </div>
 
-          {/* Benefits section - dynamic based on selection */}
+          {/* Benefits section */}
           <div className="w-full space-y-2">
             <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-medium text-left">
-              {selectedPlan === "monthly" ? "Monthly Includes" : "Includes"}
+              {selectedPlan === "pro" ? "Pro Includes" : "Starter Includes"}
             </p>
             <ul className="space-y-2 text-left">
-              {(selectedPlan === "monthly"
+              {(selectedPlan === "pro"
                 ? [
-                    `${monthlyPlan.creationLimit} creations/month (5x!)`,
-                    "Request items/templates free",
-                    "Direct access to founder",
-                    "Stronger first impression",
+                    `${proPlan.bricks.toLocaleString()} bricks/month (3x Starter!)`,
+                    "Video generation",
+                    "Region editing & refinement",
+                    "Priority processing",
                   ]
                 : [
-                    `${weeklyPlan.creationLimit} creations per week`,
-                    "Stronger first impression",
-                    "Travel anywhere in photos",
-                    "Create realistic couples",
+                    `${starterPlan.bricks.toLocaleString()} bricks per month`,
+                    "Exterior + Interior modes",
+                    "All architecture styles",
+                    "4K exports, no watermarks",
                   ]
               ).map((benefit) => (
                 <li

@@ -21,18 +21,6 @@ export default function Footer() {
           </div>
           <nav className="flex items-center gap-6 sm:gap-4 text-sm text-zinc-400 flex-wrap justify-center">
             <Link
-              href="/ai-photos"
-              className="min-h-[44px] flex items-center hover:text-white transition-colors active:text-zinc-200"
-            >
-              AI Photos
-            </Link>
-            <Link
-              href="/blog"
-              className="min-h-[44px] flex items-center hover:text-white transition-colors active:text-zinc-200"
-            >
-              Blog
-            </Link>
-            <Link
               href="/legal/privacy"
               className="min-h-[44px] flex items-center hover:text-white transition-colors active:text-zinc-200"
             >

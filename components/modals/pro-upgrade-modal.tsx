@@ -28,8 +28,8 @@ interface ProUpgradeModalProps {
 }
 
 /**
- * Modal shown to Pro (weekly) users who hit their 50 creation limit
- * Offers upgrade to Pro Monthly plan (250 creations/month for $29)
+ * Modal shown to Starter users who hit their brick limit
+ * Offers upgrade to Pro plan (12,000 bricks/month for $49)
  */
 export function ProUpgradeModal({
   open,
@@ -41,7 +41,7 @@ export function ProUpgradeModal({
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const monthlyPlan = SUBSCRIPTION_PLANS.PRO_MONTHLY;
+  const proPlan = SUBSCRIPTION_PLANS.PRO;
 
   // Track ViewContent when modal opens
   useEffect(() => {
@@ -50,10 +50,10 @@ export function ProUpgradeModal({
         content_name: "pro_upgrade_modal",
         content_type: "subscription",
         currency: "USD",
-        value: monthlyPlan.price,
+        value: proPlan.price,
       });
     }
-  }, [open, monthlyPlan.price]);
+  }, [open, proPlan.price]);
 
   const handleUpgrade = async () => {
     setIsLoading(true);
@@ -94,7 +94,7 @@ export function ProUpgradeModal({
         {
           content_type: "subscription_upgrade",
           currency: "USD",
-          value: monthlyPlan.price,
+          value: proPlan.price,
         },
         initiateCheckoutEventId
       );
@@ -103,36 +103,35 @@ export function ProUpgradeModal({
       tiktokEvents.initiateCheckout({
         content_type: "subscription_upgrade",
         currency: "USD",
-        value: monthlyPlan.price,
+        value: proPlan.price,
       });
 
       // Track in Seline
-      seline.checkout.started(monthlyPlan.slug, "pro_upgrade_modal");
+      seline.checkout.started(proPlan.slug, "pro_upgrade_modal");
 
       // Track for abandoned checkout
       fetch("/api/checkout/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          productId: monthlyPlan.slug,
+          productId: proPlan.slug,
           eventId: initiateCheckoutEventId,
         }),
       }).catch((err) =>
         console.error("[Abandoned Checkout] Failed to track:", err)
       );
 
-      // TODO: Update this when you add the monthly product to Polar
-      // For now, show error message
-      if (!monthlyPlan.productId) {
+      // TODO: Update this when you add the product to Polar
+      if (!proPlan.productId) {
         toast.error(
-          "Monthly plan not yet available. Please contact support or wait until your weekly limit resets."
+          "Pro plan not yet available. Please contact support or wait until your limit resets."
         );
         setIsLoading(false);
         return;
       }
 
       const result = await authClient.checkout({
-        slug: monthlyPlan.slug,
+        slug: proPlan.slug,
         redirect: true,
       });
       if (result?.data?.url) {
@@ -159,7 +158,7 @@ export function ProUpgradeModal({
       <DialogContent className="max-w-md w-full md:w-[90vw] bg-neutral-900 border-neutral-800 p-4 md:p-6 max-h-[85vh] flex flex-col">
         <DialogHeader className="flex-shrink-0">
           <DialogTitle className="text-lg md:text-xl text-white text-center">
-            You've Hit Your Weekly Limit 🎉
+            You've Used All Your Bricks
           </DialogTitle>
         </DialogHeader>
 
@@ -169,7 +168,7 @@ export function ProUpgradeModal({
             <div className="flex items-center justify-center gap-2 text-neutral-300">
               <Zap className="w-4 h-4 text-yellow-500" />
               <p className="text-sm">
-                You've created {creationsUsed} photos this week!
+                You've used {creationsUsed} bricks this period!
               </p>
             </div>
             <p className="text-xs text-neutral-500">
@@ -182,7 +181,7 @@ export function ProUpgradeModal({
             <div className="flex items-center justify-center gap-2">
               <TrendingUp className="w-4 h-4 text-green-500" />
               <h3 className="text-base font-semibold text-white">
-                Upgrade to Monthly
+                Upgrade to Pro
               </h3>
             </div>
 
@@ -190,20 +189,20 @@ export function ProUpgradeModal({
               {/* Pricing */}
               <div className="space-y-0.5">
                 <p className="text-xl text-white font-bold">
-                  ${monthlyPlan.price}/month
+                  ${proPlan.price}/month
                 </p>
                 <p className="text-xs text-neutral-400">
-                  Weekly plan cancelled automatically
+                  Current plan cancelled automatically
                 </p>
               </div>
 
               {/* Benefits */}
               <ul className="space-y-1.5 text-left">
                 {[
-                  `${monthlyPlan.creationLimit} creations/month (5x more!)`,
-                  "Request any item or template free",
-                  "Direct access to founder",
-                  "Better value vs weekly",
+                  `${proPlan.bricks.toLocaleString()} bricks/month (3x more!)`,
+                  "Video generation",
+                  "Region editing & refinement",
+                  "Priority processing",
                   "Cancel anytime",
                 ].map((benefit) => (
                   <li
@@ -239,7 +238,7 @@ export function ProUpgradeModal({
             data-fast-goal-source="pro_upgrade_modal"
           >
             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            Upgrade to Monthly Plan
+            Upgrade to Pro
           </Button>
           <Button
             variant="ghost"

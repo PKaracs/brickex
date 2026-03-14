@@ -27,6 +27,9 @@ export interface Tool {
   readySubtitle: string;
   /** Whether the tool supports multiple input images (like moodboard) */
   multiUpload?: boolean;
+  /** Before/after preview images for the card (input shown by default, output on hover) */
+  inputPreview?: string;
+  outputPreview?: string;
   /** Credit cost for this tool */
   creditCost: number;
 }
@@ -45,6 +48,10 @@ export const TOOLS: Tool[] = [
     sampleInputImage: "/tools/image-to-3d-input.jpg",
     readyTitle: "Upload an image to get started",
     readySubtitle: "Transform photos into 3D object models",
+    inputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/image-to-3d-input.png",
+    outputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/image-to-3d-output.png",
     creditCost: 4,
   },
   {
@@ -61,6 +68,10 @@ export const TOOLS: Tool[] = [
     readyTitle: "Upload an image to get started",
     readySubtitle: "Break down structures into exploded views",
     creditCost: 4,
+    inputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/exploded-diagram-input.png",
+    outputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/exploded-diagram-output.png",
   },
   {
     id: "floorplan-to-furnished",
@@ -106,6 +117,10 @@ export const TOOLS: Tool[] = [
     readyTitle: "Upload moodboard images to get started",
     readySubtitle: "Turn inspiration boards into photorealistic renders",
     multiUpload: true,
+    inputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/moodboard-input.png",
+    outputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/moodboard-output.png",
     creditCost: 4,
   },
   {

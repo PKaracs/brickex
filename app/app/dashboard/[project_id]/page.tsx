@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { notFound } from "next/navigation";
-import { getProject } from "@/lib/actions/get-project";
+import { getProject, getProjectLatestOutputUrl } from "@/lib/actions/get-project";
 import { getUserSubscription } from "@/lib/actions/get-user-subscription";
 import { ProjectDashboard } from "@/components/dashboard/project-dashboard";
 import DashboardLoading from "../loading";
@@ -35,10 +35,12 @@ async function ProjectContent({
 
   const subscription =
     "error" in subscriptionResult ? null : subscriptionResult;
+  const initialOutputUrl = await getProjectLatestOutputUrl(projectId);
 
   return (
     <ProjectDashboard
       project={projectResult.project}
+      initialOutputUrl={initialOutputUrl}
       subscription={subscription}
       checkoutSuccess={checkoutSuccess}
       authMethod={authMethod}

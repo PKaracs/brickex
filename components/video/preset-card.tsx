@@ -28,18 +28,31 @@ export function PresetCard({ preset, isSelected, onSelect }: PresetCardProps) {
           preset.gradient
         )}
       >
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.4)_100%)]" />
+        {preset.previewUrl ? (
+          <video
+            src={preset.previewUrl}
+            muted
+            loop
+            playsInline
+            autoPlay
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(0,0,0,0.4)_100%)]" />
+        )}
 
-        <div
-          className={cn(
-            "relative z-10 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300",
-            isSelected
-              ? "bg-white/15 text-white scale-110"
-              : "bg-white/5 text-neutral-400 group-hover:text-neutral-200 group-hover:bg-white/10 group-hover:scale-105"
-          )}
-        >
-          <Icon className="w-6 h-6" />
-        </div>
+        {!preset.previewUrl && (
+          <div
+            className={cn(
+              "relative z-10 w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300",
+              isSelected
+                ? "bg-white/15 text-white scale-110"
+                : "bg-white/5 text-neutral-400 group-hover:text-neutral-200 group-hover:bg-white/10 group-hover:scale-105"
+            )}
+          >
+            <Icon className="w-6 h-6" />
+          </div>
+        )}
 
         {isSelected && (
           <div className="absolute top-2 right-2 w-4 h-4 rounded-full bg-white flex items-center justify-center shadow-[0_0_12px_rgba(255,255,255,0.4)]">

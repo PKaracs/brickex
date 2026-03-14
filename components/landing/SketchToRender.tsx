@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { BlurFade } from "@/components/ui/blur-fade";
 import { Compare } from "@/components/ui/compare";
+import { assetUrl } from "@/lib/assets";
 
 interface Pair {
   label: string;
@@ -15,18 +16,18 @@ interface Pair {
 const PAIRS: Pair[] = [
   {
     label: "Modern White Villa",
-    before: "/api/static/real-estate-sketch/modern-white-villa-sketch.png",
-    after: "/api/static/real-estate-front/modern-white-villa.png",
+    before: assetUrl("real-estate-sketch/modern-white-villa-sketch.png"),
+    after: assetUrl("real-estate-front/modern-white-villa.png"),
   },
   {
     label: "Alpine Chalet",
-    before: "/api/static/real-estate-sketch/alpine-chalet-front-sketch.png",
-    after: "/api/static/real-estate-front/alpine-chalet-front.png",
+    before: assetUrl("real-estate-sketch/alpine-chalet-front-sketch.png"),
+    after: assetUrl("real-estate-front/alpine-chalet-front.png"),
   },
   {
     label: "Tropical Villa",
-    before: "/api/static/real-estate-sketch/tropical-villa-pool-sketch.png",
-    after: "/api/static/real-estate-front/tropical-villa-pool.png",
+    before: assetUrl("real-estate-sketch/tropical-villa-pool-sketch.png"),
+    after: assetUrl("real-estate-front/tropical-villa-pool.png"),
   },
 ];
 

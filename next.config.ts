@@ -1,6 +1,10 @@
 import { withContentCollections } from "@content-collections/next";
 import type { NextConfig } from "next";
 
+const supabaseHost = process.env.NEXT_PUBLIC_SUPABASE_URL
+  ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname
+  : null;
+
 const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
@@ -8,6 +12,15 @@ const nextConfig: NextConfig = {
     deviceSizes: [640, 750, 1080, 1920],
     imageSizes: [16, 32, 64, 128, 256],
     remotePatterns: [
+      ...(supabaseHost
+        ? [
+            {
+              protocol: "https" as const,
+              hostname: supabaseHost,
+              pathname: "/storage/v1/object/**",
+            },
+          ]
+        : []),
       {
         protocol: "https",
         hostname: "bnibtqjlriohmuacvjmf.supabase.co",
@@ -16,6 +29,11 @@ const nextConfig: NextConfig = {
       {
         protocol: "https",
         hostname: "xqvnmkjynbkcujcrtubi.supabase.co",
+        pathname: "/storage/v1/object/**",
+      },
+      {
+        protocol: "https",
+        hostname: "fgqxhvrvzrzqhofqbmdp.supabase.co",
         pathname: "/storage/v1/object/**",
       },
     ],

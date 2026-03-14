@@ -7,6 +7,13 @@ import {
   GEMINI_IMAGE_MODEL_FALLBACK,
   ASPECT_RATIOS,
 } from "@/lib/google-genai";
+import {
+  ensureProjectSourceImageAsset,
+  finishProjectImageRunFailure,
+  finishProjectImageRunSuccess,
+  startProjectImageRun,
+  updateProjectImageRunPrompt,
+} from "@/lib/generation/project-image-runs";
 
 function getOpenAI(): OpenAI | null {
   const apiKey = process.env.OPENAI_API_KEY;
@@ -324,54 +331,112 @@ export interface GenerateRenderResult {
   error?: string;
 }
 
+export interface BatchSlotInput {
+  slotId: string;
+  settings: Record<string, string>;
+}
+
+export interface BatchSlotResult {
+  slotId: string;
+  outputUrl?: string;
+  error?: string;
+}
+
+// Single-slot generation (kept for backwards compat)
 export async function generateRender(
+  projectId: string,
   imageBase64: string,
   mimeType: string,
+  modeId: string,
   mode: string,
   settings: Record<string, string>,
 ): Promise<GenerateRenderResult> {
-  try {
-    console.log(`[BrickEx] === Starting render generation ===`);
-    console.log(`[BrickEx] Mode: ${mode}`);
-    console.log(
-      `[BrickEx] Image size: ${Math.round(imageBase64.length / 1024)}KB base64`,
-    );
+  const results = await generateRenderBatch(projectId, imageBase64, mimeType, modeId, mode, [
+    { slotId: "single", settings },
+  ]);
+  const r = results[0];
+  return { outputUrl: r?.outputUrl, error: r?.error };
+}
 
-    // Step 1: GPT-5-mini vision analyzes input and builds prompt
-    const rawPrompt = await analyzeAndBuildPrompt(
-      imageBase64,
-      mimeType,
-      mode,
-      settings,
-    );
-    console.log(`[BrickEx] Raw prompt: ${rawPrompt.slice(0, 200)}...`);
+/**
+ * Batch generation: analyse the image ONCE with GPT, then fan out per-slot
+ * enhancement + Gemini calls in parallel.
+ */
+export async function generateRenderBatch(
+  projectId: string,
+  imageBase64: string,
+  mimeType: string,
+  modeId: string,
+  mode: string,
+  slotsInput: BatchSlotInput[],
+): Promise<BatchSlotResult[]> {
+  const sourceAsset = await ensureProjectSourceImageAsset({
+    projectId,
+    dataUrl: `data:${mimeType};base64,${imageBase64}`,
+  });
 
-    // Step 2: Enhance the prompt with photography specs
-    const enhancedPrompt = await enhanceArchPrompt(rawPrompt);
-    console.log(
-      `[BrickEx] Enhanced prompt: ${enhancedPrompt.slice(0, 200)}...`,
-    );
+  console.log(`[BrickEx] === Starting batch render (${slotsInput.length} slots) ===`);
+  console.log(`[BrickEx] Mode: ${mode}`);
+  console.log(`[BrickEx] Image size: ${Math.round(imageBase64.length / 1024)}KB base64`);
 
-    // Step 3: Generate with Gemini (Nano Banana 2)
-    const outputUrl = await generateWithGemini(
-      enhancedPrompt,
-      imageBase64,
-      mimeType,
-    );
+  // Step 1: GPT vision analysis ONCE with the first slot's settings as context
+  const baseAnalysis = await analyzeAndBuildPrompt(
+    imageBase64,
+    mimeType,
+    mode,
+    slotsInput[0].settings,
+  );
+  console.log(`[BrickEx] Shared base analysis: ${baseAnalysis.slice(0, 200)}...`);
 
-    if (!outputUrl) {
-      return { error: "Generation failed. Please try again." };
+  // Step 2+3: For each slot, enhance the base prompt with slot-specific settings,
+  // then generate with Gemini — all in parallel.
+  const slotPromises = slotsInput.map(async (slot): Promise<BatchSlotResult> => {
+    const run = await startProjectImageRun({
+      projectId,
+      type: "image_generation",
+      toolId: modeId,
+      model: GEMINI_IMAGE_MODEL,
+      settings: { mode: modeId, modeLabel: mode, ...slot.settings },
+      inputAssetId: sourceAsset.assetId,
+    });
+
+    try {
+      const slotContext = buildSettingsContext(mode, slot.settings);
+      const rawPrompt = `${baseAnalysis}\n\n--- SLOT-SPECIFIC OVERRIDES ---\n${slotContext}`;
+
+      const enhancedPrompt = await enhanceArchPrompt(rawPrompt);
+      console.log(`[BrickEx] [${slot.slotId}] Enhanced prompt: ${enhancedPrompt.slice(0, 120)}...`);
+      await updateProjectImageRunPrompt(run.runId, enhancedPrompt);
+
+      const outputUrl = await generateWithGemini(enhancedPrompt, imageBase64, mimeType);
+
+      if (!outputUrl) {
+        await finishProjectImageRunFailure({ run, errorMessage: "Generation failed." });
+        return { slotId: slot.slotId, error: "Generation failed. Please try again." };
+      }
+
+      const persisted = await finishProjectImageRunSuccess({
+        run,
+        dataUrl: outputUrl,
+        sourceAssetId: sourceAsset.assetId,
+        pathKind: "render-images",
+        deliverableTitle: "Generated render",
+        deliverableMetadata: { mode: modeId, modeLabel: mode, kind: "generation" },
+      });
+
+      console.log(`[BrickEx] [${slot.slotId}] Render complete`);
+      return { slotId: slot.slotId, outputUrl: persisted.url };
+    } catch (error: any) {
+      console.error(`[BrickEx] [${slot.slotId}] Error:`, error?.message);
+      await finishProjectImageRunFailure({
+        run,
+        errorMessage: error?.message || "Something went wrong.",
+      });
+      return { slotId: slot.slotId, error: error?.message || "Something went wrong." };
     }
+  });
 
-    console.log(`[BrickEx] === Render complete ===`);
-    return { outputUrl, prompt: enhancedPrompt };
-  } catch (error: any) {
-    console.error(
-      "[BrickEx] Generation pipeline error:",
-      error?.message || error,
-    );
-    return {
-      error: error?.message || "Something went wrong. Please try again.",
-    };
-  }
+  const results = await Promise.all(slotPromises);
+  console.log(`[BrickEx] === Batch complete: ${results.filter((r) => r.outputUrl).length}/${slotsInput.length} succeeded ===`);
+  return results;
 }

@@ -1,15 +1,14 @@
 "use client";
 
-import { useState } from "react";
-import { ChevronRight } from "lucide-react";
+import { Building2, Armchair } from "lucide-react";
 import { cn } from "@/lib/utils";
-import {
-  SelectModeModal,
-} from "@/components/modals/select-mode-modal";
 import {
   RENDER_MODES,
   type RenderMode,
 } from "@/lib/constants/render-modes";
+
+const EXTERIOR = RENDER_MODES.find((m) => m.id === "exterior-render")!;
+const INTERIOR = RENDER_MODES.find((m) => m.id === "interior-render")!;
 
 interface ModeSelectorCardProps {
   currentMode: RenderMode | null;
@@ -20,43 +19,34 @@ export function ModeSelectorCard({
   currentMode,
   onModeChange,
 }: ModeSelectorCardProps) {
-  const [modalOpen, setModalOpen] = useState(false);
-
-  const displayMode = currentMode ?? RENDER_MODES[0];
-  const Icon = displayMode.icon;
+  const activeId = currentMode?.id ?? EXTERIOR.id;
 
   return (
-    <>
+    <div className="flex items-center w-full rounded-xl bg-neutral-800/50 p-1 border border-neutral-700/40">
       <button
-        onClick={() => setModalOpen(true)}
+        onClick={() => onModeChange(EXTERIOR)}
         className={cn(
-          "group relative w-full rounded-xl border transition-all duration-200 overflow-hidden",
-          "bg-neutral-800/40 border-neutral-700/50 hover:border-neutral-600",
-          "hover:bg-neutral-800/60 active:scale-[0.98]"
+          "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all duration-200",
+          activeId === "exterior-render"
+            ? "bg-white text-black shadow-sm"
+            : "text-neutral-400 hover:text-white"
         )}
       >
-        <div className="flex items-center gap-3 p-2.5">
-          <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-gradient-to-br from-neutral-700 to-neutral-800 flex items-center justify-center">
-            <Icon className="w-5 h-5 text-neutral-300" />
-          </div>
-          <div className="flex-1 min-w-0 text-left">
-            <div className="text-[10px] uppercase tracking-wider text-neutral-500 font-semibold leading-none">
-              Mode
-            </div>
-            <div className="text-sm font-semibold text-white mt-1 truncate">
-              {displayMode.label}
-            </div>
-          </div>
-          <ChevronRight className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors flex-shrink-0" />
-        </div>
+        <Building2 className="w-3.5 h-3.5" />
+        Exterior
       </button>
-
-      <SelectModeModal
-        open={modalOpen}
-        onOpenChange={setModalOpen}
-        onSelect={onModeChange}
-        currentMode={currentMode}
-      />
-    </>
+      <button
+        onClick={() => onModeChange(INTERIOR)}
+        className={cn(
+          "flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-xs font-semibold transition-all duration-200",
+          activeId === "interior-render"
+            ? "bg-white text-black shadow-sm"
+            : "text-neutral-400 hover:text-white"
+        )}
+      >
+        <Armchair className="w-3.5 h-3.5" />
+        Interior
+      </button>
+    </div>
   );
 }

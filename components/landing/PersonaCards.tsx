@@ -8,7 +8,7 @@ const personas = [
   {
     name: "Architect",
     icon: Building2,
-    benefit: "Turn sketches into client-ready renders in minutes.",
+    benefit: "Turn sketches into client-ready visualizations in minutes.",
   },
   {
     name: "Design Studio",
@@ -18,7 +18,7 @@ const personas = [
   {
     name: "Hephaestus",
     icon: Sparkles,
-    benefit: "Unlimited renders for agencies and serious creators.",
+    benefit: "30,000 bricks/month for agencies and serious creators.",
   },
 ]
 

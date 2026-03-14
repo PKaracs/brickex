@@ -1,53 +1,110 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
-import { motion, AnimatePresence } from "motion/react";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { AnimatePresence, motion } from "motion/react";
+import {
+  AlertCircle,
+  ArrowRight,
+  CheckCircle2,
+  Link as LinkIcon,
+  Mail,
+  Shield,
+} from "lucide-react";
+
+import LoginForm from "@/components/auth/login-form";
+import RegisterForm from "@/components/auth/register-form";
+import { authClient } from "@/lib/auth-client";
+import { assetUrl } from "@/lib/assets";
+import { BlurFade } from "@/components/ui/blur-fade";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { BlurFade } from "@/components/ui/blur-fade";
-import Link from "next/link";
 
 const VILLA_IMAGES = [
   {
-    src: "/api/static/real-estate-presets/maldives-overwater.png",
+    src: assetUrl("real-estate-presets/maldives-overwater.png"),
     label: "Maldives Overwater Villa",
   },
   {
-    src: "/api/static/real-estate-presets/tuscan-hilltop-villa.png",
+    src: assetUrl("real-estate-presets/tuscan-hilltop-villa.png"),
     label: "Tuscan Hilltop Villa",
   },
   {
-    src: "/api/static/real-estate-presets/cape-town-clifftop.png",
+    src: assetUrl("real-estate-presets/cape-town-clifftop.png"),
     label: "Cape Town Clifftop",
   },
   {
-    src: "/api/static/real-estate-presets/miami-penthouse.png",
+    src: assetUrl("real-estate-presets/miami-penthouse.png"),
     label: "Miami Penthouse",
   },
   {
-    src: "/api/static/real-estate-presets/mykonos-cycladic.png",
+    src: assetUrl("real-estate-presets/mykonos-cycladic.png"),
     label: "Mykonos Cycladic",
   },
   {
-    src: "/api/static/real-estate-presets/scandinavian-lakehouse.png",
+    src: assetUrl("real-estate-presets/scandinavian-lakehouse.png"),
     label: "Scandinavian Lakehouse",
   },
 ];
 
 const IMAGE_CYCLE_MS = 4000;
 
+type AuthMode = "magic" | "signin" | "signup";
+
 interface LoginPageClientProps {
   authError?: string;
+  magicLinkEnabled: boolean;
 }
 
-export default function LoginPageClient({}: LoginPageClientProps) {
+function toErrorMessage(error?: string | null) {
+  switch (error) {
+    case "INVALID_TOKEN":
+      return "That sign-in link is invalid. Request a new one.";
+    case "EXPIRED_TOKEN":
+      return "That sign-in link has expired. Request a new one.";
+    case "new_user_signup_disabled":
+      return "New user sign-in is currently disabled.";
+    default:
+      return error ? "Sign-in failed. Request a new link." : null;
+  }
+}
+
+function getMarketingSiteUrl() {
+  if (typeof window === "undefined") return "/";
+
+  const { protocol, hostname, port } = window.location;
+
+  if (hostname === "app.localhost") {
+    return `${protocol}//localhost${port ? `:${port}` : ""}`;
+  }
+
+  if (hostname.startsWith("app.")) {
+    return `${protocol}//${hostname.slice(4)}${port ? `:${port}` : ""}`;
+  }
+
+  return "/";
+}
+
+function tabClasses(active: boolean) {
+  return active
+    ? "bg-white text-black shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
+    : "bg-transparent text-neutral-400 hover:bg-white/5 hover:text-white";
+}
+
+export default function LoginPageClient({
+  authError,
+  magicLinkEnabled,
+}: LoginPageClientProps) {
+  const [authMode, setAuthMode] = useState<AuthMode>(
+    magicLinkEnabled ? "magic" : "signin",
+  );
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(toErrorMessage(authError));
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -56,7 +113,17 @@ export default function LoginPageClient({}: LoginPageClientProps) {
     return () => clearInterval(interval);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  useEffect(() => {
+    setError(toErrorMessage(authError));
+  }, [authError]);
+
+  useEffect(() => {
+    if (!magicLinkEnabled && authMode === "magic") {
+      setAuthMode("signin");
+    }
+  }, [authMode, magicLinkEnabled]);
+
+  const handleMagicLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) return;
 
@@ -64,15 +131,20 @@ export default function LoginPageClient({}: LoginPageClientProps) {
     setError(null);
 
     try {
-      const res = await fetch("/api/waitlist", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+      if (!magicLinkEnabled) {
+        throw new Error("Magic link is not configured");
+      }
+
+      const result = await authClient.signIn.magicLink({
+        email,
+        ...(name.trim() ? { name: name.trim() } : {}),
+        callbackURL: "/dashboard",
+        newUserCallbackURL: "/dashboard",
+        errorCallbackURL: "/login",
       });
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.error || "Something went wrong");
+      if (result.error) {
+        throw new Error(result.error.message || "Failed to send magic link");
       }
 
       setIsSubmitted(true);
@@ -87,8 +159,7 @@ export default function LoginPageClient({}: LoginPageClientProps) {
 
   return (
     <div className="flex min-h-screen bg-[#0a0a0a]">
-      {/* Left half — transitioning villa images */}
-      <div className="hidden lg:block lg:w-1/2 relative overflow-hidden">
+      <div className="relative hidden overflow-hidden lg:block lg:w-1/2">
         <AnimatePresence mode="wait">
           <motion.div
             key={currentImage}
@@ -101,13 +172,13 @@ export default function LoginPageClient({}: LoginPageClientProps) {
             <img
               src={villa.src}
               alt={villa.label}
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover"
             />
           </motion.div>
         </AnimatePresence>
 
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-[#0a0a0a]/80 z-10" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a]/60 via-transparent to-[#0a0a0a]/30 z-10" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-transparent via-transparent to-[#0a0a0a]/80" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0a0a0a]/60 via-transparent to-[#0a0a0a]/30" />
 
         <div className="absolute bottom-8 left-8 z-20">
           <AnimatePresence mode="wait">
@@ -117,9 +188,9 @@ export default function LoginPageClient({}: LoginPageClientProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.5 }}
-              className="flex items-center gap-2 px-4 py-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10"
+              className="flex items-center gap-2 rounded-full border border-white/10 bg-black/40 px-4 py-2 backdrop-blur-xl"
             >
-              <div className="w-2 h-2 rounded-full bg-white/60 animate-pulse" />
+              <div className="h-2 w-2 animate-pulse rounded-full bg-white/60" />
               <span className="text-sm font-medium text-white/80">
                 {villa.label}
               </span>
@@ -139,8 +210,7 @@ export default function LoginPageClient({}: LoginPageClientProps) {
         </div>
       </div>
 
-      {/* Right half — waitlist form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 sm:p-12 relative">
+      <div className="relative flex w-full items-center justify-center p-6 sm:p-12 lg:w-1/2">
         <div
           className="absolute inset-0 opacity-[0.03]"
           style={{
@@ -152,94 +222,201 @@ export default function LoginPageClient({}: LoginPageClientProps) {
 
         <div className="relative z-10 w-full max-w-md">
           <BlurFade delay={0.1}>
-            <Link href="/" className="flex items-center gap-2.5 mb-14">
+            <Link href="/" className="mb-14 flex items-center gap-2.5">
               <Image
                 src="/brickex-logo.png"
                 alt="BrickEx"
                 width={40}
                 height={40}
-                className="w-10 h-10"
+                className="h-10 w-10"
                 priority
               />
               <span className="text-xl font-semibold text-white">BrickEx</span>
             </Link>
           </BlurFade>
 
-          {isSubmitted ? (
-            <BlurFade delay={0.1}>
-              <div className="space-y-6">
-                <div className="w-16 h-16 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center">
-                  <CheckCircle2 className="w-8 h-8 text-emerald-400" />
+          <BlurFade delay={0.15}>
+            <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-8 backdrop-blur-sm">
+              <div className="mb-6 space-y-2">
+                <div className="mb-4 flex items-center gap-2">
+                  <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1">
+                    <span className="text-xs font-medium text-white/60">
+                      {magicLinkEnabled ? "Auth Ready" : "Password Login Ready"}
+                    </span>
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <h1 className="text-3xl font-semibold text-white">
-                    You&apos;re on the list
-                  </h1>
-                  <p className="text-neutral-400 text-base leading-relaxed">
-                    We&apos;ll notify you at{" "}
-                    <span className="text-white font-medium">{email}</span> when
-                    BrickEx launches. Early access and founding member pricing
-                    included.
-                  </p>
-                </div>
+                <h1 className="text-2xl font-semibold text-white">
+                  Sign in to BrickEx
+                </h1>
+                <p className="text-sm text-neutral-500">
+                  {magicLinkEnabled
+                    ? "Use a magic link or switch to email and password."
+                    : "Magic link email is not configured yet, so use email and password for now."}
+                </p>
               </div>
-            </BlurFade>
-          ) : (
-            <>
-              <BlurFade delay={0.15}>
-                <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-8 backdrop-blur-sm">
-                  <div className="space-y-2 mb-8">
-                    <div className="flex items-center gap-2 mb-4">
-                      <div className="px-2.5 py-1 rounded-full bg-white/5 border border-white/10">
-                        <span className="text-xs font-medium text-white/60">
-                          Coming Soon
-                        </span>
-                      </div>
-                    </div>
-                    <h1 className="text-2xl font-semibold text-white">
-                      Join the Waitlist
-                    </h1>
-                    <p className="text-neutral-500 text-sm">
-                      Be the first to create AI-powered photorealistic renders
-                      from your architectural plans.
+
+              <div className="mb-6 flex gap-2 rounded-2xl border border-neutral-800 bg-black/20 p-1">
+                {magicLinkEnabled && (
+                  <button
+                    type="button"
+                    className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition ${tabClasses(
+                      authMode === "magic",
+                    )}`}
+                    onClick={() => {
+                      setAuthMode("magic");
+                      setError(toErrorMessage(authError));
+                    }}
+                  >
+                    Magic Link
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition ${tabClasses(
+                    authMode === "signin",
+                  )}`}
+                  onClick={() => setAuthMode("signin")}
+                >
+                  Sign In
+                </button>
+                <button
+                  type="button"
+                  className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition ${tabClasses(
+                    authMode === "signup",
+                  )}`}
+                  onClick={() => setAuthMode("signup")}
+                >
+                  Create Account
+                </button>
+              </div>
+
+              {magicLinkEnabled && authMode === "magic" && isSubmitted ? (
+                <div className="space-y-6">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10">
+                    <CheckCircle2 className="h-8 w-8 text-emerald-400" />
+                  </div>
+                  <div className="space-y-2">
+                    <h2 className="text-3xl font-semibold text-white">
+                      Check your inbox
+                    </h2>
+                    <p className="text-base leading-relaxed text-neutral-400">
+                      We sent a secure Brickex sign-in link to{" "}
+                      <span className="font-medium text-white">{email}</span>.
+                    </p>
+                    <p className="text-sm text-neutral-500">
+                      Your first successful magic-link sign-in will create your
+                      Brickex account and workspace automatically.
                     </p>
                   </div>
-
-                  <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="space-y-2">
-                      <Input
-                        type="email"
-                        placeholder="you@example.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        className="h-11 bg-neutral-900 border-neutral-800 text-white placeholder:text-neutral-600 focus:border-neutral-600 focus:ring-0"
-                        required
-                      />
-                    </div>
-
-                    {error && (
-                      <p className="text-sm text-red-400">{error}</p>
-                    )}
-
-                    <Button
-                      type="submit"
-                      variant="white"
-                      size="default"
-                      className="w-full"
-                      isLoading={isLoading}
-                    >
-                      Join Waitlist
-                      <ArrowRight className="ml-2 w-4 h-4" />
-                    </Button>
-
-                    <p className="text-xs text-neutral-600 text-center">
-                      No spam. We&apos;ll only email when we launch.
-                    </p>
-                  </form>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-neutral-800 bg-transparent text-white hover:bg-neutral-900 hover:text-white"
+                    onClick={() => setIsSubmitted(false)}
+                  >
+                    Send another link
+                  </Button>
                 </div>
-              </BlurFade>
-            </>
-          )}
+              ) : null}
+
+              {magicLinkEnabled && authMode === "magic" && !isSubmitted ? (
+                <form onSubmit={handleMagicLinkSubmit} className="space-y-4">
+                  <div className="rounded-xl border border-neutral-800 bg-black/20 p-3 text-sm text-neutral-300">
+                    <div className="flex items-start gap-2">
+                      <Mail className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                      <p>
+                        First-time magic-link login creates the user and workspace
+                        automatically.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Input
+                      type="text"
+                      placeholder="Your name (optional on first sign-in)"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="h-11 border-neutral-800 bg-neutral-900 text-white placeholder:text-neutral-600 focus:border-neutral-600 focus:ring-0"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-11 border-neutral-800 bg-neutral-900 text-white placeholder:text-neutral-600 focus:border-neutral-600 focus:ring-0"
+                      required
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-300">
+                      {error}
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    variant="white"
+                    size="default"
+                    className="w-full"
+                    isLoading={isLoading}
+                  >
+                    Email me a magic link
+                    <LinkIcon className="ml-2 h-4 w-4" />
+                  </Button>
+                </form>
+              ) : null}
+
+              {authMode === "signin" ? (
+                <div className="space-y-4">
+                  {!magicLinkEnabled ? (
+                    <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-100">
+                      <div className="flex items-start gap-2">
+                        <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-300" />
+                        <div className="space-y-1">
+                          <p>Magic-link email is not configured.</p>
+                          <p className="text-amber-200/80">
+                            Create an account below, then sign in with email and
+                            password.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : null}
+                  <LoginForm />
+                </div>
+              ) : null}
+
+              {authMode === "signup" ? (
+                <div className="space-y-4">
+                  {!magicLinkEnabled ? (
+                    <div className="rounded-xl border border-neutral-800 bg-black/20 p-3 text-sm text-neutral-300">
+                      No mail provider is needed for password signup. Create the
+                      account here, then log in immediately.
+                    </div>
+                  ) : null}
+                  <RegisterForm />
+                </div>
+              ) : null}
+
+              <div className="mt-6 border-t border-neutral-800 pt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="default"
+                  className="w-full border-neutral-800 bg-transparent text-white hover:bg-neutral-900 hover:text-white"
+                  onClick={() => window.location.assign(getMarketingSiteUrl())}
+                >
+                  Back to site
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </BlurFade>
         </div>
       </div>
     </div>

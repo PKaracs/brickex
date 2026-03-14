@@ -44,20 +44,6 @@ export default function Navbar() {
           </a>
 
           <div className="flex items-center gap-3 sm:gap-6">
-            <a
-              href="/ai-photos"
-              className="text-xs sm:text-sm font-medium text-zinc-400 hover:text-white transition-colors"
-            >
-              AI Photos
-            </a>
-            <a
-              href="/blog"
-              className="text-xs sm:text-sm font-medium text-zinc-400 hover:text-white transition-colors"
-            >
-              Blog
-            </a>
-
-            {/* CTA Button */}
             <Button
               variant="white"
               size="sm"

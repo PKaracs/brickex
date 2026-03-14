@@ -5,6 +5,11 @@ import {
   GEMINI_IMAGE_MODEL,
   GEMINI_IMAGE_MODEL_FALLBACK,
 } from "@/lib/google-genai";
+import {
+  finishProjectImageRunFailure,
+  finishProjectImageRunSuccess,
+  startProjectImageRun,
+} from "@/lib/generation/project-image-runs";
 
 const MAX_RETRIES = 2;
 const RETRY_DELAY_MS = 1500;
@@ -22,12 +27,24 @@ type ContentPart =
  * Only ONE image is sent to stay within body size limits.
  */
 export async function editRenderRegion(
+  projectId: string,
   annotatedImageBase64: string,
   editPrompt: string
 ): Promise<{ outputUrl?: string; error?: string }> {
   if (!annotatedImageBase64 || !editPrompt) {
     return { error: "Missing required parameters for editing." };
   }
+
+  const run = await startProjectImageRun({
+    projectId,
+    type: "image_edit",
+    toolId: "region-edit",
+    model: GEMINI_IMAGE_MODEL,
+    prompt: editPrompt,
+    settings: {
+      editType: "region",
+    },
+  });
 
   console.log(`[EditRender] Region edit: "${editPrompt}" (${Math.round(annotatedImageBase64.length / 1024)}KB)`);
 
@@ -59,19 +76,60 @@ RULES:
 Return the edited full image.`,
   });
 
-  return callGeminiEdit(parts);
+  const result = await callGeminiEdit(parts);
+
+  if (result.error) {
+    await finishProjectImageRunFailure({
+      run,
+      errorMessage: result.error,
+    });
+    return result;
+  }
+
+  if (!result.outputUrl) {
+    await finishProjectImageRunFailure({
+      run,
+      errorMessage: "AI didn't return an image. Try again.",
+    });
+    return { error: "AI didn't return an image. Try again." };
+  }
+
+  const persisted = await finishProjectImageRunSuccess({
+    run,
+    dataUrl: result.outputUrl,
+    pathKind: "edited-renders",
+    deliverableTitle: "Edited render",
+    deliverableMetadata: {
+      editType: "region",
+      kind: "edit",
+    },
+  });
+
+  return { outputUrl: persisted.url };
 }
 
 /**
  * Global edit: sends the full image + prompt (no region selection).
  */
 export async function editRenderGlobal(
+  projectId: string,
   imageBase64: string,
   editPrompt: string
 ): Promise<{ outputUrl?: string; error?: string }> {
   if (!imageBase64 || !editPrompt) {
     return { error: "Missing required parameters for editing." };
   }
+
+  const run = await startProjectImageRun({
+    projectId,
+    type: "image_edit",
+    toolId: "global-edit",
+    model: GEMINI_IMAGE_MODEL,
+    prompt: editPrompt,
+    settings: {
+      editType: "global",
+    },
+  });
 
   console.log(`[EditRender] Global edit: "${editPrompt}" (${Math.round(imageBase64.length / 1024)}KB)`);
 
@@ -101,7 +159,36 @@ RULES:
 Return the edited full image.`,
   });
 
-  return callGeminiEdit(parts);
+  const result = await callGeminiEdit(parts);
+
+  if (result.error) {
+    await finishProjectImageRunFailure({
+      run,
+      errorMessage: result.error,
+    });
+    return result;
+  }
+
+  if (!result.outputUrl) {
+    await finishProjectImageRunFailure({
+      run,
+      errorMessage: "AI didn't return an image. Try again.",
+    });
+    return { error: "AI didn't return an image. Try again." };
+  }
+
+  const persisted = await finishProjectImageRunSuccess({
+    run,
+    dataUrl: result.outputUrl,
+    pathKind: "edited-renders",
+    deliverableTitle: "Edited render",
+    deliverableMetadata: {
+      editType: "global",
+      kind: "edit",
+    },
+  });
+
+  return { outputUrl: persisted.url };
 }
 
 async function callGeminiEdit(
