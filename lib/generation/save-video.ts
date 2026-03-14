@@ -1,6 +1,7 @@
 import "server-only";
 
 import { eq } from "drizzle-orm";
+import { createId } from "@paralleldrive/cuid2";
 
 import * as schema from "@/db/schema";
 import { requireWorkspaceContext } from "@/lib/auth-guard";
@@ -16,7 +17,6 @@ import {
 interface SaveVideoInput {
   videoUrl: string;
   prompt: string;
-  projectId?: string | null;
   scenePresetId?: string | null;
   motionPresetId?: string | null;
   duration?: number;
@@ -33,7 +33,21 @@ export async function saveVideoToGallery(
 ): Promise<SaveVideoResult> {
   const { organizationId, userId } = await requireWorkspaceContext();
 
-  const projectId = input.projectId ?? "standalone-videos";
+  const projectSlug = `video-${createId().slice(0, 8)}`;
+  const [project] = await db
+    .insert(schema.projects)
+    .values({
+      organizationId,
+      createdByUserId: userId,
+      slug: projectSlug,
+      title: "Video Generation",
+      projectType: "other",
+      sourceType: "upload",
+      status: "complete",
+    })
+    .returning({ id: schema.projects.id });
+
+  const projectId = project.id;
 
   const [run] = await db
     .insert(schema.toolRuns)
@@ -43,7 +57,7 @@ export async function saveVideoToGallery(
       createdByUserId: userId,
       type: "video_generation",
       toolId: "video-generator",
-      provider: "xai",
+      provider: "other",
       model: "grok-imagine-video",
       status: "running",
       prompt: input.prompt,

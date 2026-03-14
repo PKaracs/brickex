@@ -1,18 +1,3 @@
-import OpenAI from "openai";
-
-let _openai: OpenAI | null = null;
-
-function getOpenAI(): OpenAI | null {
-  if (_openai) return _openai;
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    console.warn("[VideoPrompt] No OPENAI_API_KEY set, skipping enhancement");
-    return null;
-  }
-  _openai = new OpenAI({ apiKey });
-  return _openai;
-}
-
 const SCENE_PROMPTS: Record<string, string> = {
   "construction-rise":
     "Cinematic construction time-lapse. Begin with an empty dirt plot, then foundations are poured, steel beams rise, floors stack up rapidly, glass curtain walls are installed, and the building from the reference image emerges fully completed. Keep the exact architecture from the provided image as the final result. Construction cranes, scaffolding, dust catching golden sunlight.",
@@ -33,98 +18,27 @@ const SCENE_PROMPTS: Record<string, string> = {
     "Classic architectural time-lapse of this exact building. Fast-moving clouds race across the sky, their shadows sweep across the facade. Sunlight angles change dramatically, warm and cool tones alternate. People and vehicles blur into motion streaks. The building stands perfectly still as the world rushes around it. Keep the building exactly as shown.",
 };
 
-const GENERIC_SCENE_SYSTEM = `You are a video prompt writer. Write a short (40-80 word) video animation prompt.
-
-CRITICAL RULES:
-- NEVER describe what the building looks like. The video model already has the image.
-- ONLY describe the MOTION, WEATHER, LIGHTING CHANGES, or TIME-LAPSE EFFECTS.
-- Always include "Keep the building exactly as shown in the reference image" at the end.
-- Output ONLY the prompt, nothing else.`;
-
-export async function generateVideoPrompt(
-  scenePresetPrompt: string,
-  scenePresetLabel: string,
-  _imageBase64: string,
-  userPrompt?: string,
-  motionPresetPrompt?: string,
-): Promise<string> {
-  const presetId = scenePresetLabel
-    .toLowerCase()
-    .replace(/\s+/g, "-")
-    .replace(/[^a-z0-9-]/g, "");
-
-  const hardcodedPrompt = findHardcodedPrompt(presetId);
-
-  if (hardcodedPrompt) {
-    const parts = [hardcodedPrompt];
-    if (motionPresetPrompt) parts.push(motionPresetPrompt);
-    if (userPrompt) parts.push(userPrompt);
-    const final = parts.join(" ");
-    console.log(`[VideoPrompt] Using hardcoded prompt for "${presetId}" (${final.length} chars)`);
-    return final;
-  }
-
-  const openai = getOpenAI();
-  if (!openai) {
-    return buildFallbackPrompt(scenePresetPrompt, userPrompt, motionPresetPrompt);
-  }
-
-  try {
-    console.log(`[VideoPrompt] Generating prompt for scene: ${scenePresetLabel}...`);
-    const start = Date.now();
-
-    const userMessage = [
-      `Scene effect: "${scenePresetLabel}"`,
-      `Reference description of the effect (adapt but do NOT describe the building): ${scenePresetPrompt}`,
-      userPrompt ? `Additional user instructions: ${userPrompt}` : null,
-      motionPresetPrompt ? `Camera motion: ${motionPresetPrompt}` : null,
-      `Write a prompt describing ONLY the motion/weather/lighting effect. Do NOT describe the building — the model already has the image.`,
-    ].filter(Boolean).join("\n\n");
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        { role: "system", content: GENERIC_SCENE_SYSTEM },
-        { role: "user", content: userMessage },
-      ],
-      max_tokens: 200,
-    });
-
-    const enhanced = response.choices[0]?.message?.content?.trim();
-    const elapsed = Date.now() - start;
-
-    if (!enhanced || enhanced.length < 20) {
-      console.warn(`[VideoPrompt] Got empty/short response, using fallback`);
-      return buildFallbackPrompt(scenePresetPrompt, userPrompt, motionPresetPrompt);
-    }
-
-    console.log(`[VideoPrompt] Generated in ${elapsed}ms (${enhanced.length} chars)`);
-    return enhanced;
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error(`[VideoPrompt] Failed, using fallback:`, message);
-    return buildFallbackPrompt(scenePresetPrompt, userPrompt, motionPresetPrompt);
-  }
-}
-
-function findHardcodedPrompt(presetId: string): string | null {
-  if (SCENE_PROMPTS[presetId]) return SCENE_PROMPTS[presetId];
-  for (const [key, value] of Object.entries(SCENE_PROMPTS)) {
-    if (presetId.includes(key) || key.includes(presetId)) return value;
-  }
-  return null;
-}
-
-function buildFallbackPrompt(
-  scenePresetPrompt: string,
+export function getScenePrompt(
+  scenePresetId: string,
   userPrompt?: string,
   motionPresetPrompt?: string,
 ): string {
-  const parts = [
-    scenePresetPrompt,
+  const base = SCENE_PROMPTS[scenePresetId];
+
+  if (base) {
+    const parts = [base];
+    if (motionPresetPrompt) parts.push(motionPresetPrompt);
+    if (userPrompt) parts.push(userPrompt);
+    console.log(`[VideoPrompt] Using hardcoded prompt for "${scenePresetId}"`);
+    return parts.join(" ");
+  }
+
+  console.warn(`[VideoPrompt] No hardcoded prompt for "${scenePresetId}", using generic fallback`);
+  const fallbackParts = [
+    "Cinematic transformation of this exact building.",
     "Keep the building exactly as shown in the reference image.",
   ];
-  if (motionPresetPrompt) parts.push(motionPresetPrompt);
-  if (userPrompt) parts.push(userPrompt);
-  return parts.join(" ");
+  if (motionPresetPrompt) fallbackParts.push(motionPresetPrompt);
+  if (userPrompt) fallbackParts.push(userPrompt);
+  return fallbackParts.join(" ");
 }

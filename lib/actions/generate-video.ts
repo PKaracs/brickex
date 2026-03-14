@@ -6,8 +6,8 @@ import {
   pollForVideoResult,
   type GrokVideoParams,
 } from "@/lib/generation/grok-video";
-import { getPresetById, getScenePresetById } from "@/lib/constants/video-presets";
-import { generateVideoPrompt } from "@/lib/generation/video-prompt";
+import { getPresetById } from "@/lib/constants/video-presets";
+import { getScenePrompt } from "@/lib/generation/video-prompt";
 
 export interface GenerateVideoInput {
   imageBase64: string;
@@ -34,22 +34,12 @@ export async function generateVideo(
     const motionPreset = input.presetId
       ? getPresetById(input.presetId)
       : undefined;
-    const scenePreset = input.scenePresetId
-      ? getScenePresetById(input.scenePresetId)
-      : undefined;
-
-    console.log(
-      `[BrickEx:Video] Duration: ${input.duration}s, Motion: ${input.presetId ?? "none"}, Scene: ${input.scenePresetId ?? "none"}`
-    );
 
     let finalPrompt: string;
 
-    if (scenePreset) {
-      console.log(`[BrickEx:Video] Using scene preset "${scenePreset.label}" — generating prompt with GPT...`);
-      finalPrompt = await generateVideoPrompt(
-        scenePreset.prompt,
-        scenePreset.label,
-        input.imageBase64,
+    if (input.scenePresetId) {
+      finalPrompt = getScenePrompt(
+        input.scenePresetId,
         input.prompt || undefined,
         motionPreset?.prompt,
       );

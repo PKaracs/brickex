@@ -5,8 +5,8 @@ import {
   pollForVideoResult,
   type GrokVideoParams,
 } from "@/lib/generation/grok-video";
-import { getPresetById, getScenePresetById } from "@/lib/constants/video-presets";
-import { generateVideoPrompt } from "@/lib/generation/video-prompt";
+import { getPresetById } from "@/lib/constants/video-presets";
+import { getScenePrompt } from "@/lib/generation/video-prompt";
 import { saveVideoToGallery } from "@/lib/generation/save-video";
 
 export const maxDuration = 600;
@@ -37,22 +37,18 @@ export async function POST(req: NextRequest) {
     console.log(
       `[BrickEx:Video] Duration: ${duration}s, Aspect: ${aspectRatio ?? "default"}, Res: ${resolution ?? "default"}, Motion: ${presetId ?? "none"}, Scene: ${scenePresetId ?? "none"}`
     );
+    console.log(`[BrickEx:Video] Image base64 length: ${imageBase64.length} chars (~${Math.round(imageBase64.length * 0.75 / 1024)}KB)`);
 
     const motionPreset = presetId ? getPresetById(presetId) : undefined;
-    const scenePreset = scenePresetId ? getScenePresetById(scenePresetId) : undefined;
 
     let finalPrompt: string;
 
-    if (scenePreset) {
-      console.log(`[BrickEx:Video] Using scene preset "${scenePreset.label}" — generating prompt with GPT...`);
-      finalPrompt = await generateVideoPrompt(
-        scenePreset.prompt,
-        scenePreset.label,
-        imageBase64,
+    if (scenePresetId) {
+      finalPrompt = getScenePrompt(
+        scenePresetId,
         prompt || undefined,
         motionPreset?.prompt,
       );
-      console.log(`[BrickEx:Video] GPT prompt: ${finalPrompt.substring(0, 150)}...`);
     } else if (prompt && motionPreset) {
       finalPrompt = `${prompt}. ${motionPreset.prompt}`;
     } else if (prompt) {
@@ -64,9 +60,9 @@ export async function POST(req: NextRequest) {
         "Smooth cinematic camera movement, high quality, photorealistic, professional cinematography";
     }
 
-    const imageUrl = `data:image/jpeg;base64,${imageBase64}`;
+    console.log(`[BrickEx:Video] Final prompt: ${finalPrompt.substring(0, 200)}...`);
 
-    console.log(`[BrickEx:Video] Image base64 length: ${imageBase64.length} chars (~${Math.round(imageBase64.length * 0.75 / 1024)}KB)`);
+    const imageUrl = `data:image/jpeg;base64,${imageBase64}`;
 
     const params: GrokVideoParams = {
       prompt: finalPrompt,
