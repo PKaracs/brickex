@@ -144,7 +144,8 @@ async function generateImage(prompt: string, index: number): Promise<Buffer | nu
 }
 
 async function uploadToSupabase(
-  supabase: ReturnType<typeof createClient>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  supabase: any,
   localPath: string,
   remoteFileName: string
 ): Promise<boolean> {

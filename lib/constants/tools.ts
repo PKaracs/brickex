@@ -86,6 +86,10 @@ export const TOOLS: Tool[] = [
     sampleInputImage: "/tools/floorplan-furnished-input.jpg",
     readyTitle: "Upload a floorplan to get started",
     readySubtitle: "Transform empty rooms into furnished interiors",
+    inputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-furnished-input.png",
+    outputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-furnished-output.png",
     creditCost: 4,
   },
   {
@@ -101,6 +105,10 @@ export const TOOLS: Tool[] = [
     sampleInputImage: "/tools/upholstery-change-input.jpg",
     readyTitle: "Upload furniture to get started",
     readySubtitle: "Swap fabrics and materials on any piece",
+    inputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/upholstery-change-input.png",
+    outputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/upholstery-change-output.png",
     creditCost: 4,
   },
   {
@@ -136,6 +144,10 @@ export const TOOLS: Tool[] = [
     sampleInputImage: "/tools/render-isometric-input.jpg",
     readyTitle: "Upload a render to get started",
     readySubtitle: "Transform renders into isometric diagrams",
+    inputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/render-to-isometric-input.png",
+    outputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/render-to-isometric-output.png",
     creditCost: 4,
   },
   {
@@ -151,6 +163,10 @@ export const TOOLS: Tool[] = [
     sampleInputImage: "/tools/floorplan-3d-input.jpg",
     readyTitle: "Upload a floorplan to get started",
     readySubtitle: "Convert 2D plans into 3D spatial views",
+    inputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-3d-input.png",
+    outputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-3d-output.png",
     creditCost: 4,
   },
   {
@@ -166,6 +182,10 @@ export const TOOLS: Tool[] = [
     sampleInputImage: "/tools/landscape-gen-input.jpg",
     readyTitle: "Upload a sketch to get started",
     readySubtitle: "Generate landscape designs from sketches or photos",
+    inputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/landscape-generator-input.png",
+    outputPreview:
+      "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/landscape-generator-output.png",
     creditCost: 4,
   },
 ];

@@ -57,7 +57,8 @@ function getGenAI() {
   return _genai;
 }
 
-let _supabase: ReturnType<typeof createClient>;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+let _supabase: any;
 function getSupabase() {
   if (!_supabase) {
     _supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
@@ -316,7 +317,7 @@ async function listExistingImages(slug: string): Promise<Set<string>> {
   const { data } = await getSupabase()
     .storage.from(BUCKET)
     .list(prefix, { limit: 100 });
-  return new Set((data || []).map((f) => f.name.replace(/\.png$/, "")));
+  return new Set((data || []).map((f: any) => f.name.replace(/\.png$/, "")));
 }
 
 // ─── Manifest ────────────────────────────────────────────────────────────────

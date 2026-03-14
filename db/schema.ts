@@ -182,6 +182,7 @@ export const providerTypeEnum = pgEnum("provider_type", [
   "openai",
   "google",
   "kling",
+  "xai",
   "manual",
   "system",
   "other",

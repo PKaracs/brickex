@@ -39,6 +39,7 @@ export interface GalleryProjectVariation {
   mode?: string;
   prompt?: string;
   title?: string;
+  mediaType?: string;
 }
 
 export interface GalleryProjectStack {
