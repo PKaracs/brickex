@@ -92,7 +92,7 @@ export default async function middleware(req: NextRequest) {
   }
 
   // rewrite root application to `/home` folder
-  if (hostname === "localhost:3000" || hostname === "brickex.co") {
+  if (hostname === "localhost:3000" || hostname === "brickex.co" || hostname === "www.brickex.co") {
     return NextResponse.rewrite(
       new URL(`/landing${path === "/" ? "" : path}`, req.url)
     );
