@@ -19,16 +19,17 @@ export default function TermsOfServicePage() {
           Terms & Conditions
         </h1>
         <p className="text-zinc-500 text-sm mb-10">
-          Effective Date: December 10, 2025
+          Effective Date: March 14, 2026
         </p>
 
         <p className="text-zinc-400 mb-12 leading-relaxed">
-          Welcome to Richflex ("we", "us", "our"). By accessing or using{" "}
+          Welcome to Brickex (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;).
+          By accessing or using{" "}
           <a
-            href="https://richflex.co"
+            href="https://brickex.co"
             className="text-white hover:text-zinc-300 transition-colors underline underline-offset-2"
           >
-            richflex.co
+            brickex.co
           </a>
           , you agree to these Terms & Conditions. If you do not agree, do not
           use the service.
@@ -40,8 +41,10 @@ export default function TermsOfServicePage() {
               1. Service Description
             </h2>
             <p className="mb-2">
-              Richflex provides an AI-powered photo generation service that
-              allows users to generate images based on photos they upload.
+              Brickex is an AI-powered real estate marketing platform that helps
+              real estate professionals create enhanced property visuals,
+              including virtual staging, image enhancement, and marketing
+              materials from uploaded property photos.
             </p>
             <p className="text-zinc-500">
               Results may vary depending on inputs and usage. No specific
@@ -54,7 +57,7 @@ export default function TermsOfServicePage() {
               2. Eligibility
             </h2>
             <p className="text-zinc-500">
-              You must be at least 18 years old to use Richflex.
+              You must be at least 18 years old to use Brickex.
             </p>
           </section>
 
@@ -74,18 +77,23 @@ export default function TermsOfServicePage() {
               4. User Content & Consent
             </h2>
             <p className="mb-3">
-              You retain ownership of photos you upload. By uploading content,
-              you confirm that:
+              You retain ownership of property photos and content you upload. By
+              uploading content, you confirm that:
             </p>
             <ul className="list-disc list-inside space-y-1 text-zinc-500 mb-3">
               <li>You own the content or have explicit permission to use it</li>
               <li>
-                You have the consent of all individuals appearing in the images
+                You have the necessary rights or authorization to use the
+                property images (e.g. as the property owner, agent, or
+                photographer)
               </li>
-              <li>You are not impersonating another person</li>
+              <li>
+                The content does not infringe on any third-party intellectual
+                property rights
+              </li>
             </ul>
             <p className="text-zinc-500">
-              You grant Richflex a limited license to process uploaded content
+              You grant Brickex a limited license to process uploaded content
               only to provide the service.
             </p>
           </section>
@@ -99,42 +107,46 @@ export default function TermsOfServicePage() {
               includes:
             </p>
             <ul className="list-disc list-inside space-y-1 text-zinc-500 mb-4">
-              <li>NSFW or explicit sexual content</li>
-              <li>Pornographic or fetish content</li>
-              <li>Sexual nudity or sexual acts</li>
-              <li>Violence, hate, or illegal material</li>
+              <li>Illegal, harmful, or offensive material</li>
+              <li>Content unrelated to real estate marketing purposes</li>
+              <li>
+                Images you do not have the right to use commercially
+              </li>
             </ul>
             <p className="mb-2">
-              You may not use Richflex or generated content to:
+              You may not use Brickex or generated content to:
             </p>
             <ul className="list-disc list-inside space-y-1 text-zinc-500">
-              <li>Deceive, defraud, or scam others</li>
-              <li>Create fake profiles, catfish, or impersonate others</li>
+              <li>Deceive, defraud, or mislead property buyers or renters</li>
               <li>
-                Spread misinformation or present AI images as real photographs
+                Materially misrepresent the condition, size, or features of a
+                property
               </li>
-              <li>Harass, stalk, or harm any individual</li>
+              <li>
+                Create fraudulent property listings or advertisements
+              </li>
+              <li>Violate any applicable real estate advertising laws or regulations</li>
+              <li>Harass or harm any individual</li>
               <li>Commit identity theft or any form of fraud</li>
-              <li>Violate any applicable laws or regulations</li>
             </ul>
           </section>
 
           <section>
             <h2 className="text-lg font-medium text-white mb-4">
-              6. Celebrity & Public Figure Policy
+              6. Accurate Representation
             </h2>
-            <p className="mb-2">You may not upload or generate images of:</p>
-            <ul className="list-disc list-inside space-y-1 text-zinc-500 mb-3">
-              <li>Celebrities</li>
-              <li>Public figures</li>
-              <li>Influencers</li>
-              <li>Real individuals other than yourself</li>
-            </ul>
-            <p className="text-zinc-500 mb-2">
-              Unless you have explicit permission or legal rights to do so.
+            <p className="text-zinc-500 mb-3">
+              While Brickex provides tools for enhancing property visuals and
+              creating virtual staging, you are responsible for ensuring that the
+              marketing materials you create do not materially misrepresent the
+              property being marketed.
             </p>
-            <p className="text-zinc-500 text-sm">
-              Content that violates this rule may be removed without notice.
+            <p className="text-zinc-500">
+              AI-generated enhancements should be used to showcase a
+              property&apos;s potential, not to deceive prospective buyers or
+              renters about the actual condition or features of a property. Where
+              required by local law or regulation, you must disclose that images
+              have been digitally enhanced or virtually staged.
             </p>
           </section>
 
@@ -143,16 +155,16 @@ export default function TermsOfServicePage() {
               7. Fair Use Policy
             </h2>
             <p className="mb-4">
-              Richflex plans may be described as "unlimited" and are subject to
-              fair use.
+              Brickex plans may be described as &quot;unlimited&quot; and are
+              subject to fair use.
             </p>
 
             <h3 className="text-zinc-300 font-medium mb-2">
-              What "Unlimited" Means
+              What &quot;Unlimited&quot; Means
             </h3>
             <ul className="list-disc list-inside space-y-1 text-zinc-500 mb-4">
               <li>
-                No fixed daily limit for normal personal or professional use
+                No fixed daily limit for normal professional use
               </li>
               <li>Designed for typical human usage, not automation</li>
             </ul>
@@ -189,10 +201,10 @@ export default function TermsOfServicePage() {
             <p className="text-zinc-500">
               If you need higher volume, contact{" "}
               <a
-                href="mailto:hello@richflex.co"
+                href="mailto:hello@brickex.co"
                 className="text-white hover:text-zinc-300 transition-colors underline underline-offset-2"
               >
-                hello@richflex.co
+                hello@brickex.co
               </a>
             </p>
           </section>
@@ -226,17 +238,18 @@ export default function TermsOfServicePage() {
             </h2>
             <p className="text-zinc-500 mb-3">
               You are solely responsible for all content you generate using
-              Richflex and how you use, share, or distribute that content.
+              Brickex and how you use, share, or distribute that content in
+              property listings, advertisements, or other marketing materials.
             </p>
             <p className="text-zinc-500 mb-3">
-              Richflex is not responsible for any claims, damages, or legal
+              Brickex is not responsible for any claims, damages, or legal
               issues arising from your use of generated images, including but
-              not limited to defamation, fraud, misrepresentation, or
+              not limited to misrepresentation, misleading advertising, or
               intellectual property infringement.
             </p>
             <p className="text-zinc-500">
               By using this service, you agree to indemnify and hold harmless
-              Richflex from any claims resulting from your use of generated
+              Brickex from any claims resulting from your use of generated
               content.
             </p>
           </section>
@@ -246,14 +259,15 @@ export default function TermsOfServicePage() {
               11. AI-Generated Content Disclaimer
             </h2>
             <p className="text-zinc-500 mb-3">
-              All images created through Richflex are AI-generated and
-              fictional. They do not represent real events, real wealth, real
-              possessions, or real circumstances.
+              All enhanced images and virtual staging created through Brickex are
+              AI-generated. They represent a visualization of potential and do
+              not necessarily reflect the current state of a property.
             </p>
             <p className="text-zinc-500">
-              Users acknowledge that generated images may contain errors,
-              inaccuracies, or artifacts. Richflex makes no representations
-              about the accuracy or realism of any generated content.
+              Users acknowledge that generated images may contain
+              inaccuracies or artifacts. Brickex makes no representations
+              about the accuracy of any generated content. It is the
+              user&apos;s responsibility to review all output before publishing.
             </p>
           </section>
 
@@ -262,8 +276,8 @@ export default function TermsOfServicePage() {
               12. Disclaimer
             </h2>
             <p className="text-zinc-500">
-              Richflex is provided "as is" without warranties of any kind. We do
-              not guarantee specific results or outcomes.
+              Brickex is provided &quot;as is&quot; without warranties of any
+              kind. We do not guarantee specific results or outcomes.
             </p>
           </section>
 
@@ -272,7 +286,7 @@ export default function TermsOfServicePage() {
               13. Limitation of Liability
             </h2>
             <p className="text-zinc-500">
-              To the maximum extent permitted by law, Richflex is not liable for
+              To the maximum extent permitted by law, Brickex is not liable for
               indirect, incidental, or consequential damages arising from use of
               the service.
             </p>
@@ -312,10 +326,10 @@ export default function TermsOfServicePage() {
             <p className="text-zinc-500">
               For questions or support:{" "}
               <a
-                href="mailto:hello@richflex.co"
+                href="mailto:hello@brickex.co"
                 className="text-white hover:text-zinc-300 transition-colors underline underline-offset-2"
               >
-                hello@richflex.co
+                hello@brickex.co
               </a>
             </p>
           </section>

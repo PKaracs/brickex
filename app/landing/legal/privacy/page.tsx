@@ -19,18 +19,20 @@ export default function PrivacyPolicyPage() {
           Privacy Policy
         </h1>
         <p className="text-zinc-500 text-sm mb-10">
-          Effective Date: December 10, 2025
+          Effective Date: March 14, 2026
         </p>
 
         <p className="text-zinc-400 mb-12 leading-relaxed">
-          This Privacy Policy explains how Richflex ("we", "us", "our") collects
-          and uses information when you use{" "}
+          This Privacy Policy explains how Brickex (&quot;we&quot;,
+          &quot;us&quot;, &quot;our&quot;) collects and uses information when you
+          use{" "}
           <a
-            href="https://richflex.co"
+            href="https://brickex.co"
             className="text-white hover:text-zinc-300 transition-colors underline underline-offset-2"
           >
-            richflex.co
+            brickex.co
           </a>
+          , our AI-powered real estate marketing platform.
         </p>
 
         <div className="space-y-10 text-zinc-400 leading-relaxed">
@@ -45,7 +47,8 @@ export default function PrivacyPolicyPage() {
                 </h3>
                 <ul className="list-disc list-inside space-y-1 text-zinc-500">
                   <li>Email address</li>
-                  <li>Account-related details</li>
+                  <li>Name and account-related details</li>
+                  <li>Business or agency information</li>
                 </ul>
               </div>
               <div>
@@ -53,7 +56,11 @@ export default function PrivacyPolicyPage() {
                   Uploaded Content
                 </h3>
                 <ul className="list-disc list-inside space-y-1 text-zinc-500">
-                  <li>Photos or images you upload for generation</li>
+                  <li>
+                    Property photos, floor plans, and other real estate images
+                    you upload for processing
+                  </li>
+                  <li>Property details and descriptions you provide</li>
                 </ul>
               </div>
               <div>
@@ -95,8 +102,10 @@ export default function PrivacyPolicyPage() {
             </h2>
             <p className="mb-2">We use information to:</p>
             <ul className="list-disc list-inside space-y-1 text-zinc-500">
-              <li>Provide and operate the service</li>
-              <li>Generate AI images requested by users</li>
+              <li>Provide and operate our real estate marketing tools</li>
+              <li>
+                Generate AI-enhanced property images and marketing materials
+              </li>
               <li>Manage subscriptions and payments</li>
               <li>Improve performance and user experience</li>
               <li>Communicate service-related updates</li>
@@ -106,26 +115,32 @@ export default function PrivacyPolicyPage() {
 
           <section>
             <h2 className="text-lg font-medium text-white mb-4">
-              3. Photos & Privacy
+              3. Property Images & Privacy
             </h2>
             <ul className="list-disc list-inside space-y-1 text-zinc-500">
-              <li>Uploaded photos are used only to provide the service</li>
-              <li>We do not sell user photos</li>
-              <li>We do not publicly display your photos without permission</li>
-              <li>Photos may be temporarily stored for processing</li>
-              <li>We do not use your photos to train AI models</li>
               <li>
-                Uploaded photos are automatically deleted after 30 days of
+                Uploaded property images are used only to provide the service
+              </li>
+              <li>We do not sell your uploaded images</li>
+              <li>
+                We do not publicly display your images without permission
+              </li>
+              <li>Images may be temporarily stored for processing</li>
+              <li>
+                We do not use your uploaded images to train AI models
+              </li>
+              <li>
+                Uploaded images are automatically deleted after 30 days of
                 inactivity
               </li>
               <li>
                 You can request immediate deletion of your data at any time
                 through email to{" "}
                 <a
-                  href="mailto:hello@richflex.co"
+                  href="mailto:hello@brickex.co"
                   className="text-white hover:text-zinc-300 transition-colors underline underline-offset-2"
                 >
-                  hello@richflex.co
+                  hello@brickex.co
                 </a>
               </li>
             </ul>
@@ -140,6 +155,7 @@ export default function PrivacyPolicyPage() {
               <li>Payments</li>
               <li>Analytics</li>
               <li>Advertising</li>
+              <li>AI image processing</li>
               <li>Hosting and infrastructure</li>
             </ul>
             <p className="text-zinc-500">
@@ -172,10 +188,10 @@ export default function PrivacyPolicyPage() {
             <p className="text-zinc-500">
               Contact{" "}
               <a
-                href="mailto:hello@richflex.co"
+                href="mailto:hello@brickex.co"
                 className="text-white hover:text-zinc-300 transition-colors underline underline-offset-2"
               >
-                hello@richflex.co
+                hello@brickex.co
               </a>{" "}
               for requests.
             </p>
@@ -196,10 +212,10 @@ export default function PrivacyPolicyPage() {
             <p className="text-zinc-500">
               For privacy questions:{" "}
               <a
-                href="mailto:hello@richflex.co"
+                href="mailto:hello@brickex.co"
                 className="text-white hover:text-zinc-300 transition-colors underline underline-offset-2"
               >
-                hello@richflex.co
+                hello@brickex.co
               </a>
             </p>
           </section>
