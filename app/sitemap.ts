@@ -4,7 +4,7 @@ import { getGalleryImages } from "@/lib/constants/seo-gallery-manifest";
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://richflex.co";
+  const baseUrl = "https://brickex.co";
 
   const CONTENT_LAST_UPDATED = "2026-03-02";
 

@@ -33,7 +33,7 @@ export default function Footer() {
               Terms of Service
             </Link>
             <a
-              href="mailto:hello@richflex.co"
+              href="mailto:hello@brickex.co"
               className="min-h-[44px] flex items-center hover:text-white transition-colors active:text-zinc-200"
             >
               Contact

@@ -51,14 +51,14 @@ export const metadata: Metadata = {
   authors: [{ name: "BrickEx" }],
   creator: "BrickEx",
   publisher: "BrickEx",
-  metadataBase: new URL("https://richflex.co"),
+  metadataBase: new URL("https://brickex.co"),
   alternates: {
     canonical: "/",
   },
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://richflex.co",
+    url: "https://brickex.co",
     siteName: "BrickEx",
     title: "BrickEx - AI Visualization for Real Estate",
     description:
@@ -110,7 +110,7 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const baseUrl = "https://richflex.co";
+  const baseUrl = "https://brickex.co";
 
   const organizationJsonLd = {
     "@context": "https://schema.org",
