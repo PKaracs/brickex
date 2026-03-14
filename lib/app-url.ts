@@ -1,4 +1,4 @@
-const PROD_DEFAULT_APP_URL = "https://app.brickex.com";
+const PROD_DEFAULT_APP_URL = "https://app.brickex.co";
 const DEV_DEFAULT_APP_URL = "http://app.localhost:3000";
 
 const sanitizeUrl = (url: string) => url.replace(/\/$/, "");

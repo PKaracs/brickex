@@ -60,7 +60,7 @@ export async function addWatermark(
     const logoWidth = logoHeight * logoAspectRatio;
     const urlFontSize = 72;
     const urlPadding = 48;
-    const urlText = "brickex.com";
+    const urlText = "brickex.co";
 
     // Measure URL text width
     ctx.font = `${urlFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;

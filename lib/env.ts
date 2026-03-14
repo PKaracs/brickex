@@ -10,7 +10,7 @@ const serverSchema = z.object({
   BETTER_AUTH_SECRET: z.string().min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
   BETTER_AUTH_URL: z.string().url("BETTER_AUTH_URL must be a valid URL"),
   AUTH_TRUSTED_ORIGINS: z.array(z.string().url()).default([]),
-  AUTH_FROM_EMAIL: z.string().min(1).default("Brickex <auth@brickex.com>"),
+  AUTH_FROM_EMAIL: z.string().min(1).default("Brickex <auth@brickex.co>"),
   AUTH_REQUIRE_EMAIL_VERIFICATION: z.boolean().default(false),
   NEXT_PUBLIC_SUPABASE_URL: z.string().url("NEXT_PUBLIC_SUPABASE_URL must be a valid URL"),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, "NEXT_PUBLIC_SUPABASE_ANON_KEY is required"),

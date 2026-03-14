@@ -118,7 +118,7 @@ export default function RootLayout({
     name: "BrickEx",
     url: baseUrl,
     logo: `${baseUrl}/brickex-logo.png`,
-    email: "hello@brickex.com",
+    email: "hello@brickex.co",
   };
 
   const webSiteJsonLd = {
