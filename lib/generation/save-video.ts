@@ -5,6 +5,7 @@ import { createId } from "@paralleldrive/cuid2";
 
 import * as schema from "@/db/schema";
 import { requireWorkspaceContext } from "@/lib/auth-guard";
+import { calculateVideoCreditCost } from "@/lib/constants/tools";
 import { db } from "@/lib/db";
 import { storageBuckets } from "@/lib/env";
 import {
@@ -62,6 +63,7 @@ export async function saveVideoToGallery(
       status: "running",
       prompt: input.prompt,
       settings: input.settings ?? null,
+      creditsConsumed: calculateVideoCreditCost(input.duration ?? 5),
       startedAt: new Date(),
     })
     .returning({ id: schema.toolRuns.id });

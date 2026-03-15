@@ -42,6 +42,7 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "100mb",
     },
+    middlewareClientMaxBodySize: "100mb",
   },
   // This is required to support PostHog trailing slash API requests
   skipTrailingSlashRedirect: true,

@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/sheet";
 import { Textarea } from "@/components/ui/textarea";
 import type { SubscriptionData } from "@/lib/actions/get-user-subscription";
+import { IMAGE_CREDIT_COST, EDIT_CREDIT_COST } from "@/lib/constants/tools";
 import { ModeSelectorCard } from "@/components/dashboard/mode-selector-card";
 import { ModeSettingsForm } from "@/components/dashboard/mode-settings-form";
 import { AngleSlotAccordion } from "@/components/dashboard/angle-slot-accordion";
@@ -123,7 +124,7 @@ const EditSidebar = memo(function EditSidebar({
             {isEditGenerating ? "Applying..." : "Apply Edit"}
             {!isEditGenerating && (
               <span className="text-neutral-400 text-[10px] ml-1">
-                (1 credit)
+                ({EDIT_CREDIT_COST} bricks)
               </span>
             )}
           </Button>
@@ -357,6 +358,11 @@ export const Sidebar = memo(function Sidebar({
                   {isGenerating
                     ? "Generating..."
                     : `Generate${slots.length > 1 ? ` All (${slots.length})` : ""}`}
+                  {!isGenerating && (
+                    <span className="text-neutral-400 text-[10px] ml-1">
+                      ({(slots.length * IMAGE_CREDIT_COST).toLocaleString()} bricks)
+                    </span>
+                  )}
                 </Button>
               </div>
             </TooltipTrigger>
@@ -365,15 +371,16 @@ export const Sidebar = memo(function Sidebar({
                 side="top"
                 className="bg-neutral-900 border-neutral-700 text-white"
               >
-                Upload a source image first
+                {(subscription?.creationsRemaining ?? 0) <= 0
+                  ? "Not enough bricks — upgrade your plan"
+                  : "Upload a source image first"}
               </TooltipContent>
             )}
           </Tooltip>
-          {subscription?.plan === "free" && (
+          {subscription && (
             <p className="text-[10px] text-neutral-500 text-center">
-              {(subscription?.creationsUsed ?? 0) === 0
-                ? "100 free bricks included · Upgrade anytime"
-                : "Upgrade to create more"}
+              {subscription.creationsRemaining.toLocaleString()} bricks remaining
+              {subscription.plan === "free" && " · Upgrade anytime"}
             </p>
           )}
         </div>
@@ -512,13 +519,17 @@ export const MobileBottomBar = memo(function MobileBottomBar({
                 <Sparkles className="h-5 w-5 mr-2" />
               )}
               {isGenerating ? "Generating..." : "Generate"}
+              {!isGenerating && (
+                <span className="text-neutral-400 text-[10px] ml-1">
+                  ({IMAGE_CREDIT_COST} bricks)
+                </span>
+              )}
             </Button>
           </div>
-          {subscription?.plan === "free" && (
+          {subscription && (
             <p className="text-[10px] text-neutral-500 text-center">
-              {(subscription?.creationsUsed ?? 0) === 0
-                ? "100 free bricks included · Upgrade anytime"
-                : "Upgrade to create more"}
+              {subscription.creationsRemaining.toLocaleString()} bricks remaining
+              {subscription.plan === "free" && " · Upgrade anytime"}
             </p>
           )}
         </div>

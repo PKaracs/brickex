@@ -120,10 +120,10 @@ CRITICAL RULES:
 
 async function generatePageContent(
   entry: CatalogEntry,
-  allSlugs: string[]
+  allSlugs: string[],
 ): Promise<GeneratedPage> {
   const response = await getOpenAI().chat.completions.create({
-    model: "gpt-4o",
+    model: "gpt-5",
     messages: [
       { role: "system", content: SYSTEM_PROMPT },
       {
@@ -173,7 +173,7 @@ function getExistingSlugs(): Set<string> {
   const files = fs.readdirSync(DATA_DIR).filter((f) => f.endsWith(".json"));
   for (const file of files) {
     const pages = JSON.parse(
-      fs.readFileSync(path.join(DATA_DIR, file), "utf-8")
+      fs.readFileSync(path.join(DATA_DIR, file), "utf-8"),
     );
     if (Array.isArray(pages)) {
       for (const p of pages) {
@@ -193,8 +193,12 @@ function sleep(ms: number): Promise<void> {
 async function main() {
   const args = process.argv.slice(2);
   const catalogIdx = args.indexOf("--catalog");
-  const categoryFilter = args.indexOf("--category") !== -1 ? args[args.indexOf("--category") + 1] : null;
-  const slugFilter = args.indexOf("--slug") !== -1 ? args[args.indexOf("--slug") + 1] : null;
+  const categoryFilter =
+    args.indexOf("--category") !== -1
+      ? args[args.indexOf("--category") + 1]
+      : null;
+  const slugFilter =
+    args.indexOf("--slug") !== -1 ? args[args.indexOf("--slug") + 1] : null;
 
   if (catalogIdx === -1) {
     console.log(`Usage:
@@ -221,7 +225,9 @@ async function main() {
   // Filter
   if (categoryFilter) {
     entries = entries.filter((e) => e.category === categoryFilter);
-    console.log(`Filtered to ${entries.length} entries in category: ${categoryFilter}`);
+    console.log(
+      `Filtered to ${entries.length} entries in category: ${categoryFilter}`,
+    );
   }
   if (slugFilter) {
     entries = entries.filter((e) => e.slug === slugFilter);
@@ -231,7 +237,9 @@ async function main() {
   // Skip existing
   const existing = getExistingSlugs();
   const newEntries = entries.filter((e) => !existing.has(e.slug));
-  console.log(`${existing.size} pages already exist, ${newEntries.length} new to generate\n`);
+  console.log(
+    `${existing.size} pages already exist, ${newEntries.length} new to generate\n`,
+  );
 
   if (newEntries.length === 0) {
     console.log("Nothing to generate!");
@@ -239,10 +247,7 @@ async function main() {
   }
 
   // Build full slug list for relatedSlugs suggestions
-  const allSlugs = [
-    ...Array.from(existing),
-    ...entries.map((e) => e.slug),
-  ];
+  const allSlugs = [...Array.from(existing), ...entries.map((e) => e.slug)];
 
   let generated = 0;
   let failed = 0;
@@ -250,7 +255,7 @@ async function main() {
   for (let i = 0; i < newEntries.length; i++) {
     const entry = newEntries[i];
     process.stdout.write(
-      `[${i + 1}/${newEntries.length}] ${entry.slug} (${entry.category})... `
+      `[${i + 1}/${newEntries.length}] ${entry.slug} (${entry.category})... `,
     );
 
     try {

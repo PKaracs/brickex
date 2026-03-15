@@ -22,7 +22,7 @@ export const SUBSCRIPTION_PLANS = {
     bricks: 4000,
     price: 29,
     billingPeriod: "month" as const,
-    productId: "656b0fb0-9bb2-4b87-b654-5145da063d0d",
+    productId: "12577231-5566-4444-bdcb-a595db7e248d",
     resetPeriod: "monthly" as const,
   },
   PRO: {
@@ -32,7 +32,7 @@ export const SUBSCRIPTION_PLANS = {
     bricks: 12000,
     price: 49,
     billingPeriod: "month" as const,
-    productId: "2c6e7350-bd42-4ed2-ac9e-02caf675afa1",
+    productId: "d085f940-134d-4871-9321-4da9de1e5cd0",
     resetPeriod: "monthly" as const,
     perks: [
       "12,000 bricks per month",
@@ -48,7 +48,7 @@ export const SUBSCRIPTION_PLANS = {
     bricks: 30000,
     price: 99,
     billingPeriod: "month" as const,
-    productId: "", // TODO: Set Polar product ID when created
+    productId: "29aa4751-1992-4e53-92d3-8f4c513936e7",
     resetPeriod: "monthly" as const,
     perks: [
       "30,000 bricks per month",
@@ -66,6 +66,8 @@ export type PlanSlug = "free" | "starter" | "pro" | "studio";
 const LEGACY_PRODUCT_IDS = [
   "96094503-2b61-405c-a32b-364219ee21ba",
   "397c0bc4-f749-4110-b794-82960f2e437f",
+  "656b0fb0-9bb2-4b87-b654-5145da063d0d",
+  "2c6e7350-bd42-4ed2-ac9e-02caf675afa1",
 ] as const;
 
 /**

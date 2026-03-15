@@ -2,21 +2,28 @@
 
 import { useState } from "react";
 import Image from "next/image";
-import { ArrowRight, Check, Plus, Minus, Upload, Sparkles, ImageIcon } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  Plus,
+  Minus,
+  Sparkles,
+  ImageIcon,
+  FileText,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SceneCard } from "@/components/seo/scene-card";
 import { SceneGallery } from "@/components/seo/scene-gallery";
 import { getSignupUrl } from "@/lib/app-url";
 import {
-  type SeoPage,
-  getPageImage,
-  getPageBySlug,
-  PAGE_CATEGORY_LABELS,
-} from "@/lib/constants/seo-pages-loader";
-import { getGalleryImages } from "@/lib/constants/seo-gallery-manifest";
+  type IdeaPage,
+  getIdeaBySlug,
+  getIdeaHeroImage,
+  IDEA_CATEGORY_LABELS,
+} from "@/lib/constants/idea-pages";
 
 interface ScenePageProps {
-  scene: SeoPage;
+  scene: IdeaPage;
 }
 
 function FAQItem({
@@ -64,31 +71,31 @@ function FAQItem({
 
 const STEPS = [
   {
-    icon: Upload,
-    title: "Upload a selfie",
-    description: "Any clear photo of your face. Takes 5 seconds.",
+    icon: ImageIcon,
+    title: "Review the space set",
+    description: "Study the eight references and pick the luxury angle you want.",
+  },
+  {
+    icon: FileText,
+    title: "Open the prompt recipe",
+    description: "Each image includes the structure behind the look, mood, and styling.",
   },
   {
     icon: Sparkles,
-    title: "AI generates your photo",
-    description: "Our AI places you in the scene — photorealistic results.",
-  },
-  {
-    icon: ImageIcon,
-    title: "Download & share",
-    description: "Get your photo instantly. Use it anywhere.",
+    title: "Generate your version",
+    description: "Adapt the prompt in BrickEx for boards, listings, interior studies, or concept work.",
   },
 ];
 
 export function ScenePage({ scene }: ScenePageProps) {
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
   const signupUrl = getSignupUrl();
-  const image = getPageImage(scene);
-  const galleryImages = getGalleryImages(scene.slug);
+  const image = getIdeaHeroImage(scene);
+  const galleryImages = scene.gallery;
 
   const relatedScenes = scene.relatedSlugs
-    .map((slug) => getPageBySlug(slug))
-    .filter((s): s is SeoPage => s != null);
+    .map((slug) => getIdeaBySlug(slug))
+    .filter((s): s is IdeaPage => s != null);
 
   return (
     <div className="min-h-screen bg-[#0c0c0c] text-white">
@@ -110,7 +117,7 @@ export function ScenePage({ scene }: ScenePageProps) {
         )}
         <div className="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 sm:-mt-40 pb-12 sm:pb-16 z-10">
           <span className="mb-3 inline-block text-[10px] sm:text-xs font-semibold uppercase tracking-widest text-zinc-500">
-            {PAGE_CATEGORY_LABELS[scene.category] || scene.category}
+            {IDEA_CATEGORY_LABELS[scene.category] || scene.category}
           </span>
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4 sm:mb-5">
             <span className="bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
@@ -122,12 +129,12 @@ export function ScenePage({ scene }: ScenePageProps) {
           </p>
           <Button size="lg" className="gap-2 h-12 px-8 text-base font-semibold" asChild>
             <a href={signupUrl}>
-              Generate Photos Like These
+              Generate renders like this
               <ArrowRight className="w-4 h-4" />
             </a>
           </Button>
           <p className="text-zinc-600 text-xs mt-3">
-            Free to try. No credit card needed.
+            Use BrickEx to turn the prompt direction into your own visual set.
           </p>
         </div>
       </section>
@@ -173,7 +180,7 @@ export function ScenePage({ scene }: ScenePageProps) {
             <div className="lg:col-span-3">
               <h2 className="text-xl sm:text-2xl font-semibold mb-6">
                 <span className="bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-                  About these photos
+                  About this idea pack
                 </span>
               </h2>
               <div className="space-y-4">
@@ -186,7 +193,7 @@ export function ScenePage({ scene }: ScenePageProps) {
             </div>
             <div className="lg:col-span-2">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 mb-4">
-                What&apos;s in the photo
+                What to study
               </h3>
               <ul className="space-y-2.5">
                 {scene.content.highlights.map((h, i) => (
@@ -249,10 +256,10 @@ export function ScenePage({ scene }: ScenePageProps) {
       <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-zinc-800">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6">
-            Want photos like these?
+            Want to build a set like this?
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base mb-6 sm:mb-8 max-w-md mx-auto">
-            Upload a selfie and our AI generates photos of you in seconds. No photographer, no studio, no travel.
+            Use BrickEx to iterate on composition, lighting, and material direction without rebuilding the whole visual stack from scratch.
           </p>
           <Button
             size="lg"
@@ -260,13 +267,10 @@ export function ScenePage({ scene }: ScenePageProps) {
             asChild
           >
             <a href={signupUrl}>
-              Try It Free
+              Open BrickEx
               <ArrowRight className="w-4 h-4" />
             </a>
           </Button>
-          <p className="text-zinc-600 text-xs mt-3">
-            Your first photo is free. No credit card needed.
-          </p>
         </div>
       </section>
     </div>

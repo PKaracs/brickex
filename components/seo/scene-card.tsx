@@ -1,8 +1,12 @@
 import Link from "next/link";
-import { type SeoPage, getPageImage, PAGE_CATEGORY_LABELS } from "@/lib/constants/seo-pages-loader";
+import {
+  type IdeaPage,
+  getIdeaHeroImage,
+  IDEA_CATEGORY_LABELS,
+} from "@/lib/constants/idea-pages";
 
 interface SceneCardProps {
-  scene: SeoPage;
+  scene: IdeaPage;
   priority?: boolean;
 }
 
@@ -17,11 +21,11 @@ function getOptimizedUrl(url: string, width: number): string {
 }
 
 export function SceneCard({ scene, priority = false }: SceneCardProps) {
-  const image = getPageImage(scene);
+  const image = getIdeaHeroImage(scene);
 
   return (
     <Link
-      href={`/ai-photos/${scene.slug}`}
+      href={`/ideas/${scene.slug}`}
       className="group relative block overflow-hidden rounded-2xl border border-neutral-800/80 bg-neutral-900 shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.03)] transition-all duration-300 hover:border-neutral-700/80 hover:-translate-y-1 hover:shadow-[0_16px_48px_rgba(0,0,0,0.5)]"
     >
       {image && (
@@ -39,7 +43,7 @@ export function SceneCard({ scene, priority = false }: SceneCardProps) {
       )}
       <div className="relative p-4 sm:p-5">
         <span className="mb-2 inline-block text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-          {PAGE_CATEGORY_LABELS[scene.category] || scene.category}
+          {IDEA_CATEGORY_LABELS[scene.category] || scene.category}
         </span>
         <h3 className="text-sm sm:text-base font-semibold text-white mb-1.5 group-hover:text-zinc-100 transition-colors">
           {scene.content.headline}

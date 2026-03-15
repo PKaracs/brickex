@@ -1,9 +1,10 @@
 import "server-only";
 
-import { and, eq, isNull, or } from "drizzle-orm";
+import { and, eq, isNull, or, sql } from "drizzle-orm";
 
 import * as schema from "@/db/schema";
 import { requireWorkspaceContext } from "@/lib/auth-guard";
+import { getCreditCostForToolId } from "@/lib/constants/tools";
 import { db } from "@/lib/db";
 import { storageBuckets } from "@/lib/env";
 import {
@@ -183,6 +184,29 @@ export async function startProjectImageRun(
     throw new Error("Project not found");
   }
 
+  const brickCost = getCreditCostForToolId(input.toolId);
+
+  const user = await db.query.users.findFirst({
+    where: eq(schema.users.id, userId),
+    columns: { creationsUsed: true, creationsLimit: true },
+  });
+  if (!user) throw new Error("User not found");
+
+  const remaining = user.creationsLimit - user.creationsUsed;
+  if (remaining < brickCost) {
+    throw new Error(
+      `Not enough bricks. This costs ${brickCost} bricks but you have ${remaining} remaining.`,
+    );
+  }
+
+  await db
+    .update(schema.users)
+    .set({
+      creationsUsed: sql`LEAST(${schema.users.creationsUsed} + ${brickCost}, ${schema.users.creationsLimit})`,
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.users.id, userId));
+
   const [run] = await db
     .insert(schema.toolRuns)
     .values({
@@ -196,6 +220,7 @@ export async function startProjectImageRun(
       status: "running",
       prompt: input.prompt ?? null,
       settings: input.settings ?? null,
+      creditsConsumed: brickCost,
       startedAt: new Date(),
     })
     .returning({ id: schema.toolRuns.id });

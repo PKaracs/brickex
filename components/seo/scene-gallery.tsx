@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { X, Sparkles, ArrowRight } from "lucide-react";
 import { getSignupUrl } from "@/lib/app-url";
-import type { GalleryImage } from "@/lib/constants/seo-gallery-manifest";
+import type { IdeaGalleryImage } from "@/lib/constants/idea-pages";
 
 interface SceneGalleryProps {
-  images: GalleryImage[];
+  images: IdeaGalleryImage[];
   sceneHeadline: string;
 }
 
@@ -17,11 +17,15 @@ const ASPECT_CLASSES: Record<string, string> = {
 };
 
 function getOptimizedUrl(url: string, width: number): string {
-  // Supabase image transformation: resize while preserving aspect ratio
-  return url.replace(
-    "/storage/v1/object/public/",
-    "/storage/v1/render/image/public/"
-  ) + `?width=${width}&resize=contain&quality=75`;
+  if (url.includes("/storage/v1/object/public/")) {
+    return (
+      url.replace(
+        "/storage/v1/object/public/",
+        "/storage/v1/render/image/public/"
+      ) + `?width=${width}&resize=contain&quality=75`
+    );
+  }
+  return url;
 }
 
 export function SceneGallery({ images, sceneHeadline }: SceneGalleryProps) {
@@ -41,14 +45,14 @@ export function SceneGallery({ images, sceneHeadline }: SceneGalleryProps) {
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-3 sm:gap-4">
             {images.map((img, i) => (
               <figure
-                key={img.filename}
+                key={img.id}
                 className="relative mb-3 sm:mb-4 block w-full overflow-hidden rounded-xl border border-neutral-800/60 bg-neutral-800 transition-all duration-300 hover:border-neutral-700/80 hover:shadow-[0_8px_32px_rgba(0,0,0,0.5)] break-inside-avoid group cursor-pointer"
                 onClick={() => setLightboxIndex(i)}
               >
                 <div className={`relative w-full ${ASPECT_CLASSES[img.aspectRatio] || "aspect-video"} bg-neutral-800`}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={getOptimizedUrl(img.url, 600)}
+                    src={getOptimizedUrl(img.src, 600)}
                     alt={img.altText}
                     title={img.altText}
                     className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
@@ -56,8 +60,22 @@ export function SceneGallery({ images, sceneHeadline }: SceneGalleryProps) {
                     decoding="async"
                   />
                 </div>
-                <figcaption className="px-3 py-2.5 text-xs text-zinc-400 leading-relaxed">
-                  {img.description || img.altText}
+                <figcaption className="px-3 py-3 text-xs text-zinc-400 leading-relaxed space-y-2.5">
+                  <div>
+                    <p className="text-sm text-zinc-200 font-medium mb-1">{img.title}</p>
+                    <p>{img.description || img.altText}</p>
+                  </div>
+                  <details
+                    className="rounded-lg border border-zinc-800 bg-zinc-950/70 p-2.5"
+                    onClick={(event) => event.stopPropagation()}
+                  >
+                    <summary className="cursor-pointer select-none text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                      {img.promptLabel}
+                    </summary>
+                    <pre className="mt-2 whitespace-pre-wrap text-[11px] leading-relaxed text-zinc-400 font-sans">
+                      {img.prompt}
+                    </pre>
+                  </details>
                 </figcaption>
               </figure>
             ))}
@@ -86,7 +104,7 @@ export function SceneGallery({ images, sceneHeadline }: SceneGalleryProps) {
             <div className="relative flex-1 min-w-0">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src={getOptimizedUrl(images[lightboxIndex].url, 1200)}
+                src={getOptimizedUrl(images[lightboxIndex].src, 1200)}
                 alt={images[lightboxIndex].altText}
                 className="w-full h-auto max-h-[70vh] lg:max-h-[85vh] object-contain rounded-lg"
               />
@@ -100,17 +118,28 @@ export function SceneGallery({ images, sceneHeadline }: SceneGalleryProps) {
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
                 <Sparkles className="w-4 h-4" />
-                Generate this with yourself in it
+                Generate a version in BrickEx
                 <ArrowRight className="w-4 h-4" />
               </a>
 
               <div className="hidden lg:block space-y-3 mt-2">
+                <p className="text-sm text-zinc-200 font-medium">
+                  {images[lightboxIndex].title}
+                </p>
                 <p className="text-xs text-zinc-500 leading-relaxed">
                   {images[lightboxIndex].description || images[lightboxIndex].altText}
                 </p>
+                <details className="rounded-lg border border-zinc-800 bg-zinc-950/70 p-3">
+                  <summary className="cursor-pointer select-none text-[11px] font-semibold uppercase tracking-[0.16em] text-zinc-500">
+                    {images[lightboxIndex].promptLabel}
+                  </summary>
+                  <pre className="mt-2 whitespace-pre-wrap text-[11px] leading-relaxed text-zinc-400 font-sans">
+                    {images[lightboxIndex].prompt}
+                  </pre>
+                </details>
                 <div className="text-[10px] text-zinc-600 space-y-1">
-                  <p>AI-generated by Richflex</p>
-                  <p>Upload a selfie to create your version</p>
+                  <p>AI-generated concept reference for BrickEx</p>
+                  <p>Adapt the prompt inside your own workflow</p>
                 </div>
               </div>
             </div>

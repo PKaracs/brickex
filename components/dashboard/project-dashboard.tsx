@@ -8,6 +8,7 @@ import { Project } from "@/db/schema";
 import { createProject } from "@/lib/actions/create-project";
 import { useRouter } from "next/navigation";
 import type { SubscriptionData } from "@/lib/actions/get-user-subscription";
+import { getUserSubscription } from "@/lib/actions/get-user-subscription";
 import { addWatermark } from "@/lib/watermark";
 import { toast } from "sonner";
 import { fireFirstGenConfetti } from "@/components/ui/confetti";
@@ -115,6 +116,8 @@ export function ProjectDashboard({
   const originalImageUrl = activeEditHistory[0] ?? null;
 
   const canGenerate = uploadedFiles.length > 0 || !!sourceUrl;
+  const hasEnoughBricks = (subscription?.creationsRemaining ?? 0) > 0;
+  const canStartGeneration = canGenerate && hasEnoughBricks;
 
   // Keep a stable preview URL for the source image
   useEffect(() => {
@@ -273,12 +276,16 @@ export function ProjectDashboard({
   };
 
   const handleGenerate = useCallback(async () => {
-    if (!canGenerate) {
-      toast("Upload a source image first", {
-        description:
-          "Drag & drop or click the canvas to upload a floor plan, sketch, or photo.",
-        duration: 5000,
-      });
+    if (!canStartGeneration) {
+      if (!canGenerate) {
+        toast("Upload a source image first", {
+          description:
+            "Drag & drop or click the canvas to upload a floor plan, sketch, or photo.",
+          duration: 5000,
+        });
+      } else {
+        toast.error("Not enough bricks. Upgrade your plan to continue.");
+      }
       return;
     }
 
@@ -390,8 +397,10 @@ export function ProjectDashboard({
       }
     } finally {
       setIsGenerating(false);
+      const updated = await getUserSubscription();
+      if (!("error" in updated)) setSubscription(updated);
     }
-  }, [canGenerate, uploadedFiles, sourceUrl, currentMode, globalValues, objectFiles, slots, project.id]);
+  }, [canStartGeneration, canGenerate, uploadedFiles, sourceUrl, currentMode, globalValues, objectFiles, slots, project.id]);
 
   // ============================================================
   // EDIT HANDLERS (per active slot)
@@ -620,7 +629,7 @@ export function ProjectDashboard({
               onNewProject={handleNewProject}
               onDownload={handleDownload}
               isGenerating={isGenerating}
-              canGenerate={canGenerate}
+              canGenerate={canStartGeneration}
               hasGeneratedImage={hasAnyOutput}
               subscription={subscription}
               currentMode={currentMode}
@@ -658,7 +667,7 @@ export function ProjectDashboard({
           onDownload={handleDownload}
           onShare={handleShare}
           isGenerating={isGenerating}
-          canGenerate={canGenerate}
+          canGenerate={canStartGeneration}
           hasGeneratedImage={hasAnyOutput}
           subscription={subscription}
           currentMode={currentMode}

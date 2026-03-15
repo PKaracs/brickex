@@ -52,7 +52,7 @@ export const TOOLS: Tool[] = [
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/image-to-3d-input.png",
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/image-to-3d-output.png",
-    creditCost: 4,
+    creditCost: 80,
   },
   {
     id: "exploded-diagram",
@@ -67,7 +67,7 @@ export const TOOLS: Tool[] = [
     sampleInputImage: "/tools/exploded-diagram-input.jpg",
     readyTitle: "Upload an image to get started",
     readySubtitle: "Break down structures into exploded views",
-    creditCost: 4,
+    creditCost: 80,
     inputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/exploded-diagram-input.png",
     outputPreview:
@@ -90,7 +90,7 @@ export const TOOLS: Tool[] = [
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-furnished-input.png",
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-furnished-output.png",
-    creditCost: 4,
+    creditCost: 80,
   },
   {
     id: "upholstery-change",
@@ -109,7 +109,7 @@ export const TOOLS: Tool[] = [
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/upholstery-change-input.png",
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/upholstery-change-output.png",
-    creditCost: 4,
+    creditCost: 80,
   },
   {
     id: "moodboard-to-render",
@@ -129,7 +129,7 @@ export const TOOLS: Tool[] = [
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/moodboard-input.png",
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/moodboard-output.png",
-    creditCost: 4,
+    creditCost: 80,
   },
   {
     id: "render-to-isometric",
@@ -148,7 +148,7 @@ export const TOOLS: Tool[] = [
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/render-to-isometric-input.png",
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/render-to-isometric-output.png",
-    creditCost: 4,
+    creditCost: 80,
   },
   {
     id: "floorplan-to-3d",
@@ -167,7 +167,7 @@ export const TOOLS: Tool[] = [
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-3d-input.png",
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-3d-output.png",
-    creditCost: 4,
+    creditCost: 80,
   },
   {
     id: "landscape-generator",
@@ -186,10 +186,32 @@ export const TOOLS: Tool[] = [
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/landscape-generator-input.png",
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/landscape-generator-output.png",
-    creditCost: 4,
+    creditCost: 80,
   },
 ];
 
 export function getToolById(id: string): Tool | undefined {
   return TOOLS.find((t) => t.id === id);
+}
+
+export const VIDEO_CREDIT_COST_PER_SECOND = 50;
+export const EDIT_CREDIT_COST = 20;
+
+export function calculateVideoCreditCost(durationSeconds: number): number {
+  return Math.ceil(durationSeconds) * VIDEO_CREDIT_COST_PER_SECOND;
+}
+
+export const IMAGE_CREDIT_COST = 80;
+
+/**
+ * Resolve the brick cost for a given toolId.
+ * Edits (region-edit, global-edit) cost EDIT_CREDIT_COST.
+ * Image tools cost IMAGE_CREDIT_COST (or the tool's creditCost).
+ */
+export function getCreditCostForToolId(toolId: string): number {
+  if (toolId === "region-edit" || toolId === "global-edit") {
+    return EDIT_CREDIT_COST;
+  }
+  const tool = getToolById(toolId);
+  return tool?.creditCost ?? IMAGE_CREDIT_COST;
 }

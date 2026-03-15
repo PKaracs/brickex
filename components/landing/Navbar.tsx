@@ -44,6 +44,12 @@ export default function Navbar() {
           </a>
 
           <div className="flex items-center gap-3 sm:gap-6">
+            <a
+              href="/ideas"
+              className="hidden sm:inline-flex text-sm text-zinc-300 hover:text-white transition-colors"
+            >
+              Ideas
+            </a>
             <Button
               variant="white"
               size="sm"

@@ -23,6 +23,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { authClient } from "@/lib/auth-client";
 import type { SubscriptionData } from "@/lib/actions/get-user-subscription";
 import { SubscriptionModal } from "@/components/modals/subscription-modal";
+import { ProfileSettingsModal } from "@/components/modals/profile-settings-modal";
 import { OrgSwitcher } from "@/components/dashboard/org-switcher";
 import {
   openCrisp,
@@ -47,6 +48,7 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
   const router = useRouter();
   const { data: session, isPending } = authClient.useSession();
   const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
+  const [profileModalOpen, setProfileModalOpen] = useState(false);
   const [crispUnreadCount, setCrispUnreadCount] = useState(0);
   const [hasMounted, setHasMounted] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -83,15 +85,10 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
     router.push("/login");
   };
 
-  const isFreeUser = !subscription?.plan || subscription.plan === "free";
   const generationsRemaining = subscription?.creationsRemaining ?? 0;
 
   const handleGenerationsClick = () => {
-    if (isFreeUser) {
-      router.push("/pricing");
-    } else {
-      setSubscriptionModalOpen(true);
-    }
+    setSubscriptionModalOpen(true);
   };
 
   const getInitials = (name: string | null | undefined) => {
@@ -285,9 +282,11 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
 
           {/* User */}
           <div className="mt-2 border-t border-neutral-700 pt-2">
-            <div
+            <button
+              type="button"
+              onClick={() => setProfileModalOpen(true)}
               className={cn(
-                "flex items-center gap-3 px-3 py-2",
+                "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left transition-colors hover:bg-neutral-700/40",
                 !isOpen && "justify-center px-0"
               )}
             >
@@ -315,10 +314,13 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
                         ? session?.user?.name || "User"
                         : "..."}
                     </p>
+                    <p className="text-xs text-neutral-500 truncate">
+                      Profile settings
+                    </p>
                   </motion.div>
                 )}
               </AnimatePresence>
-            </div>
+            </button>
           </div>
         </div>
       </motion.div>
@@ -336,6 +338,7 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
         generationsRemaining={generationsRemaining}
         getInitials={getInitials}
         isActive={isActive}
+        onProfileClick={() => setProfileModalOpen(true)}
       />
 
       {/* Main content area: rounded panel like the Aceternity design */}
@@ -349,6 +352,10 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
         open={subscriptionModalOpen}
         onOpenChange={setSubscriptionModalOpen}
         subscription={subscription ?? null}
+      />
+      <ProfileSettingsModal
+        open={profileModalOpen}
+        onOpenChange={setProfileModalOpen}
       />
     </div>
   );
@@ -370,6 +377,7 @@ function MobileSidebar({
   generationsRemaining,
   getInitials,
   isActive,
+  onProfileClick,
 }: {
   primaryLinks: SidebarLinkItem[];
   secondaryLinks: SidebarLinkItem[];
@@ -382,6 +390,7 @@ function MobileSidebar({
   generationsRemaining: number;
   getInitials: (name: string | null | undefined) => string;
   isActive: (link: SidebarLinkItem) => boolean;
+  onProfileClick: () => void;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -520,7 +529,14 @@ function MobileSidebar({
               </button>
 
               {/* User */}
-              <div className="flex items-center gap-3 px-2 py-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setOpen(false);
+                  setTimeout(() => onProfileClick(), 200);
+                }}
+                className="flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition-colors hover:bg-neutral-700/40"
+              >
                 <Avatar className="h-9 w-9 border border-neutral-600 flex-shrink-0">
                   <AvatarImage src={session?.user?.image || undefined} />
                   <AvatarFallback className="bg-neutral-700 text-xs flex items-center justify-center text-neutral-200">
@@ -541,7 +557,7 @@ function MobileSidebar({
                     {hasMounted && !isPending ? session?.user?.email : ""}
                   </p>
                 </div>
-              </div>
+              </button>
             </div>
           </motion.div>
         )}

@@ -5,9 +5,12 @@ import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { toNextJsHandler, nextCookies } from "better-auth/next-js";
 import { magicLink, organization, twoFactor, username } from "better-auth/plugins";
+import { polar, checkout, portal, webhooks } from "@polar-sh/better-auth";
+import { Polar } from "@polar-sh/sdk";
 
 import * as schema from "@/db/schema";
 import { sendMagicLinkEmail, sendResetPasswordEmail, sendVerificationEmail } from "@/lib/auth-email";
+import { SUBSCRIPTION_PLANS } from "@/lib/constants/subscription-plans";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
 
@@ -94,11 +97,173 @@ async function createWorkspaceForUser(user: {
   return workspace.id;
 }
 
+const polarClient = new Polar({
+  accessToken: env.POLAR_ACCESS_TOKEN,
+  server: env.POLAR_ENV === "sandbox" ? "sandbox" : "production",
+});
+
+type SubscriptionStatusValue = "trialing" | "active" | "past_due" | "canceled" | "expired" | "paused";
+
+const VALID_SUB_STATUSES = new Set<string>(["trialing", "active", "past_due", "canceled", "expired", "paused"]);
+
+function castSubStatus(raw: string | undefined | null): SubscriptionStatusValue | null {
+  if (!raw || !VALID_SUB_STATUSES.has(raw)) return null;
+  return raw as SubscriptionStatusValue;
+}
+
+function resolvePlanFromProductId(productId: string): {
+  slug: string;
+  creationLimit: number;
+} | null {
+  if (
+    productId === SUBSCRIPTION_PLANS.STARTER.productId
+  ) {
+    return { slug: "starter", creationLimit: SUBSCRIPTION_PLANS.STARTER.creationLimit };
+  }
+  if (productId === SUBSCRIPTION_PLANS.PRO.productId) {
+    return { slug: "pro", creationLimit: SUBSCRIPTION_PLANS.PRO.creationLimit };
+  }
+  if (
+    SUBSCRIPTION_PLANS.STUDIO.productId &&
+    productId === SUBSCRIPTION_PLANS.STUDIO.productId
+  ) {
+    return { slug: "studio", creationLimit: SUBSCRIPTION_PLANS.STUDIO.creationLimit };
+  }
+  return null;
+}
+
+const checkoutProducts = [
+  {
+    productId: SUBSCRIPTION_PLANS.STARTER.productId,
+    slug: SUBSCRIPTION_PLANS.STARTER.slug,
+  },
+  {
+    productId: SUBSCRIPTION_PLANS.PRO.productId,
+    slug: SUBSCRIPTION_PLANS.PRO.slug,
+  },
+  ...(SUBSCRIPTION_PLANS.STUDIO.productId
+    ? [
+        {
+          productId: SUBSCRIPTION_PLANS.STUDIO.productId,
+          slug: SUBSCRIPTION_PLANS.STUDIO.slug,
+        },
+      ]
+    : []),
+];
+
 const authPlugins = [
   nextCookies(),
   username(),
   organization(),
   twoFactor(),
+  polar({
+    client: polarClient,
+    createCustomerOnSignUp: true,
+    use: [
+      checkout({
+        products: checkoutProducts,
+        successUrl: env.POLAR_SUCCESS_URL,
+        authenticatedUsersOnly: true,
+      }),
+      portal(),
+      webhooks({
+        secret: env.POLAR_WEBHOOK_SECRET,
+        onPayload: async (payload) => {
+          const { type, data } = payload;
+
+          if (
+            type === "subscription.created" ||
+            type === "subscription.updated"
+          ) {
+            const sub = data as Record<string, unknown>;
+            const customerId = sub.customer_id as string | undefined;
+            if (!customerId) return;
+
+            const user = await db.query.users.findFirst({
+              where: eq(schema.users.billingCustomerId, customerId),
+              columns: { id: true },
+            });
+            if (!user) return;
+
+            const productId = sub.product_id as string | undefined;
+            const status = castSubStatus(sub.status as string | undefined);
+            const currentPeriodEnd = sub.current_period_end as string | undefined;
+
+            const plan = productId
+              ? resolvePlanFromProductId(productId)
+              : null;
+
+            const isNewlyActive =
+              status === "active" && type === "subscription.created";
+
+            await db
+              .update(schema.users)
+              .set({
+                subscriptionPlan: plan?.slug ?? null,
+                subscriptionStatus: status,
+                subscriptionCurrentPeriodEnd: currentPeriodEnd
+                  ? new Date(currentPeriodEnd)
+                  : null,
+                creationsLimit: plan?.creationLimit ?? SUBSCRIPTION_PLANS.FREE.creationLimit,
+                ...(isNewlyActive ? { creationsUsed: 0 } : {}),
+                updatedAt: new Date(),
+              })
+              .where(eq(schema.users.id, user.id));
+          }
+
+          if (type === "subscription.canceled" || type === "subscription.revoked") {
+            const sub = data as Record<string, unknown>;
+            const customerId = sub.customer_id as string | undefined;
+            if (!customerId) return;
+
+            const user = await db.query.users.findFirst({
+              where: eq(schema.users.billingCustomerId, customerId),
+              columns: { id: true },
+            });
+            if (!user) return;
+
+            await db
+              .update(schema.users)
+              .set({
+                subscriptionStatus: "canceled",
+                subscriptionPlan: null,
+                creationsLimit: SUBSCRIPTION_PLANS.FREE.creationLimit,
+                updatedAt: new Date(),
+              })
+              .where(eq(schema.users.id, user.id));
+          }
+
+          if (type === "subscription.active") {
+            const sub = data as Record<string, unknown>;
+            const customerId = sub.customer_id as string | undefined;
+            if (!customerId) return;
+
+            const user = await db.query.users.findFirst({
+              where: eq(schema.users.billingCustomerId, customerId),
+              columns: { id: true },
+            });
+            if (!user) return;
+
+            const productId = sub.product_id as string | undefined;
+            const plan = productId
+              ? resolvePlanFromProductId(productId)
+              : null;
+
+            await db
+              .update(schema.users)
+              .set({
+                subscriptionStatus: "active",
+                subscriptionPlan: plan?.slug ?? null,
+                creationsLimit: plan?.creationLimit ?? SUBSCRIPTION_PLANS.FREE.creationLimit,
+                creationsUsed: 0,
+                updatedAt: new Date(),
+              })
+              .where(eq(schema.users.id, user.id));
+          }
+        },
+      }),
+    ],
+  }),
   ...(env.authEmailEnabled
     ? [
         magicLink({

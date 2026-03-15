@@ -370,7 +370,7 @@ export default function PricingPageClient({
         {/* Trust signals */}
         <div className="text-center mb-16">
           <p className="text-xs text-neutral-600">
-            Secure payment via Stripe · Cancel anytime
+            Secure payment · Cancel anytime
           </p>
         </div>
 

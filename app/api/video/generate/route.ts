@@ -8,6 +8,8 @@ import {
 import { getPresetById } from "@/lib/constants/video-presets";
 import { getScenePrompt } from "@/lib/generation/video-prompt";
 import { saveVideoToGallery } from "@/lib/generation/save-video";
+import { deductBricks } from "@/lib/actions/get-user-subscription";
+import { calculateVideoCreditCost } from "@/lib/constants/tools";
 
 export const maxDuration = 600;
 
@@ -33,7 +35,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    const videoDuration = duration ?? 5;
+    const brickCost = calculateVideoCreditCost(videoDuration);
+    const deduction = await deductBricks(brickCost);
+    if (!deduction.success) {
+      return NextResponse.json(
+        { error: deduction.error },
+        { status: 402 }
+      );
+    }
+
     console.log("[BrickEx:Video] === Starting video generation ===");
+    console.log(`[BrickEx:Video] Deducted ${brickCost} bricks (${videoDuration}s × 50/s). Remaining: ${deduction.remaining}`);
     console.log(
       `[BrickEx:Video] Duration: ${duration}s, Aspect: ${aspectRatio ?? "default"}, Res: ${resolution ?? "default"}, Motion: ${presetId ?? "none"}, Scene: ${scenePresetId ?? "none"}`
     );

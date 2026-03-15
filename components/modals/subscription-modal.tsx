@@ -4,11 +4,20 @@ import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Loader2, Check, Calendar, AlertCircle } from "lucide-react";
+import {
+  Loader2,
+  Check,
+  Calendar,
+  AlertCircle,
+  Crown,
+  Zap,
+  Building2,
+  X,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 import { trackMetaEvent } from "@/lib/meta-pixel";
 import { tiktokEvents } from "@/lib/tiktok-pixel";
@@ -28,6 +37,73 @@ interface SubscriptionModalProps {
   projectId?: string;
 }
 
+type PaidPlan = "starter" | "pro" | "studio";
+
+const PLAN_TIERS: {
+  key: PaidPlan;
+  config: (typeof SUBSCRIPTION_PLANS)[keyof typeof SUBSCRIPTION_PLANS];
+  icon: React.ReactNode;
+  badge: string | null;
+  badgeColor: string;
+  accentColor: string;
+  buttonClass: string;
+  benefits: string[];
+}[] = [
+  {
+    key: "starter",
+    config: SUBSCRIPTION_PLANS.STARTER,
+    icon: <Zap className="w-5 h-5" />,
+    badge: null,
+    badgeColor: "",
+    accentColor: "text-white",
+    buttonClass:
+      "bg-white text-black hover:bg-neutral-200 active:bg-neutral-300",
+    benefits: [
+      `${SUBSCRIPTION_PLANS.STARTER.bricks.toLocaleString()} bricks per month`,
+      "Exterior + Interior modes",
+      "All architecture styles",
+      "4K exports, no watermarks",
+      "Cancel anytime",
+    ],
+  },
+  {
+    key: "pro",
+    config: SUBSCRIPTION_PLANS.PRO,
+    icon: <Crown className="w-5 h-5" />,
+    badge: "Most Popular",
+    badgeColor: "bg-green-500/15 text-green-400 border-green-500/25",
+    accentColor: "text-green-400",
+    buttonClass:
+      "bg-green-500 text-white hover:bg-green-400 active:bg-green-600 shadow-lg shadow-green-500/20",
+    benefits: [
+      `${SUBSCRIPTION_PLANS.PRO.bricks.toLocaleString()} bricks per month`,
+      "Everything in Starter",
+      "Video generation",
+      "Region editing & refinement",
+      "Priority processing",
+      "Cancel anytime",
+    ],
+  },
+  {
+    key: "studio",
+    config: SUBSCRIPTION_PLANS.STUDIO,
+    icon: <Building2 className="w-5 h-5" />,
+    badge: "For Teams",
+    badgeColor: "bg-violet-500/15 text-violet-400 border-violet-500/25",
+    accentColor: "text-violet-400",
+    buttonClass:
+      "bg-violet-500 text-white hover:bg-violet-400 active:bg-violet-600 shadow-lg shadow-violet-500/20",
+    benefits: [
+      `${SUBSCRIPTION_PLANS.STUDIO.bricks.toLocaleString()} bricks per month`,
+      "Everything in Pro",
+      "Batch rendering",
+      "API access",
+      "Dedicated account manager",
+      "Cancel anytime",
+    ],
+  },
+];
+
 export function SubscriptionModal({
   open,
   onOpenChange,
@@ -35,13 +111,14 @@ export function SubscriptionModal({
   projectId,
 }: SubscriptionModalProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const [loadingPlan, setLoadingPlan] = useState<PaidPlan | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPlan, setSelectedPlan] = useState<"starter" | "pro">("starter");
 
-  const isPro = subscription?.plan === "starter" || subscription?.plan === "pro" || subscription?.plan === "studio";
-  
-  const starterPlan = SUBSCRIPTION_PLANS.STARTER;
-  const proPlan = SUBSCRIPTION_PLANS.PRO;
+  const isPaidUser =
+    subscription?.plan === "starter" ||
+    subscription?.plan === "pro" ||
+    subscription?.plan === "studio";
+
   const usagePercent = subscription
     ? Math.min(
         100,
@@ -49,9 +126,8 @@ export function SubscriptionModal({
       )
     : 0;
 
-  // Track ViewContent when modal opens (soft intent signal for Meta)
   useEffect(() => {
-    if (open && !isPro) {
+    if (open && !isPaidUser) {
       trackMetaEvent("ViewContent", {
         content_name: "subscription_modal",
         content_type: "subscription",
@@ -59,21 +135,25 @@ export function SubscriptionModal({
         value: 29,
       });
 
-      // Track for PostHog A/B test analytics (Variant A users see this modal)
       posthog.capture("subscription_modal_viewed", {
-        ab_variant: "A", // Only Variant A users see the modal
-        source: "free_limit_reached",
+        source: "bricks_click",
       });
     }
-  }, [open, isPro]);
+  }, [open, isPaidUser]);
 
-  const handleUpgrade = async () => {
+  const handleUpgrade = async (plan: PaidPlan) => {
     setIsLoading(true);
+    setLoadingPlan(plan);
     setError(null);
+
     try {
-      const plan = selectedPlan === "pro" ? proPlan : starterPlan;
-      
-      // Store project ID for return after checkout
+      const planConfig =
+        plan === "studio"
+          ? SUBSCRIPTION_PLANS.STUDIO
+          : plan === "pro"
+            ? SUBSCRIPTION_PLANS.PRO
+            : SUBSCRIPTION_PLANS.STARTER;
+
       if (projectId) {
         sessionStorage.setItem(
           SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT,
@@ -81,72 +161,76 @@ export function SubscriptionModal({
         );
       }
 
-      // Generate event IDs for deduplication
-      // InitiateCheckout: same ID used for browser pixel + server CAPI
-      // Purchase: stored now, used later in webhook + success page pixel
       const initiateCheckoutEventId = generateEventId();
       const purchaseEventId = generateEventId();
 
-      // Capture and save Meta tracking data for CAPI enhanced matching
-      // Also store purchaseEventId for deduplication in webhook
       const trackingData = captureMetaTrackingData();
-      
-      // CRITICAL: Must await this! Webhook needs fbp/fbc/eventId for attribution
+
       await updateMetaTracking({
         ...trackingData,
-        purchaseEventId, // Will be used by webhook for Purchase event dedup
+        purchaseEventId,
       }).catch((err) =>
         console.error("[Meta Tracking] Failed to save tracking data:", err)
       );
 
-      // Store purchaseEventId in sessionStorage for client-side Purchase pixel
       sessionStorage.setItem(
         SESSION_STORAGE_KEYS.META_PURCHASE_EVENT_ID,
         purchaseEventId
       );
 
-      // Track InitiateCheckout via browser pixel (with correct price based on selection)
       trackMetaEvent(
         "InitiateCheckout",
-        { content_type: "subscription", currency: "USD", value: plan.price },
+        {
+          content_type: "subscription",
+          currency: "USD",
+          value: planConfig.price,
+        },
         initiateCheckoutEventId
       );
 
-      // Track checkout initiation (TikTok client-side)
       tiktokEvents.initiateCheckout({
         content_type: "subscription",
         currency: "USD",
-        value: plan.price,
+        value: planConfig.price,
       });
 
-      // Track checkout started in Seline
-      seline.checkout.started(plan.slug, "subscription_modal");
+      seline.checkout.started(planConfig.slug, "subscription_modal");
 
-      // Track for abandoned checkout email recovery + Meta CAPI InitiateCheckout (with same eventId)
+      posthog.capture("checkout_initiated", {
+        plan,
+        source: "pricing_modal",
+        value: planConfig.price,
+      });
+
       fetch("/api/checkout/track", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          productId: plan.slug,
+          productId: planConfig.slug,
           eventId: initiateCheckoutEventId,
-          checkoutValue: plan.price, // Include price for Meta CAPI
+          checkoutValue: planConfig.price,
         }),
       }).catch((err) =>
         console.error("[Abandoned Checkout] Failed to track:", err)
       );
 
-      const result = await authClient.checkout({ slug: plan.slug, redirect: true });
+      const result = await authClient.checkout({
+        slug: planConfig.slug,
+        redirect: true,
+      });
       if (result?.data?.url) {
         window.location.href = result.data.url;
       } else if (result?.error) {
         console.error("Checkout returned error:", result.error);
         toast.error("Unable to start checkout. Please try again.");
         setIsLoading(false);
+        setLoadingPlan(null);
       }
     } catch (err) {
       console.error("Checkout error:", err);
       toast.error("Something went wrong. Please try again.");
       setIsLoading(false);
+      setLoadingPlan(null);
     }
   };
 
@@ -182,23 +266,19 @@ export function SubscriptionModal({
     onOpenChange(false);
   };
 
-  // Pro user view - manage subscription (UNCHANGED from original)
-  if (isPro) {
+  if (isPaidUser) {
     return (
       <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
         <DialogContent className="max-w-md w-full md:w-[90vw] bg-neutral-900 border-neutral-800 flex flex-col p-4 md:p-6 overflow-hidden">
-          <DialogHeader className="flex-shrink-0">
-            <DialogTitle className="text-lg md:text-xl text-white flex items-center justify-between pr-10 md:pr-0">
-              <span>Your Plan</span>
-              <span className="text-xs md:text-sm font-normal text-neutral-400">
-                {subscription?.creationsUsed ?? 0} /{" "}
-                {subscription?.creationsLimit ?? 4000} bricks used
-              </span>
-            </DialogTitle>
-          </DialogHeader>
+          <DialogTitle className="text-lg md:text-xl text-white flex items-center justify-between pr-10 md:pr-0">
+            <span>Your Plan</span>
+            <span className="text-xs md:text-sm font-normal text-neutral-400">
+              {subscription?.creationsUsed ?? 0} /{" "}
+              {subscription?.creationsLimit ?? 4000} bricks used
+            </span>
+          </DialogTitle>
 
           <div className="flex-1 overflow-y-auto py-4 md:py-6 space-y-5">
-            {/* Usage Section */}
             <div className="space-y-3">
               <div className="relative h-1.5 bg-neutral-800 rounded-full overflow-hidden">
                 <div
@@ -213,7 +293,6 @@ export function SubscriptionModal({
               </p>
             </div>
 
-            {/* Subscription Info */}
             {subscription?.currentPeriodEnd && (
               <div className="flex items-center gap-2 text-sm text-neutral-400">
                 <Calendar className="w-4 h-4 text-neutral-500" />
@@ -223,12 +302,12 @@ export function SubscriptionModal({
                     : subscription.creationsRemaining === 0
                       ? "Limit resets"
                       : "Renews"}{" "}
-                  {subscription.resetDateMessage || formatDate(subscription.currentPeriodEnd)}
+                  {subscription.resetDateMessage ||
+                    formatDate(subscription.currentPeriodEnd)}
                 </span>
               </div>
             )}
 
-            {/* Error */}
             {error && (
               <div className="p-3 rounded-lg bg-neutral-800 border border-neutral-700">
                 <p className="text-sm text-neutral-300 flex items-center gap-2">
@@ -262,153 +341,149 @@ export function SubscriptionModal({
     );
   }
 
-  // Free user view - outcome-driven upgrade prompt
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-      <DialogContent className="max-w-md w-full md:w-[90vw] bg-neutral-900 border-neutral-800 p-4 md:p-6 max-h-[90vh] flex flex-col">
-        {/* Visually hidden title for accessibility */}
-        <DialogTitle className="sr-only">Upgrade Your Plan</DialogTitle>
-        <div className="flex-1 overflow-y-auto flex flex-col items-center text-center space-y-4 -mx-4 px-4">
-          {/* Title */}
-          <h2 className="text-lg md:text-xl font-medium text-white leading-tight pt-2">
-            Get more bricks to keep creating
-          </h2>
+      <DialogContent
+        className="w-full max-w-4xl bg-neutral-900 border-neutral-800 p-0 max-h-[92vh] flex flex-col overflow-hidden"
+        showXIcon={false}
+      >
+        <DialogTitle className="sr-only">Choose Your Plan</DialogTitle>
 
-          {/* Outcome reminder */}
-          <p className="text-xs md:text-sm text-neutral-400">
-            Turn your designs into stunning architectural renders.
-          </p>
-
-          {/* Plan Toggle */}
-          <div className="w-full space-y-2">
-            <div className="flex gap-2 p-1 bg-neutral-800 rounded-lg">
-              <button
-                onClick={() => setSelectedPlan("starter")}
-                className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all ${
-                  selectedPlan === "starter"
-                    ? "bg-white text-black"
-                    : "text-neutral-400 hover:text-white"
-                }`}
-              >
-                Starter
-              </button>
-              <button
-                onClick={() => setSelectedPlan("pro")}
-                className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all relative ${
-                  selectedPlan === "pro"
-                    ? "bg-white text-black"
-                    : "text-neutral-400 hover:text-white"
-                }`}
-              >
-                Pro
-                <span className="absolute -top-1.5 -right-1.5 bg-green-500 text-white text-[9px] px-1 py-0.5 rounded-full font-bold">
-                  BEST
-                </span>
-              </button>
+        {/* Header */}
+        <div className="flex-shrink-0 px-6 pt-6 pb-4 border-b border-neutral-800">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-xl font-semibold text-white">
+                Choose your plan
+              </h2>
+              <p className="text-sm text-neutral-500 mt-1">
+                Upgrade to unlock more bricks and premium features.
+              </p>
             </div>
+            <button
+              onClick={handleClose}
+              className="p-2 rounded-lg text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
           </div>
+        </div>
 
-          {/* Price */}
-          <div className="space-y-0.5">
-            {selectedPlan === "starter" ? (
-              <>
-                <p className="text-base md:text-lg text-white font-semibold">
-                  ${starterPlan.price}/month{" "}
-                  <span className="text-xs md:text-sm font-normal text-neutral-400">
-                    · Cancel anytime
-                  </span>
-                </p>
-                <p className="text-xs text-neutral-500">
-                  {starterPlan.bricks.toLocaleString()} bricks/month
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="text-base md:text-lg text-white font-semibold">
-                  ${proPlan.price}/month{" "}
-                  <span className="text-xs md:text-sm font-normal text-neutral-400">
-                    · Cancel anytime
-                  </span>
-                </p>
-                <p className="text-xs text-neutral-500">
-                  {proPlan.bricks.toLocaleString()} bricks/month
-                </p>
-              </>
-            )}
-          </div>
+        {/* Plans grid */}
+        <div className="flex-1 overflow-y-auto px-6 py-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {PLAN_TIERS.map((tier) => {
+              const isPopular = tier.key === "pro";
 
-          {/* Bricks usage section */}
-          <div className="w-full space-y-1.5">
-            <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-medium text-left">
-              Free bricks used up
-            </p>
-            {/* Progress bar - full */}
-            <div className="relative h-1.5 bg-neutral-800 rounded-full overflow-hidden">
-              <div
-                className="absolute inset-y-0 left-0 rounded-full bg-white transition-all duration-500"
-                style={{ width: "100%" }}
-              />
-            </div>
-          </div>
-
-          {/* Benefits section */}
-          <div className="w-full space-y-2">
-            <p className="text-[10px] uppercase tracking-widest text-neutral-500 font-medium text-left">
-              {selectedPlan === "pro" ? "Pro Includes" : "Starter Includes"}
-            </p>
-            <ul className="space-y-2 text-left">
-              {(selectedPlan === "pro"
-                ? [
-                    `${proPlan.bricks.toLocaleString()} bricks/month (3x Starter!)`,
-                    "Video generation",
-                    "Region editing & refinement",
-                    "Priority processing",
-                  ]
-                : [
-                    `${starterPlan.bricks.toLocaleString()} bricks per month`,
-                    "Exterior + Interior modes",
-                    "All architecture styles",
-                    "4K exports, no watermarks",
-                  ]
-              ).map((benefit) => (
-                <li
-                  key={benefit}
-                  className="text-xs text-neutral-300 flex items-start gap-2"
+              return (
+                <div
+                  key={tier.key}
+                  className={cn(
+                    "relative flex flex-col rounded-xl border p-5 transition-all",
+                    isPopular
+                      ? "border-green-500/40 bg-green-500/[0.03] shadow-[0_0_24px_rgba(34,197,94,0.06)]"
+                      : "border-neutral-800 bg-neutral-800/30 hover:border-neutral-700"
+                  )}
                 >
-                  <Check className="w-3.5 h-3.5 text-green-500 flex-shrink-0 mt-0.5" />
-                  <span>{benefit}</span>
-                </li>
-              ))}
-            </ul>
+                  {/* Badge */}
+                  {tier.badge && (
+                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                      <span
+                        className={cn(
+                          "inline-block px-3 py-1 rounded-full text-[11px] font-semibold border",
+                          tier.badgeColor
+                        )}
+                      >
+                        {tier.badge}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Plan header */}
+                  <div className={cn("flex items-center gap-2 mb-4", tier.badge && "mt-1")}>
+                    <div className={cn(tier.accentColor)}>{tier.icon}</div>
+                    <span className="text-base font-semibold text-white">
+                      {tier.config.name}
+                    </span>
+                  </div>
+
+                  {/* Price */}
+                  <div className="mb-5">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-bold text-white">
+                        ${tier.config.price}
+                      </span>
+                      <span className="text-sm text-neutral-500">/month</span>
+                    </div>
+                    <p className="text-xs text-neutral-500 mt-1">
+                      {tier.config.bricks.toLocaleString()} bricks included
+                    </p>
+                  </div>
+
+                  {/* CTA */}
+                  <button
+                    onClick={() => handleUpgrade(tier.key)}
+                    disabled={isLoading}
+                    className={cn(
+                      "w-full py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mb-5",
+                      tier.buttonClass
+                    )}
+                  >
+                    {isLoading && loadingPlan === tier.key ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      `Get ${tier.config.name}`
+                    )}
+                  </button>
+
+                  {/* Divider */}
+                  <div className="h-px bg-neutral-700/50 mb-4" />
+
+                  {/* Benefits */}
+                  <ul className="space-y-2.5 flex-1">
+                    {tier.benefits.map((benefit) => (
+                      <li
+                        key={benefit}
+                        className="flex items-start gap-2.5 text-sm text-neutral-300"
+                      >
+                        <Check
+                          className={cn(
+                            "w-4 h-4 flex-shrink-0 mt-0.5",
+                            isPopular
+                              ? "text-green-500"
+                              : tier.key === "studio"
+                                ? "text-violet-400"
+                                : "text-neutral-500"
+                          )}
+                        />
+                        <span>{benefit}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
           </div>
 
           {/* Error */}
           {error && (
-            <div className="w-full p-2 rounded-lg bg-neutral-800 border border-neutral-700">
-              <p className="text-xs text-neutral-300 flex items-center gap-2">
-                <AlertCircle className="w-3.5 h-3.5 flex-shrink-0" />
+            <div className="mt-4 p-3 rounded-lg bg-neutral-800 border border-neutral-700">
+              <p className="text-sm text-neutral-300 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
                 {error}
               </p>
             </div>
           )}
         </div>
 
-        {/* CTA - Fixed at bottom */}
-        <div className="flex-shrink-0 pt-3 border-t border-neutral-800 space-y-2">
-          <Button
-            onClick={handleUpgrade}
-            disabled={isLoading}
-            className="w-full h-11 text-sm font-semibold"
-            data-fast-goal="checkout_initiated"
-            data-fast-goal-plan={selectedPlan}
-            data-fast-goal-source="subscription_modal"
-          >
-            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            Upgrade Now
-          </Button>
+        {/* Footer */}
+        <div className="flex-shrink-0 px-6 py-4 border-t border-neutral-800 flex items-center justify-between">
+          <p className="text-xs text-neutral-600">
+            Secure payment &middot; Cancel anytime
+          </p>
           <button
             onClick={handleClose}
-            className="w-full text-xs text-neutral-600 hover:text-neutral-500 transition-colors py-2"
+            className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors py-1 px-3 rounded-md hover:bg-neutral-800"
           >
             Maybe later
           </button>

@@ -41,7 +41,7 @@ export function identifyUserJot(user: UserJotUser): void {
  */
 export function openUserJot(): void {
   // Open the feedback board directly in a new tab
-  window.open("https://richflex.userjot.com", "_blank");
+  window.open("https://brickex.userjot.com", "_blank");
 }
 
 /**

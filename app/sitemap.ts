@@ -1,6 +1,5 @@
 import { allPosts } from "@/.content-collections/generated";
-import { allSeoPages } from "@/lib/constants/seo-pages-loader";
-import { getGalleryImages } from "@/lib/constants/seo-gallery-manifest";
+import { allIdeaPages } from "@/lib/constants/idea-pages";
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
@@ -22,7 +21,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.9,
     },
     {
-      url: `${baseUrl}/ai-photos`,
+      url: `${baseUrl}/ideas`,
       lastModified: CONTENT_LAST_UPDATED,
       changeFrequency: "weekly",
       priority: 0.9,
@@ -56,15 +55,14 @@ export default function sitemap(): MetadataRoute.Sitemap {
       };
     });
 
-  const scenePages: MetadataRoute.Sitemap = allSeoPages.map((scene) => {
-    const gallery = getGalleryImages(scene.slug);
+  const scenePages: MetadataRoute.Sitemap = allIdeaPages.map((scene) => {
     return {
-      url: `${baseUrl}/ai-photos/${scene.slug}`,
+      url: `${baseUrl}/ideas/${scene.slug}`,
       lastModified: CONTENT_LAST_UPDATED,
       changeFrequency: "weekly" as const,
       priority: 0.8,
-      ...(gallery.length > 0 && {
-        images: gallery.map((img) => img.url),
+      ...(scene.gallery.length > 0 && {
+        images: scene.gallery.map((img) => `${baseUrl}${img.src}`),
       }),
     };
   });

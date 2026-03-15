@@ -1,6 +1,6 @@
 "use server";
 
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import * as schema from "@/db/schema";
 import { db } from "@/lib/db";
@@ -24,7 +24,6 @@ function normalizePlan(plan: string | null | undefined): PlanSlug {
   if (plan === "starter") return "starter";
   if (plan === "pro") return "pro";
   if (plan === "studio") return "studio";
-  // Legacy plan slug mappings
   if (plan.includes("week")) return "starter";
   if (plan.includes("month") || plan === "unlimited-flex-pro") return "pro";
   return "free";
@@ -56,10 +55,7 @@ export async function getUserSubscription(): Promise<
     }
 
     const creationsRemaining = Math.max(user.creationsLimit - user.creationsUsed, 0);
-    const canGenerate =
-      user.subscriptionStatus === "active" || user.subscriptionStatus === "trialing"
-        ? true
-        : creationsRemaining > 0;
+    const canGenerate = creationsRemaining > 0;
 
     return {
       plan: normalizePlan(user.subscriptionPlan),
@@ -109,40 +105,70 @@ export async function checkCanGenerate(): Promise<{
   };
 }
 
+/**
+ * Deduct bricks from the authenticated user's balance.
+ * Uses an atomic SQL update with a floor of 0 to prevent races.
+ * Returns the new remaining balance, or an error.
+ */
+export async function deductBricks(
+  amount: number,
+): Promise<{ success: true; remaining: number } | { success: false; error: string }> {
+  if (amount <= 0) {
+    return { success: false, error: "Invalid deduction amount" };
+  }
+
+  const userId = await getAuthUserId();
+  if (!userId) {
+    return { success: false, error: "Unauthorized" };
+  }
+
+  const user = await db.query.users.findFirst({
+    where: eq(schema.users.id, userId),
+    columns: {
+      creationsUsed: true,
+      creationsLimit: true,
+    },
+  });
+
+  if (!user) {
+    return { success: false, error: "User not found" };
+  }
+
+  const remaining = user.creationsLimit - user.creationsUsed;
+  if (remaining < amount) {
+    return {
+      success: false,
+      error: `Not enough bricks. Need ${amount}, have ${remaining}.`,
+    };
+  }
+
+  const [updated] = await db
+    .update(schema.users)
+    .set({
+      creationsUsed: sql`LEAST(${schema.users.creationsUsed} + ${amount}, ${schema.users.creationsLimit})`,
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.users.id, userId))
+    .returning({
+      creationsUsed: schema.users.creationsUsed,
+      creationsLimit: schema.users.creationsLimit,
+    });
+
+  return {
+    success: true,
+    remaining: updated.creationsLimit - updated.creationsUsed,
+  };
+}
+
+/**
+ * @deprecated Use deductBricks() instead
+ */
 export async function incrementCreationCount(): Promise<
   { success: boolean } | { error: string }
 > {
-  try {
-    const userId = await getAuthUserId();
-
-    if (!userId) {
-      return { error: "Unauthorized" };
-    }
-
-    const user = await db.query.users.findFirst({
-      where: eq(schema.users.id, userId),
-      columns: {
-        creationsUsed: true,
-      },
-    });
-
-    if (!user) {
-      return { error: "User not found" };
-    }
-
-    await db
-      .update(schema.users)
-      .set({
-        creationsUsed: user.creationsUsed + 1,
-        updatedAt: new Date(),
-      })
-      .where(eq(schema.users.id, userId));
-
-    return { success: true };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to increment usage";
-    return { error: message };
-  }
+  const result = await deductBricks(1);
+  if (!result.success) return { error: result.error };
+  return { success: true };
 }
 
 export async function resetCreationsForUser(
