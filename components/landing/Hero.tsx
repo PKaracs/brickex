@@ -115,13 +115,13 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
 
           <BlurFade inView delay={0.3}>
             <div className="mt-7 sm:mt-8 flex flex-col items-center gap-3">
-              <a href="/waitlist">
+              <a href={signupUrl}>
                 <ShimmerButton shimmerColor="#ffffff" shimmerSize="0.05em" background="rgba(255,255,255,0.1)" className="px-8 py-3.5 text-sm sm:text-base font-semibold">
-                  Join the Waitlist
+                  Start Free
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </ShimmerButton>
               </a>
-              <p className="text-xs sm:text-sm text-white/40">Be the first to try BrickEx when we launch.</p>
+              <p className="text-xs sm:text-sm text-white/40">Create an account or sign in to start rendering now.</p>
             </div>
           </BlurFade>
 

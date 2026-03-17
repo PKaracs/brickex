@@ -47,8 +47,8 @@ export default function LoginForm() {
         return;
       }
 
-      // Redirect to dashboard after successful login
-      router.push("/dashboard");
+      // Redirect to a fresh blank project after successful login
+      router.push("/dashboard/new");
       router.refresh();
     } catch (err) {
       setError("An unexpected error occurred");

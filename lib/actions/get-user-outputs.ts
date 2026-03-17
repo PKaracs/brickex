@@ -5,7 +5,7 @@ import { and, count, desc, eq, inArray, isNull, or, sql } from "drizzle-orm";
 import * as schema from "@/db/schema";
 import { requireWorkspaceContext } from "@/lib/auth-guard";
 import { db } from "@/lib/db";
-import { getSignedDownloadUrl, toStorageKey } from "@/lib/storage";
+import { getSignedDownloadUrls, toStorageKey } from "@/lib/storage";
 
 export interface GalleryImage {
   id: string;
@@ -40,6 +40,7 @@ export interface GalleryProjectVariation {
   prompt?: string;
   title?: string;
   mediaType?: string;
+  toolId?: string;
 }
 
 export interface GalleryProjectStack {
@@ -67,6 +68,7 @@ function renderAssetConditions(organizationId: string) {
     or(
       and(eq(schema.assets.mediaType, "image"), eq(schema.assets.assetKind, "render_image")),
       and(eq(schema.assets.mediaType, "video"), eq(schema.assets.assetKind, "render_video")),
+      eq(schema.assets.mediaType, "model_3d"),
     ),
     eq(schema.assets.status, "ready"),
     isNull(schema.assets.deletedAt),
@@ -92,8 +94,9 @@ async function fetchGalleryRows(offset = 0, limit = 8) {
       })
       .from(schema.deliverables)
       .innerJoin(schema.assets, eq(schema.deliverables.assetId, schema.assets.id))
+      .innerJoin(schema.projects, eq(schema.deliverables.projectId, schema.projects.id))
       .leftJoin(schema.toolRuns, eq(schema.deliverables.toolRunId, schema.toolRuns.id))
-      .where(conditions)
+      .where(and(conditions, isNull(schema.projects.archivedAt)))
       .orderBy(desc(schema.deliverables.createdAt))
       .limit(limit)
       .offset(offset),
@@ -101,7 +104,8 @@ async function fetchGalleryRows(offset = 0, limit = 8) {
       .select({ total: count() })
       .from(schema.deliverables)
       .innerJoin(schema.assets, eq(schema.deliverables.assetId, schema.assets.id))
-      .where(conditions),
+      .innerJoin(schema.projects, eq(schema.deliverables.projectId, schema.projects.id))
+      .where(and(conditions, isNull(schema.projects.archivedAt))),
   ]);
 
   return {
@@ -163,7 +167,13 @@ export async function getUserProjectStacksPaginated(
       })
       .from(schema.deliverables)
       .innerJoin(schema.assets, eq(schema.deliverables.assetId, schema.assets.id))
-      .where(renderAssetConditions(organizationId))
+      .innerJoin(schema.projects, eq(schema.deliverables.projectId, schema.projects.id))
+      .where(
+        and(
+          renderAssetConditions(organizationId),
+          isNull(schema.projects.archivedAt),
+        ),
+      )
       .groupBy(schema.deliverables.projectId)
       .as("latest_deliverables_by_project");
 
@@ -193,7 +203,13 @@ export async function getUserProjectStacksPaginated(
         })
         .from(schema.deliverables)
         .innerJoin(schema.assets, eq(schema.deliverables.assetId, schema.assets.id))
-        .where(renderAssetConditions(organizationId)),
+        .innerJoin(schema.projects, eq(schema.deliverables.projectId, schema.projects.id))
+        .where(
+          and(
+            renderAssetConditions(organizationId),
+            isNull(schema.projects.archivedAt),
+          ),
+        ),
     ]);
 
     const projectIds = projectRows.map((row) => row.projectId);
@@ -217,6 +233,7 @@ export async function getUserProjectStacksPaginated(
           bucket: schema.assets.bucket,
           path: schema.assets.path,
           prompt: schema.toolRuns.prompt,
+          toolId: schema.toolRuns.toolId,
           metadata: schema.deliverables.metadata,
           title: schema.deliverables.title,
           mediaType: schema.assets.mediaType,
@@ -257,33 +274,51 @@ export async function getUserProjectStacksPaginated(
         .orderBy(desc(schema.assets.createdAt)),
     ]);
 
-    const signedVariations = await Promise.all(
-      variationRows.map(async (row) => ({
+    const signedUrlMap = await getSignedDownloadUrls([
+      ...variationRows.map((row) => toStorageKey(row.bucket, row.path)),
+      ...originalRows.map((row) => toStorageKey(row.bucket, row.path)),
+    ]);
+
+    const signedVariations = variationRows.map((row) => {
+      const storageKey = toStorageKey(row.bucket, row.path);
+      const signedUrl = signedUrlMap.get(storageKey);
+      if (!signedUrl) {
+        throw new Error(`Missing signed URL for ${storageKey}`);
+      }
+
+      return {
         projectId: row.projectId,
         variation: {
           id: row.assetId,
-          url: await getSignedDownloadUrl(toStorageKey(row.bucket, row.path)),
+          url: signedUrl,
           createdAt: toIsoDateString(row.createdAt),
           projectId: row.projectId,
           mode: extractMode(row.metadata as Record<string, unknown> | null | undefined),
           prompt: row.prompt ?? undefined,
           title: row.title,
           mediaType: row.mediaType ?? "image",
+          toolId: row.toolId ?? undefined,
         } satisfies GalleryProjectVariation,
-      })),
-    );
+      };
+    });
 
-    const signedOriginals = await Promise.all(
-      originalRows.map(async (row) => ({
+    const signedOriginals = originalRows.map((row) => {
+      const storageKey = toStorageKey(row.bucket, row.path);
+      const signedUrl = signedUrlMap.get(storageKey);
+      if (!signedUrl) {
+        throw new Error(`Missing signed URL for ${storageKey}`);
+      }
+
+      return {
         projectId: row.projectId!,
         original: {
           id: row.assetId,
-          url: await getSignedDownloadUrl(toStorageKey(row.bucket, row.path)),
+          url: signedUrl,
           createdAt: toIsoDateString(row.createdAt),
           filename: row.filename ?? undefined,
         } satisfies GalleryProjectOriginal,
-      })),
-    );
+      };
+    });
 
     const variationsByProject = new Map<string, GalleryProjectVariation[]>();
     for (const row of signedVariations) {
@@ -378,17 +413,27 @@ export async function getUserOutputsPaginated(
     const safeLimit = Math.min(Math.max(1, limit), 100);
     const { rows, totalCount } = await fetchGalleryRows(safeOffset, safeLimit);
 
-    const images = await Promise.all(
-      rows.map(async (row) => ({
+    const signedUrlMap = await getSignedDownloadUrls(
+      rows.map((row) => toStorageKey(row.bucket, row.path)),
+    );
+
+    const images = rows.map((row) => {
+      const storageKey = toStorageKey(row.bucket, row.path);
+      const signedUrl = signedUrlMap.get(storageKey);
+      if (!signedUrl) {
+        throw new Error(`Missing signed URL for ${storageKey}`);
+      }
+
+      return {
         id: row.assetId,
-        url: await getSignedDownloadUrl(toStorageKey(row.bucket, row.path)),
+        url: signedUrl,
         createdAt: row.createdAt.toISOString(),
         projectId: row.projectId,
         mode: extractMode(row.metadata as Record<string, unknown> | null | undefined),
         prompt: row.prompt ?? undefined,
         mediaType: row.mediaType ?? "image",
-      })),
-    );
+      };
+    });
 
     return {
       images,

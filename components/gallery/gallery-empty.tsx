@@ -27,7 +27,7 @@ export function GalleryEmpty() {
           </div>
 
           {/* CTA Button */}
-          <Link href="/dashboard">
+          <Link href="/dashboard/new">
             <Button className="bg-white text-black hover:bg-neutral-200 font-semibold h-11 px-6">
               <Sparkles className="h-4 w-4 mr-2" />
               Create Your First Image

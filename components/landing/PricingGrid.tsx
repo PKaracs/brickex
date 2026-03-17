@@ -3,10 +3,13 @@
 import { cn } from "@/lib/utils";
 import { PricingCard, type Plan } from "@/components/ui/pricing-card";
 import { BlurFade } from "@/components/ui/blur-fade";
+import { getSignupUrl } from "@/lib/app-url";
 
 export default function PricingGrid() {
+  const signupUrl = getSignupUrl();
+
   const navigate = () => {
-    window.location.href = "/waitlist";
+    window.location.href = signupUrl;
   };
 
   const plans: Plan[] = [
@@ -22,7 +25,7 @@ export default function PricingGrid() {
         "SketchUp, AutoCAD & PDF support",
         "Basic architecture styles",
       ],
-      buttonText: "Try Free",
+      buttonText: "Start Free",
       onClick: navigate,
     },
     {
@@ -76,7 +79,7 @@ export default function PricingGrid() {
         "White-label exports",
       ],
       additionalFeatures: ["Everything in Pro"],
-      buttonText: "Contact Sales",
+      buttonText: "Start with BrickEx",
       onClick: navigate,
     },
   ];

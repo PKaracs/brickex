@@ -4,8 +4,11 @@ import { useState, useEffect, useRef, useCallback, memo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
+  getExploreCategories,
   getExploreImages,
   getExploreCategoryImages,
+  type ExploreCategory,
+  type ExploreCategoryId,
   type ExploreImage,
 } from "@/lib/actions/get-explore-images";
 import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
@@ -16,38 +19,20 @@ import { cn } from "@/lib/utils";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-/** Category cards with cover images from the explore bucket */
-const CATEGORIES = [
-  {
-    id: "all",
-    label: "All",
-    cover: `https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/explore/johnny/output-adu6w97xyuyqyqutxgkcqhfz.png`,
-  },
-  {
-    id: "luxury",
-    label: "Luxury",
-    cover: `https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/explore/johnny/output-zpumpiz47xtlrz7inu2oyeqe.png`,
-  },
-  {
-    id: "travel",
-    label: "Travel",
-    cover: `https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/explore/johnny/output-cf5hyr7rqmutm54zcfiolv9r.png`,
-  },
-  {
-    id: "lifestyle",
-    label: "Lifestyle",
-    cover: `https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/explore/johnny/output-a8kt0or378cjqsqiczwac0b7.png`,
-  },
-  {
-    id: "cars",
-    label: "Cars & Jets",
-    cover: `https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/explore/johnny/output-wvd0505qqfdpzx7dqogduz1v.png`,
-  },
-] as const;
-
-type CategoryId = (typeof CATEGORIES)[number]["id"];
-
 const PAGE_SIZE = 20;
+
+function getOptimizedUrl(url: string, width: number) {
+  if (url.includes("/storage/v1/object/public/")) {
+    return (
+      url.replace(
+        "/storage/v1/object/public/",
+        "/storage/v1/render/image/public/"
+      ) + `?width=${width}&resize=cover&quality=75`
+    );
+  }
+
+  return url;
+}
 
 // ─── Category Card ───────────────────────────────────────────────────────────
 
@@ -56,7 +41,7 @@ const CategoryCard = memo(function CategoryCard({
   isActive,
   onClick,
 }: {
-  category: (typeof CATEGORIES)[number];
+  category: ExploreCategory;
   isActive: boolean;
   onClick: () => void;
 }) {
@@ -79,12 +64,15 @@ const CategoryCard = memo(function CategoryCard({
           className="object-cover"
           priority
         />
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
-        {/* Label */}
-        <span className="absolute bottom-3 left-0 right-0 text-center text-sm sm:text-base font-bold text-white tracking-wide drop-shadow-lg">
-          {category.label}
-        </span>
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-3 text-left">
+          <span className="block text-sm sm:text-base font-bold text-white tracking-wide drop-shadow-lg">
+            {category.label}
+          </span>
+          <span className="mt-1 block text-[11px] uppercase tracking-[0.16em] text-neutral-300">
+            {category.count} images
+          </span>
+        </div>
       </div>
     </button>
   );
@@ -130,14 +118,24 @@ const ExploreCard = memo(function ExploreCard({
       >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={image.url}
-          alt=""
+          src={getOptimizedUrl(image.url, 720)}
+          alt={image.name}
           loading={index < 4 ? "eager" : "lazy"}
           decoding="async"
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 group-active:scale-[1.02]"
         />
-        {/* Hover gradient */}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+        <div className="absolute inset-x-0 bottom-0 p-3 text-left">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-300">
+            {image.categoryLabel}
+          </p>
+          <p className="mt-1 line-clamp-2 text-sm font-medium text-white">
+            {image.name}
+          </p>
+          <p className="mt-1 line-clamp-1 text-xs text-neutral-400">
+            {image.packTitle}
+          </p>
+        </div>
       </div>
     </button>
   );
@@ -197,7 +195,7 @@ function ExploreImageModal({
           <div className="relative w-full aspect-[3/4] sm:aspect-[4/5] md:aspect-[3/4] max-h-[65dvh] md:max-h-[70vh] bg-neutral-900">
             <Image
               src={image.url}
-              alt="Explore image preview"
+              alt={image.name}
               fill
               priority
               sizes="(max-width: 768px) 100vw, 700px"
@@ -207,18 +205,20 @@ function ExploreImageModal({
 
           {/* CTA Section */}
           <div className="p-5 sm:p-6 space-y-4 bg-neutral-950">
-            <div className="text-center space-y-1.5">
-              <h3 className="text-lg sm:text-xl font-semibold text-white">
-                Create your own version
-              </h3>
-              <p className="text-sm text-neutral-400">
-                Upload a selfie and recreate this look with AI
+            <div className="space-y-2 text-center">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-neutral-500">
+                {image.categoryLabel}
               </p>
+              <h3 className="text-lg sm:text-xl font-semibold text-white">
+                {image.name}
+              </h3>
+              <p className="text-sm text-neutral-400">{image.packTitle}</p>
+              <p className="text-sm text-neutral-500">{image.description}</p>
             </div>
             <Button
               onClick={() => {
                 onOpenChange(false);
-                router.push("/dashboard");
+                router.push("/dashboard/new");
               }}
               className="w-full h-12 sm:h-13 bg-white hover:bg-neutral-200 text-black font-semibold text-base rounded-xl transition-all active:scale-[0.98]"
             >
@@ -235,7 +235,8 @@ function ExploreImageModal({
 // ─── Main Component ──────────────────────────────────────────────────────────
 
 export function ExploreClient() {
-  const [activeCategory, setActiveCategory] = useState<CategoryId>("all");
+  const [categories, setCategories] = useState<ExploreCategory[]>([]);
+  const [activeCategory, setActiveCategory] = useState<ExploreCategoryId>("all");
   const [images, setImages] = useState<ExploreImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -248,9 +249,12 @@ export function ExploreClient() {
   const hasFetchedRef = useRef(false);
   const offsetRef = useRef(0);
 
+  const activeCategoryMeta =
+    categories.find((category) => category.id === activeCategory) ?? null;
+
   // Fetch images
   const fetchImages = useCallback(
-    async (category: CategoryId, offset: number, append: boolean) => {
+    async (category: ExploreCategoryId, offset: number, append: boolean) => {
       try {
         const result =
           category === "all"
@@ -279,6 +283,8 @@ export function ExploreClient() {
 
     (async () => {
       setIsLoading(true);
+      const loadedCategories = await getExploreCategories();
+      setCategories(loadedCategories);
       await fetchImages("all", 0, false);
       setIsLoading(false);
     })();
@@ -286,7 +292,7 @@ export function ExploreClient() {
 
   // Category change
   const handleCategoryChange = useCallback(
-    async (category: CategoryId) => {
+    async (category: ExploreCategoryId) => {
       if (category === activeCategory) return;
       setActiveCategory(category);
       setIsLoading(true);
@@ -344,7 +350,7 @@ export function ExploreClient() {
         {/* ── Category Image Cards ─────────────────────────────────────── */}
         <div className="mt-6">
           <div className="flex gap-3 overflow-x-auto scrollbar-hide py-1">
-            {CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <CategoryCard
                 key={cat.id}
                 category={cat}
@@ -361,7 +367,11 @@ export function ExploreClient() {
         {/* ── Image count ──────────────────────────────────────────────── */}
         <div className="mt-4 mb-3">
           <p className="text-xs text-neutral-600">
-            {isLoading ? "" : `${total} images to explore`}
+            {isLoading
+              ? ""
+              : activeCategory === "all"
+                ? `${total} architecture images across BrickEx`
+                : `${total} images in ${activeCategoryMeta?.label ?? "this category"}`}
           </p>
         </div>
 
@@ -375,8 +385,8 @@ export function ExploreClient() {
         ) : images.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-neutral-500">
             <Sparkles className="h-12 w-12 mb-4 opacity-40" />
-            <p className="text-lg font-medium">No images yet</p>
-            <p className="text-sm">Check back soon for inspiration</p>
+            <p className="text-lg font-medium">No images in this pack yet</p>
+            <p className="text-sm">Pick another idea category to keep browsing</p>
           </div>
         ) : (
           <div className="columns-2 sm:columns-2 md:columns-3 gap-2 sm:gap-3">

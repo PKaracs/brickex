@@ -32,6 +32,10 @@ export interface Tool {
   outputPreview?: string;
   /** Credit cost for this tool */
   creditCost: number;
+  /** Whether this tool can run in the current image-generation workflow */
+  generationReady: boolean;
+  /** Explanation shown when a tool is unavailable */
+  unavailableReason?: string;
 }
 
 export const TOOLS: Tool[] = [
@@ -53,6 +57,7 @@ export const TOOLS: Tool[] = [
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/image-to-3d-output.png",
     creditCost: 80,
+    generationReady: true,
   },
   {
     id: "exploded-diagram",
@@ -72,6 +77,7 @@ export const TOOLS: Tool[] = [
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/exploded-diagram-input.png",
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/exploded-diagram-output.png",
+    generationReady: true,
   },
   {
     id: "floorplan-to-furnished",
@@ -91,6 +97,7 @@ export const TOOLS: Tool[] = [
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-furnished-output.png",
     creditCost: 80,
+    generationReady: true,
   },
   {
     id: "upholstery-change",
@@ -110,6 +117,7 @@ export const TOOLS: Tool[] = [
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/upholstery-change-output.png",
     creditCost: 80,
+    generationReady: true,
   },
   {
     id: "moodboard-to-render",
@@ -130,6 +138,7 @@ export const TOOLS: Tool[] = [
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/moodboard-output.png",
     creditCost: 80,
+    generationReady: true,
   },
   {
     id: "render-to-isometric",
@@ -149,13 +158,14 @@ export const TOOLS: Tool[] = [
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/render-to-isometric-output.png",
     creditCost: 80,
+    generationReady: true,
   },
   {
     id: "floorplan-to-3d",
     label: "Floorplan to 3D Diagram",
     labelItalic: "Diagram",
     description:
-      "Transform 2D floor plans into immersive 3D spatial diagrams and walkthroughs.",
+      "Transform 2D floor plans into immersive 3D spatial diagrams and axonometric views.",
     icon: Map,
     tags: ["Architecture", "3D"],
     placeholder: "Upload a floor plan to convert to 3D",
@@ -168,6 +178,7 @@ export const TOOLS: Tool[] = [
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-3d-output.png",
     creditCost: 80,
+    generationReady: true,
   },
   {
     id: "landscape-generator",
@@ -187,11 +198,20 @@ export const TOOLS: Tool[] = [
     outputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/landscape-generator-output.png",
     creditCost: 80,
+    generationReady: true,
   },
 ];
 
 export function getToolById(id: string): Tool | undefined {
   return TOOLS.find((t) => t.id === id);
+}
+
+export function isToolGenerationReady(id: string): boolean {
+  return getToolById(id)?.generationReady ?? false;
+}
+
+export function getToolUnavailableReason(id: string): string | null {
+  return getToolById(id)?.unavailableReason ?? null;
 }
 
 export const VIDEO_CREDIT_COST_PER_SECOND = 50;

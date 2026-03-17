@@ -26,10 +26,12 @@ import {
   createAngleSlot,
   resolveSlotSettings,
 } from "@/lib/constants/render-modes";
+import { IMAGE_CREDIT_COST } from "@/lib/constants/tools";
 import {
   editRenderRegion,
   editRenderGlobal,
 } from "@/lib/actions/edit-render";
+import { SESSION_STORAGE_KEYS } from "@/lib/constants/session-storage-keys";
 
 function haptic(type: "light" | "medium" | "success" | "error") {
   try {
@@ -64,6 +66,7 @@ export function ProjectDashboard({
   replaceUrl,
   initialOutputUrl,
   subscription: initialSubscription,
+  checkoutSuccess,
 }: ProjectDashboardProps) {
   const router = useRouter();
 
@@ -116,7 +119,9 @@ export function ProjectDashboard({
   const originalImageUrl = activeEditHistory[0] ?? null;
 
   const canGenerate = uploadedFiles.length > 0 || !!sourceUrl;
-  const hasEnoughBricks = (subscription?.creationsRemaining ?? 0) > 0;
+  const generationBrickCost = slots.length * IMAGE_CREDIT_COST;
+  const hasEnoughBricks =
+    (subscription?.creationsRemaining ?? 0) >= generationBrickCost;
   const canStartGeneration = canGenerate && hasEnoughBricks;
 
   // Keep a stable preview URL for the source image
@@ -156,6 +161,40 @@ export function ProjectDashboard({
     }
     return () => document.body.classList.remove("generating");
   }, [isGenerating]);
+
+  const syncSubscription = useCallback(async () => {
+    const updated = await getUserSubscription();
+    if ("error" in updated) return;
+
+    setSubscription(updated);
+
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("brickex:subscription-updated", {
+          detail: updated,
+        })
+      );
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!checkoutSuccess) return;
+
+    const returnProjectId = sessionStorage.getItem(
+      SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT,
+    );
+
+    if (returnProjectId && returnProjectId !== project.id) {
+      sessionStorage.removeItem(SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT);
+      router.replace(`/dashboard/${returnProjectId}?checkout=success`);
+      return;
+    }
+
+    sessionStorage.removeItem(SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT);
+    void syncSubscription();
+    window.history.replaceState(null, "", `/dashboard/${project.id}`);
+    toast.success("Subscription active. Your BrickEx balance is updated.");
+  }, [checkoutSuccess, project.id, router, syncSubscription]);
 
   // ============================================================
   // SOURCE HANDLERS
@@ -284,7 +323,9 @@ export function ProjectDashboard({
           duration: 5000,
         });
       } else {
-        toast.error("Not enough bricks. Upgrade your plan to continue.");
+        toast.error(
+          `Not enough bricks. This generation costs ${generationBrickCost.toLocaleString()} bricks.`
+        );
       }
       return;
     }
@@ -397,10 +438,21 @@ export function ProjectDashboard({
       }
     } finally {
       setIsGenerating(false);
-      const updated = await getUserSubscription();
-      if (!("error" in updated)) setSubscription(updated);
+      await syncSubscription();
     }
-  }, [canStartGeneration, canGenerate, uploadedFiles, sourceUrl, currentMode, globalValues, objectFiles, slots, project.id]);
+  }, [
+    canStartGeneration,
+    canGenerate,
+    uploadedFiles,
+    sourceUrl,
+    currentMode,
+    globalValues,
+    objectFiles,
+    slots,
+    project.id,
+    generationBrickCost,
+    syncSubscription,
+  ]);
 
   // ============================================================
   // EDIT HANDLERS (per active slot)
@@ -447,9 +499,10 @@ export function ProjectDashboard({
         toast.error(error?.message || "Edit failed. Please try again.");
       } finally {
         setIsEditGenerating(false);
+        await syncSubscription();
       }
     },
-    [pushToHistory, project.id]
+    [pushToHistory, project.id, syncSubscription]
   );
 
   const handleGlobalEditSubmit = useCallback(async () => {
@@ -503,8 +556,9 @@ export function ProjectDashboard({
       toast.error(error?.message || "Edit failed. Please try again.");
     } finally {
       setIsEditGenerating(false);
+      await syncSubscription();
     }
-  }, [editPrompt, generatedImageUrl, pushToHistory, project.id]);
+  }, [editPrompt, generatedImageUrl, pushToHistory, project.id, syncSubscription]);
 
   const handleHistorySelect = useCallback(
     (index: number) => {

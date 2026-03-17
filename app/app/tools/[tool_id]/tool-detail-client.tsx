@@ -3,20 +3,80 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
+import { ModelViewerPreview } from "@/components/ui/model-viewer-preview";
 import { cn } from "@/lib/utils";
-import { getToolById } from "@/lib/constants/tools";
+import {
+  getToolById,
+  getToolUnavailableReason,
+  isToolGenerationReady,
+} from "@/lib/constants/tools";
+import { createProject } from "@/lib/actions/create-project";
+import { generateToolImage } from "@/lib/actions/generate-tool-image";
+import { uploadProjectImagesDirect } from "@/lib/project-images-service";
 import {
   ArrowLeft,
+  FileImage,
   Plus,
   X,
   Loader2,
   ArrowRight,
-  Heart,
   Download,
-  MoreVertical,
 } from "lucide-react";
+import { toast } from "sonner";
 
 /* ─── Upload Zone ─────────────────────────────────────────────────────────── */
+
+const SUPPORTED_TOOL_IMAGE_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+
+const TOOL_IMAGE_ACCEPT = ".jpg,.jpeg,.png,.webp";
+
+function isSupportedToolImageFile(file: File) {
+  if (SUPPORTED_TOOL_IMAGE_TYPES.has(file.type)) {
+    return true;
+  }
+
+  return /\.(jpe?g|png|webp)$/i.test(file.name);
+}
+
+function buildToolProjectTitle(toolLabel: string, file?: File | null) {
+  const baseName = file?.name
+    ?.replace(/\.[^.]+$/, "")
+    .replace(/[-_]+/g, " ")
+    .trim();
+
+  if (!baseName) {
+    return toolLabel;
+  }
+
+  const truncated = baseName.slice(0, 48).trim();
+  return `${toolLabel} - ${truncated}`;
+}
+
+async function downloadFile(url: string, filename: string) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error("Failed to download file.");
+  }
+
+  const blob = await response.blob();
+  const objectUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = objectUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(objectUrl);
+}
+
+type GeneratedAsset = {
+  url: string;
+  mediaType: "image" | "model_3d";
+};
 
 function UploadZone({
   files,
@@ -90,24 +150,53 @@ function UploadedThumb({
   onRemove: () => void;
   large?: boolean;
 }) {
-  const previewUrl = useMemo(
-    () => (file ? URL.createObjectURL(file) : null),
-    [file]
-  );
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewFailed, setPreviewFailed] = useState(false);
 
   useEffect(() => {
-    return () => {
-      if (previewUrl) URL.revokeObjectURL(previewUrl);
-    };
-  }, [previewUrl]);
+    setPreviewFailed(false);
 
-  if (!file || !previewUrl) {
+    if (!file) {
+      setPreviewUrl(null);
+      return;
+    }
+
+    const reader = new FileReader();
+    let canceled = false;
+
+    reader.onload = () => {
+      if (canceled) return;
+      if (typeof reader.result === "string") {
+        setPreviewUrl(reader.result);
+      } else {
+        setPreviewFailed(true);
+        setPreviewUrl(null);
+      }
+    };
+
+    reader.onerror = () => {
+      if (canceled) return;
+      setPreviewFailed(true);
+      setPreviewUrl(null);
+    };
+
+    reader.readAsDataURL(file);
+
+    return () => {
+      canceled = true;
+      if (reader.readyState === FileReader.LOADING) {
+        reader.abort();
+      }
+    };
+  }, [file]);
+
+  if (!file) {
     return (
       <button
         onClick={onAdd}
         className={cn(
           "rounded-xl border border-dashed border-neutral-700 bg-neutral-800/20 hover:bg-neutral-800/40 transition-colors flex flex-col items-center justify-center gap-2 flex-shrink-0",
-          large ? "w-full py-14" : "w-40 h-32 sm:w-44 sm:h-36"
+          large ? "w-full py-14" : "w-40 h-32 sm:w-44 sm:h-36",
         )}
       >
         <div className="w-8 h-8 rounded-full border border-dashed border-neutral-600 flex items-center justify-center">
@@ -120,17 +209,53 @@ function UploadedThumb({
     );
   }
 
+  if (!previewUrl || previewFailed) {
+    return (
+      <div
+        className={cn(
+          "relative rounded-xl overflow-hidden bg-neutral-800/50 border border-neutral-700/40 flex flex-col items-center justify-center px-4 text-center",
+          large ? "w-full aspect-[16/9] max-h-56" : "w-40 h-32 sm:w-44 sm:h-36",
+        )}
+      >
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove();
+          }}
+          className="absolute top-2 right-2 z-10 w-6 h-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors"
+        >
+          <X className="w-3 h-3 text-white" />
+        </button>
+        <button
+          onClick={onAdd}
+          className="absolute top-2 left-2 z-10 w-6 h-6 rounded-full bg-black/60 backdrop-blur-sm flex items-center justify-center hover:bg-black/80 transition-colors"
+        >
+          <Plus className="w-3 h-3 text-white" />
+        </button>
+
+        <FileImage className="w-8 h-8 text-neutral-500 mb-3" />
+        <p className="text-xs font-medium text-neutral-300 line-clamp-2">
+          {file.name}
+        </p>
+        <p className="text-[11px] text-neutral-500 mt-1">
+          Preview unavailable
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div
       className={cn(
         "relative rounded-xl overflow-hidden bg-neutral-800/50 border border-neutral-700/40 flex-shrink-0",
-        large ? "w-full aspect-[16/9] max-h-56" : "w-40 h-32 sm:w-44 sm:h-36"
+        large ? "w-full aspect-[16/9] max-h-56" : "w-40 h-32 sm:w-44 sm:h-36",
       )}
     >
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={previewUrl}
         alt="Uploaded"
+        onError={() => setPreviewFailed(true)}
         className="absolute inset-0 w-full h-full object-cover"
       />
       <button
@@ -156,43 +281,70 @@ function UploadedThumb({
 
 function PreviewPanel({
   isGenerating,
-  generatedUrl,
+  isUploading,
+  generatedAsset,
   inputThumbs,
   readyTitle,
   readySubtitle,
+  pendingLabel,
   icon: Icon,
+  sampleInput,
+  sampleOutput,
+  sourcePreviewUrl,
+  onDownload,
 }: {
   isGenerating: boolean;
-  generatedUrl: string | null;
+  isUploading: boolean;
+  generatedAsset: GeneratedAsset | null;
   inputThumbs: string[];
   readyTitle: string;
   readySubtitle: string;
+  pendingLabel: string;
   icon: React.ComponentType<{ className?: string }>;
+  sampleInput?: string;
+  sampleOutput?: string;
+  sourcePreviewUrl?: string | null;
+  onDownload?: () => void;
 }) {
-  if (generatedUrl) {
+  if (generatedAsset) {
     return (
       <div className="relative w-full h-full rounded-xl overflow-hidden bg-neutral-900">
-        {/* Action buttons */}
-        <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between">
-          <button className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors">
-            <Heart className="w-4 h-4 text-white" />
-          </button>
-          <div className="flex items-center gap-1.5">
-            <button className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors">
+        <div className="absolute top-3 right-3 z-10 flex items-center gap-2">
+          {onDownload ? (
+            <button
+              onClick={onDownload}
+              className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors"
+            >
               <Download className="w-4 h-4 text-white" />
             </button>
-            <button className="w-8 h-8 rounded-full bg-black/50 backdrop-blur-sm flex items-center justify-center hover:bg-black/70 transition-colors">
-              <MoreVertical className="w-4 h-4 text-white" />
-            </button>
-          </div>
+          ) : null}
+          <Link
+            href="/gallery"
+            className="rounded-full bg-black/50 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white hover:bg-black/70 transition-colors"
+          >
+            Gallery
+          </Link>
         </div>
 
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src={generatedUrl}
-          alt="Generated result"
-          className="w-full h-full object-cover"
-        />
+        {generatedAsset.mediaType === "model_3d" ? (
+          <ModelViewerPreview
+            src={generatedAsset.url}
+            alt="Generated 3D model"
+            posterSrc={sourcePreviewUrl ?? null}
+            className="h-full w-full"
+          />
+        ) : (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={generatedAsset.url}
+            alt="Generated result"
+            className="w-full h-full object-cover"
+          />
+        )}
+
+        <div className="absolute top-3 left-3 rounded-full bg-black/55 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
+          Saved to gallery
+        </div>
 
         {/* Input thumbnails strip */}
         {inputThumbs.length > 0 && (
@@ -220,10 +372,10 @@ function PreviewPanel({
           <div className="absolute inset-0 w-14 h-14 rounded-full border-2 border-transparent border-t-white/60 animate-spin" />
         </div>
         <p className="text-sm font-medium text-neutral-300">
-          Creating render...
+          {pendingLabel}
         </p>
         <p className="text-xs text-neutral-600 mt-1.5">
-          This usually takes ~30 seconds
+          {isUploading ? "Uploading source image..." : "This usually takes ~30 seconds"}
         </p>
       </div>
     );
@@ -234,11 +386,29 @@ function PreviewPanel({
       {/* Before → After visual */}
       <div className="flex items-center gap-5 mb-7">
         <div className="w-28 h-24 sm:w-32 sm:h-28 rounded-2xl bg-neutral-800/50 border border-neutral-700/30 flex items-center justify-center overflow-hidden">
-          <Icon className="w-8 h-8 text-neutral-600" />
+          {sampleInput ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={sampleInput}
+              alt="Sample input"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Icon className="w-8 h-8 text-neutral-600" />
+          )}
         </div>
         <ArrowRight className="w-5 h-5 text-neutral-600 flex-shrink-0" />
-        <div className="w-28 h-24 sm:w-32 sm:h-28 rounded-2xl bg-neutral-800/50 border border-dashed border-neutral-700/40 flex items-center justify-center overflow-hidden">
-          <div className="w-8 h-8 rounded-lg border border-dashed border-neutral-600" />
+        <div className="w-28 h-24 sm:w-32 sm:h-28 rounded-2xl bg-neutral-800/50 border border-neutral-700/30 flex items-center justify-center overflow-hidden">
+          {sampleOutput ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src={sampleOutput}
+              alt="Sample output"
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-8 h-8 rounded-lg border border-dashed border-neutral-600" />
+          )}
         </div>
       </div>
 
@@ -258,29 +428,50 @@ export function ToolDetailClient() {
   const params = useParams();
   const toolId = params.tool_id as string;
   const tool = getToolById(toolId);
+  const isLiveTool = tool ? isToolGenerationReady(toolId) : false;
+  const disabledReason = tool ? getToolUnavailableReason(toolId) : null;
 
   const maxSlots = tool?.multiUpload ? 4 : 1;
   const [files, setFiles] = useState<(File | null)[]>(
-    () => Array(maxSlots).fill(null) as (File | null)[]
+    () => Array(maxSlots).fill(null) as (File | null)[],
   );
   const [isGenerating, setIsGenerating] = useState(false);
-  const [generatedUrl, setGeneratedUrl] = useState<string | null>(null);
+  const [isUploadingSource, setIsUploadingSource] = useState(false);
+  const [generatedAsset, setGeneratedAsset] = useState<GeneratedAsset | null>(null);
+  const [projectId, setProjectId] = useState<string | null>(null);
+  const [sourceUploaded, setSourceUploaded] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const activeSlotRef = useRef<number>(0);
+
+  useEffect(() => {
+    setFiles(Array(maxSlots).fill(null) as (File | null)[]);
+    setGeneratedAsset(null);
+    setProjectId(null);
+    setSourceUploaded(false);
+  }, [maxSlots, toolId]);
 
   const handleFileSelect = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const selected = e.target.files?.[0];
       if (!selected) return;
+
+      if (!isSupportedToolImageFile(selected)) {
+        toast.error("Use a JPG, PNG, or WebP image.");
+        e.target.value = "";
+        return;
+      }
+
       setFiles((prev) => {
         const updated = [...prev];
         updated[activeSlotRef.current] = selected;
         return updated;
       });
-      setGeneratedUrl(null);
+      setGeneratedAsset(null);
+      setProjectId(null);
+      setSourceUploaded(false);
       e.target.value = "";
     },
-    []
+    [],
   );
 
   const handleAdd = useCallback((slotIndex: number) => {
@@ -294,15 +485,98 @@ export function ToolDetailClient() {
       updated[slotIndex] = null;
       return updated;
     });
-    setGeneratedUrl(null);
+    setGeneratedAsset(null);
+    setProjectId(null);
+    setSourceUploaded(false);
   }, []);
 
-  const handleGenerate = useCallback(() => {
+  const handleGenerate = useCallback(async () => {
+    if (!tool) return;
+
+    if (!isLiveTool) {
+      toast.error(
+        disabledReason ?? `${tool.label} is not available in this workflow.`,
+      );
+      return;
+    }
+
+    const selectedFiles = files.filter((file): file is File => file !== null);
+    if (selectedFiles.length === 0) {
+      toast.error("Upload an image first.");
+      return;
+    }
+
     setIsGenerating(true);
-    setTimeout(() => {
+    setGeneratedAsset(null);
+
+    try {
+      let activeProjectId = projectId;
+
+      if (!activeProjectId) {
+        const created = await createProject({
+          sourceType: "upload",
+          title: buildToolProjectTitle(tool.label, selectedFiles[0]),
+        });
+
+        if ("error" in created) {
+          throw new Error(created.error);
+        }
+
+        activeProjectId = created.projectId;
+        setProjectId(created.projectId);
+      }
+
+      if (!sourceUploaded) {
+        setIsUploadingSource(true);
+        const uploadResult = await uploadProjectImagesDirect(
+          activeProjectId,
+          selectedFiles,
+        );
+
+        if (!uploadResult.success) {
+          throw new Error(uploadResult.error || "Failed to upload source image.");
+        }
+
+        setSourceUploaded(true);
+      }
+
+      setIsUploadingSource(false);
+
+      const result = await generateToolImage(activeProjectId, toolId);
+
+      if (result.error || !result.outputUrl) {
+        throw new Error(result.error || "Generation failed.");
+      }
+
+      setGeneratedAsset({
+        url: result.outputUrl,
+        mediaType: result.mediaType ?? "image",
+      });
+      toast.success(`${tool.label} generated and saved to gallery.`);
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Generation failed.";
+      toast.error(message);
+    } finally {
       setIsGenerating(false);
-    }, 3000);
-  }, []);
+      setIsUploadingSource(false);
+    }
+  }, [disabledReason, files, isLiveTool, projectId, sourceUploaded, tool, toolId]);
+
+  const handleDownload = useCallback(async () => {
+    if (!generatedAsset) return;
+
+    try {
+      await downloadFile(
+        generatedAsset.url,
+        `${toolId}.${generatedAsset.mediaType === "model_3d" ? "glb" : "png"}`,
+      );
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to download file.";
+      toast.error(message);
+    }
+  }, [generatedAsset, toolId]);
 
   const hasFiles = files.some(Boolean);
 
@@ -311,9 +585,15 @@ export function ToolDetailClient() {
       files
         .filter((f): f is File => f !== null)
         .map((f) => URL.createObjectURL(f)),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [files, generatedUrl]
+    [files],
   );
+  const primarySourcePreview = inputThumbs[0] ?? null;
+
+  useEffect(() => {
+    return () => {
+      inputThumbs.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [inputThumbs]);
 
   if (!tool) {
     return (
@@ -346,7 +626,7 @@ export function ToolDetailClient() {
           className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-white transition-colors mb-5 flex-shrink-0 w-fit"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Apps</span>
+          <span>Tools</span>
         </Link>
 
         {/* Container card */}
@@ -377,7 +657,7 @@ export function ToolDetailClient() {
                 <input
                   ref={inputRef}
                   type="file"
-                  accept="image/*"
+                  accept={TOOL_IMAGE_ACCEPT}
                   className="hidden"
                   onChange={handleFileSelect}
                 />
@@ -385,32 +665,41 @@ export function ToolDetailClient() {
 
               {/* Bottom controls */}
               <div className="mt-6 space-y-3 flex-shrink-0">
-                {/* Credit cost */}
-                <p className="text-xs text-neutral-500 text-center">
-                  Your request will cost{" "}
-                  <span className="text-amber-400/90 font-medium">
-                    {tool.creditCost} bricks
-                  </span>
-                </p>
+                {isLiveTool ? (
+                  <p className="text-xs text-neutral-500 text-center">
+                    Your request will cost{" "}
+                    <span className="text-amber-400/90 font-medium">
+                      {tool.creditCost} bricks
+                    </span>
+                  </p>
+                ) : (
+                  <p className="text-xs text-neutral-500 text-center leading-relaxed">
+                    {disabledReason}
+                  </p>
+                )}
 
                 {/* Generate */}
                 <button
                   onClick={handleGenerate}
-                  disabled={!hasFiles || isGenerating}
+                  disabled={!hasFiles || isGenerating || !isLiveTool}
                   className={cn(
                     "w-full py-3 rounded-xl text-sm font-semibold transition-all duration-200",
-                    hasFiles && !isGenerating
+                    hasFiles && !isGenerating && isLiveTool
                       ? "bg-white text-black hover:bg-neutral-200 active:scale-[0.98]"
-                      : "bg-neutral-800 text-neutral-500 cursor-not-allowed"
+                      : "bg-neutral-800 text-neutral-500 cursor-not-allowed",
                   )}
                 >
                   {isGenerating ? (
                     <span className="flex items-center justify-center gap-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      Generating...
+                      {isUploadingSource ? "Uploading..." : "Generating..."}
                     </span>
                   ) : (
-                    "Generate Image"
+                    isLiveTool
+                      ? toolId === "image-to-3d"
+                        ? "Generate 3D Model"
+                        : "Generate Image"
+                      : "Unavailable in Gemini 3.1"
                   )}
                 </button>
               </div>
@@ -420,11 +709,23 @@ export function ToolDetailClient() {
             <div className="flex-1 min-w-0 min-h-[300px] lg:min-h-0">
               <PreviewPanel
                 isGenerating={isGenerating}
-                generatedUrl={generatedUrl}
+                isUploading={isUploadingSource}
+                generatedAsset={generatedAsset}
                 inputThumbs={inputThumbs}
                 readyTitle={tool.readyTitle}
-                readySubtitle={tool.readySubtitle}
+                readySubtitle={isLiveTool ? tool.readySubtitle : disabledReason ?? tool.readySubtitle}
+                pendingLabel={
+                  isUploadingSource
+                    ? "Uploading source..."
+                    : toolId === "image-to-3d"
+                      ? "Generating 3D model..."
+                      : `Generating ${tool.label.toLowerCase()}...`
+                }
                 icon={tool.icon}
+                sampleInput={tool.inputPreview}
+                sampleOutput={tool.outputPreview}
+                sourcePreviewUrl={primarySourcePreview}
+                onDownload={generatedAsset ? handleDownload : undefined}
               />
             </div>
           </div>

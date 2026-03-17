@@ -116,7 +116,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
       {/* Left - Logo */}
       <div className="flex items-center gap-2 sm:gap-3">
         <Link
-          href="/dashboard"
+          href="/dashboard/new"
           className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity touch-manipulation"
         >
           <Image
@@ -147,7 +147,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
         </Link>
         <Separator orientation="vertical" className="h-4 bg-neutral-700" />
         <Link
-          href="/dashboard"
+          href="/dashboard/new"
           className={`text-sm font-medium transition-colors ${
             pathname?.includes("/dashboard")
               ? "text-white"
@@ -325,7 +325,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
               <span className="font-medium">Explore</span>
             </Link>
             <Link
-              href="/dashboard"
+              href="/dashboard/new"
               onClick={() => setMobileNavOpen(false)}
               className={cn(
                 "flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors",

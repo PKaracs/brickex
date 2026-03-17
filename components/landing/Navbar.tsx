@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { getSignupUrl } from "@/lib/app-url";
 import { Button } from "@/components/ui/button";
-import { getPublicAssetUrl } from "@/lib/utils/storage";
 
 export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -56,7 +55,7 @@ export default function Navbar() {
               className="px-3 sm:px-5 py-2 sm:py-2.5 min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm font-medium"
               asChild
             >
-              <a href="/waitlist">Join the Waitlist</a>
+              <a href={signupUrl}>Start Free</a>
             </Button>
           </div>
         </div>

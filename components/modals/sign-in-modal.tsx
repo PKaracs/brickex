@@ -41,7 +41,7 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
         return;
       }
 
-      router.push("/dashboard");
+      router.push("/dashboard/new");
       router.refresh();
       onOpenChange(false);
     } catch (err) {

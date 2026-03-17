@@ -104,7 +104,7 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
   const primaryLinks: SidebarLinkItem[] = [
     {
       label: "Create",
-      href: "/dashboard",
+      href: "/dashboard/new",
       icon: <Sparkles className="h-5 w-5 flex-shrink-0" />,
       matchPath: "/dashboard",
     },
@@ -163,7 +163,7 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
         <div className="flex flex-1 flex-col overflow-x-hidden overflow-y-auto">
           {/* Logo */}
           <Link
-            href="/dashboard"
+            href="/dashboard/new"
             className="flex items-center gap-2.5 px-3 py-1 mb-1"
           >
             <Image
@@ -398,7 +398,7 @@ function MobileSidebar({
     <>
       {/* Mobile top bar */}
       <div className="flex h-[52px] w-full items-center justify-between bg-neutral-800 px-4 md:hidden fixed top-0 left-0 right-0 z-50">
-        <Link href="/dashboard" className="flex items-center gap-2">
+        <Link href="/dashboard/new" className="flex items-center gap-2">
           <Image
             src="/brickex-logo.png"
             alt="BrickEx Logo"
@@ -444,7 +444,7 @@ function MobileSidebar({
           >
             <div>
               <div className="flex items-center justify-between mb-8">
-                <Link href="/dashboard" className="flex items-center gap-2">
+                <Link href="/dashboard/new" className="flex items-center gap-2">
                   <Image
                     src="/brickex-logo.png"
                     alt="BrickEx Logo"

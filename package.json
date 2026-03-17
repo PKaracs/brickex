@@ -13,13 +13,16 @@
     "db:studio": "drizzle-kit studio",
     "generate:textures": "tsx scripts/generate-interior-textures.ts",
     "generate:architecture-styles": "tsx scripts/generate-architecture-style-images.ts",
+    "generate:interior-styles": "tsx scripts/generate-interior-style-images.ts",
     "generate:idea-galleries": "tsx scripts/generate-idea-galleries.ts",
     "upload:idea-galleries": "tsx scripts/upload-idea-galleries.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.940.0",
     "@aws-sdk/s3-request-presigner": "^3.940.0",
+    "@fal-ai/client": "^1.9.4",
     "@google/genai": "^1.30.0",
+    "@google/model-viewer": "^4.2.0",
     "@mapbox/mapbox-gl-geocoder": "^5.1.2",
     "@paralleldrive/cuid2": "^3.0.4",
     "@polar-sh/better-auth": "^1.5.0",

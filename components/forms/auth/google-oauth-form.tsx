@@ -1,13 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 
 export default function GoogleOAuthForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
 
   const handleGoogleSignIn = async () => {
     setIsLoading(true);
@@ -19,7 +17,7 @@ export default function GoogleOAuthForm() {
       }
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard?auth=google",
+        callbackURL: "/dashboard/new",
       });
     } catch (err) {
       console.error("Google sign in error:", err);

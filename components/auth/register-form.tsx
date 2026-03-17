@@ -82,7 +82,7 @@ export default function RegisterForm() {
         console.error("[Meta Tracking] Failed to save at signup:", err)
       );
 
-      router.push("/dashboard");
+      router.push("/dashboard/new");
       router.refresh();
     } catch (err) {
       setError("An unexpected error occurred");

@@ -2,16 +2,33 @@
 
 import { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Download, Layers3, Play, Share2, Trash2, X } from "lucide-react";
+import { ModelViewerPreview } from "@/components/ui/model-viewer-preview";
+import {
+  Box,
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  Layers3,
+  Pencil,
+  Play,
+  Save,
+  Share2,
+  Trash2,
+  X,
+} from "lucide-react";
 
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { RENDER_MODES } from "@/lib/constants/render-modes";
 import {
   GalleryProjectModalItem,
   GalleryProjectStack,
+  getGalleryProjectCollection,
+  getGalleryProjectCollectionLabel,
   getGalleryProjectItems,
+  getGalleryProjectPrimaryDescriptor,
 } from "./gallery-types";
 
 const BLUR_DATA_URL =
@@ -37,6 +54,14 @@ interface ImagePreviewModalProps {
   onDownload?: (item: GalleryProjectModalItem) => void;
   onShare?: (item: GalleryProjectModalItem) => void;
   onDelete?: (item: GalleryProjectModalItem) => void;
+  onDeleteProject?: (project: GalleryProjectStack) => void;
+  isRenamingProject?: boolean;
+  projectRenameValue?: string;
+  onProjectRenameValueChange?: (value: string) => void;
+  onProjectRenameStart?: (project: GalleryProjectStack) => void;
+  onProjectRenameCancel?: () => void;
+  onProjectRenameSubmit?: () => void;
+  isSavingProjectName?: boolean;
 }
 
 export function ImagePreviewModal({
@@ -48,6 +73,14 @@ export function ImagePreviewModal({
   onDownload,
   onShare,
   onDelete,
+  onDeleteProject,
+  isRenamingProject = false,
+  projectRenameValue = "",
+  onProjectRenameValueChange,
+  onProjectRenameStart,
+  onProjectRenameCancel,
+  onProjectRenameSubmit,
+  isSavingProjectName = false,
 }: ImagePreviewModalProps) {
   const [touchStart, setTouchStart] = useState<number | null>(null);
   const [touchEnd, setTouchEnd] = useState<number | null>(null);
@@ -73,6 +106,18 @@ export function ImagePreviewModal({
       ? RENDER_MODES.find((mode) => mode.id === currentItem.mode)
       : null;
   const CurrentModeIcon = currentMode?.icon;
+  const projectCollection = useMemo(
+    () => (project ? getGalleryProjectCollection(project) : "tool"),
+    [project],
+  );
+  const projectDescriptor = useMemo(
+    () => (project ? getGalleryProjectPrimaryDescriptor(project) : "Tool"),
+    [project],
+  );
+  const isCurrentVideo =
+    currentItem?.kind === "variation" && currentItem.mediaType === "video";
+  const isCurrentModel =
+    currentItem?.kind === "variation" && currentItem.mediaType === "model_3d";
 
   const goToPrevious = useCallback(() => {
     if (!hasPrevious) return;
@@ -161,17 +206,32 @@ export function ImagePreviewModal({
             </div>
 
             <div className="relative h-full w-full p-6 md:p-10 pb-28 md:pb-10">
-              {currentItem.kind === "variation" && currentItem.mediaType === "video" ? (
+              {isCurrentVideo ? (
                 <div className="absolute inset-6 md:inset-10 bottom-28 md:bottom-10 flex items-center justify-center">
-                  <video
-                    key={currentItem.id}
-                    src={currentItem.url}
-                    controls
-                    autoPlay
-                    loop
-                    playsInline
-                    className="max-w-full max-h-full rounded-lg"
-                  />
+                  <div className="w-full max-w-5xl rounded-[28px] border border-neutral-800 bg-neutral-950/90 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.45)]">
+                    <div className="overflow-hidden rounded-[22px] border border-neutral-800 bg-black">
+                      <video
+                        key={currentItem.id}
+                        src={currentItem.url}
+                        controls
+                        loop
+                        playsInline
+                        preload="metadata"
+                        poster={project.original?.url}
+                        className="max-h-[72vh] w-full object-contain"
+                      />
+                    </div>
+                  </div>
+                </div>
+              ) : isCurrentModel ? (
+                <div className="absolute inset-6 md:inset-10 bottom-28 md:bottom-10 overflow-hidden rounded-[28px] border border-neutral-800 bg-neutral-950/90 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.45)]">
+                  <div className="h-full overflow-hidden rounded-[22px] border border-neutral-800 bg-black">
+                    <ModelViewerPreview
+                      src={currentItem.url}
+                      alt={project.title}
+                      posterSrc={project.original?.url}
+                    />
+                  </div>
                 </div>
               ) : (
                 <Image
@@ -179,6 +239,7 @@ export function ImagePreviewModal({
                   alt={project.title}
                   fill
                   priority
+                  unoptimized
                   placeholder="blur"
                   blurDataURL={BLUR_DATA_URL}
                   className="object-contain"
@@ -199,18 +260,52 @@ export function ImagePreviewModal({
                         : "border-neutral-800 opacity-70 hover:opacity-100",
                     )}
                   >
-                    <Image
-                      src={item.url}
-                      alt={item.label}
-                      fill
-                      sizes="64px"
-                      loading="lazy"
-                      placeholder="blur"
-                      blurDataURL={BLUR_DATA_URL}
-                      className="object-cover"
-                    />
+                    {item.kind === "variation" && item.mediaType === "video" ? (
+                      <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center">
+                        <Play className="w-5 h-5 text-neutral-300 fill-neutral-300" />
+                      </div>
+                    ) : item.kind === "variation" && item.mediaType === "model_3d" ? (
+                      <>
+                        {project.original ? (
+                          <Image
+                            src={project.original.url}
+                            alt={item.label}
+                            fill
+                            unoptimized
+                            sizes="64px"
+                            loading="lazy"
+                            placeholder="blur"
+                            blurDataURL={BLUR_DATA_URL}
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="absolute inset-0 bg-neutral-900" />
+                        )}
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                          <Box className="w-5 h-5 text-white" />
+                        </div>
+                      </>
+                    ) : (
+                      <Image
+                        src={item.url}
+                        alt={item.label}
+                        fill
+                        unoptimized
+                        sizes="64px"
+                        loading="lazy"
+                        placeholder="blur"
+                        blurDataURL={BLUR_DATA_URL}
+                        className="object-cover"
+                      />
+                    )}
                     <div className="absolute inset-x-1 bottom-1 rounded bg-black/70 px-1 py-0.5 text-[9px] text-white">
-                      {item.kind === "original" ? "OG" : item.label.replace("Variation ", "V")}
+                      {item.kind === "original"
+                        ? "OG"
+                        : item.mediaType === "video"
+                          ? "Video"
+                          : item.mediaType === "model_3d"
+                            ? "3D"
+                          : item.label.replace("Variation ", "V")}
                     </div>
                   </button>
                 ))}
@@ -248,17 +343,71 @@ export function ImagePreviewModal({
           <aside className="hidden md:flex w-[360px] flex-col border-l border-neutral-900 bg-neutral-950/80">
             <div className="border-b border-neutral-900 px-5 py-4">
               <p className="text-xs uppercase tracking-[0.24em] text-neutral-500">Project Stack</p>
-              <h3 className="mt-2 text-lg font-medium text-white">{project.title}</h3>
-              <p className="mt-1 text-sm text-neutral-500">
-                {project.variationCount} {project.variationCount === 1 ? "variation" : "variations"}
-                {project.original ? " + original" : ""}
-              </p>
+              {isRenamingProject ? (
+                <div className="mt-3 space-y-3">
+                  <Input
+                    value={projectRenameValue}
+                    onChange={(e) => onProjectRenameValueChange?.(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        onProjectRenameSubmit?.();
+                      }
+                      if (e.key === "Escape") {
+                        e.preventDefault();
+                        onProjectRenameCancel?.();
+                      }
+                    }}
+                    placeholder="Project name"
+                    autoFocus
+                  />
+                  <div className="flex items-center justify-end gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={onProjectRenameCancel}
+                      className="border-neutral-700 text-neutral-200 hover:bg-neutral-800"
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      variant="white"
+                      size="sm"
+                      onClick={onProjectRenameSubmit}
+                      isLoading={isSavingProjectName}
+                    >
+                      <Save className="h-4 w-4" />
+                      Save
+                    </Button>
+                  </div>
+                </div>
+              ) : (
+                <div className="mt-2 flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className="text-lg font-medium text-white">{project.title}</h3>
+                    <p className="mt-1 text-sm text-neutral-500">
+                      {project.variationCount} {project.variationCount === 1 ? "variation" : "variations"}
+                      {project.original ? " + original" : ""}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onProjectRenameStart?.(project)}
+                    className="h-9 w-9 rounded-full border border-neutral-800 bg-neutral-900 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                  >
+                    <Pencil className="h-4 w-4" />
+                  </Button>
+                </div>
+              )}
             </div>
 
             <div className="flex-1 overflow-y-auto px-5 py-4 space-y-5">
               <div className="grid grid-cols-4 gap-2">
                 {items.map((item) => {
                   const isVideo = item.kind === "variation" && item.mediaType === "video";
+                  const isModel =
+                    item.kind === "variation" && item.mediaType === "model_3d";
                   return (
                     <button
                       key={item.id}
@@ -274,11 +423,33 @@ export function ImagePreviewModal({
                         <div className="absolute inset-0 bg-neutral-900 flex items-center justify-center">
                           <Play className="w-5 h-5 text-neutral-400 fill-neutral-400" />
                         </div>
+                      ) : isModel ? (
+                        <>
+                          {project.original ? (
+                            <Image
+                              src={project.original.url}
+                              alt={item.label}
+                              fill
+                              unoptimized
+                              sizes="80px"
+                              loading="lazy"
+                              placeholder="blur"
+                              blurDataURL={BLUR_DATA_URL}
+                              className="object-cover"
+                            />
+                          ) : (
+                            <div className="absolute inset-0 bg-neutral-900" />
+                          )}
+                          <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+                            <Box className="w-5 h-5 text-white" />
+                          </div>
+                        </>
                       ) : (
                         <Image
                           src={item.url}
                           alt={item.label}
                           fill
+                          unoptimized
                           sizes="80px"
                           loading="lazy"
                           placeholder="blur"
@@ -287,7 +458,13 @@ export function ImagePreviewModal({
                         />
                       )}
                       <div className="absolute inset-x-1 bottom-1 rounded bg-black/70 px-1.5 py-0.5 text-[10px] text-white">
-                        {item.kind === "original" ? "Original" : isVideo ? "Video" : item.label.replace("Variation ", "V")}
+                        {item.kind === "original"
+                          ? "Original"
+                          : isVideo
+                            ? "Video"
+                            : isModel
+                              ? "3D"
+                              : item.label.replace("Variation ", "V")}
                       </div>
                     </button>
                   );
@@ -300,6 +477,9 @@ export function ImagePreviewModal({
                   <div className="mt-2 flex items-center gap-2">
                     <span className="inline-flex rounded-full border border-neutral-800 bg-neutral-900 px-2.5 py-1 text-xs text-neutral-200">
                       {currentItem.label}
+                    </span>
+                    <span className="inline-flex rounded-full border border-neutral-800 bg-neutral-900 px-2.5 py-1 text-xs text-neutral-200">
+                      {projectDescriptor}
                     </span>
                     {currentMode && (
                       <span className="inline-flex items-center gap-1 rounded-full border border-neutral-800 bg-neutral-900 px-2.5 py-1 text-xs text-neutral-200">
@@ -333,12 +513,20 @@ export function ImagePreviewModal({
                         <p className="mt-2 text-sm text-neutral-300">{currentItem.title}</p>
                       </div>
                     )}
+                    <div>
+                      <p className="text-xs font-medium text-neutral-500">Collection</p>
+                      <p className="mt-2 text-sm text-neutral-300">
+                        {getGalleryProjectCollectionLabel(projectCollection)}
+                      </p>
+                    </div>
                     {currentItem.prompt && (
                       <div>
                         <p className="text-xs font-medium text-neutral-500">Prompt</p>
-                        <p className="mt-2 text-sm leading-relaxed text-neutral-300">
+                        <div className="mt-2 max-h-56 overflow-y-auto rounded-2xl border border-neutral-800 bg-neutral-900/60 p-3">
+                          <p className="text-sm leading-relaxed text-neutral-300">
                           {currentItem.prompt}
-                        </p>
+                          </p>
+                        </div>
                       </div>
                     )}
                   </>
@@ -364,12 +552,28 @@ export function ImagePreviewModal({
               </Button>
               <Button
                 variant="outline"
+                onClick={() => onProjectRenameStart?.(project)}
+                className="w-full border-neutral-700 text-neutral-200 hover:bg-neutral-800"
+              >
+                <Pencil className="mr-2 h-4 w-4" />
+                Rename Project
+              </Button>
+              <Button
+                variant="outline"
                 disabled={currentItem.kind !== "variation"}
                 onClick={() => onDelete?.(currentItem)}
                 className="w-full border-neutral-700 text-neutral-200 hover:bg-neutral-800 disabled:opacity-40"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
                 Delete Variation
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => onDeleteProject?.(project)}
+                className="w-full border-red-900/60 text-red-300 hover:bg-red-950/40 hover:text-red-200"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Project
               </Button>
             </div>
           </aside>

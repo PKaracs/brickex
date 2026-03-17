@@ -135,7 +135,7 @@ export default function RootLayout({
         <JsonLd data={webSiteJsonLd} />
         <Script
           src="https://cdn.seline.com/seline.js"
-          data-token="0d89fd8b4ef2fd2"
+          data-token="b1aba6eaab2f911"
           strategy="afterInteractive"
         />
         {/* UserJot SDK Loader */}

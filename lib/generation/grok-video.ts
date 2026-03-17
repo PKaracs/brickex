@@ -41,7 +41,7 @@ export async function submitVideoGeneration(
   };
 
   if (params.imageUrl) {
-    body.image_url = params.imageUrl;
+    body.image = { url: params.imageUrl };
   }
 
   if (params.duration) {

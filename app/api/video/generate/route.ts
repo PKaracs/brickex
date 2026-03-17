@@ -20,6 +20,7 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const {
       imageBase64,
+      imageMimeType,
       prompt,
       presetId,
       scenePresetId,
@@ -75,7 +76,11 @@ export async function POST(req: NextRequest) {
 
     console.log(`[BrickEx:Video] Final prompt: ${finalPrompt.substring(0, 200)}...`);
 
-    const imageUrl = `data:image/jpeg;base64,${imageBase64}`;
+    const safeImageMimeType =
+      typeof imageMimeType === "string" && imageMimeType.startsWith("image/")
+        ? imageMimeType
+        : "image/jpeg";
+    const imageUrl = `data:${safeImageMimeType};base64,${imageBase64}`;
 
     const params: GrokVideoParams = {
       prompt: finalPrompt,

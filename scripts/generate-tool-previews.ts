@@ -62,6 +62,14 @@ const TOOLS_TO_GENERATE: ToolSpec[] = [
       "The exact same modern living room interior photograph, identical composition and angle, but the L-shaped sofa now has rich emerald green velvet upholstery instead of grey. Everything else in the room remains identical — same wooden floor, same windows, same lighting. Only the sofa fabric changed.",
   },
   {
+    id: "exploded-diagram",
+    label: "Exploded Diagram",
+    inputBrief:
+      "A polished architectural render of a sculptural waterfront tower with a podium base, glazed facade, visible floor plates, and a twisted vertical profile. High-end real estate visualization, centered composition, clean skyline backdrop.",
+    outputBrief:
+      "An elegant exploded axonometric diagram of the same sculptural waterfront tower, separated into logical assembly layers such as base, podium, structural core, floor plates, facade shell, and crown. Clean off-white background, subtle shadows, crisp linework, restrained technical shading, premium architectural presentation style, no labels or text.",
+  },
+  {
     id: "render-to-isometric",
     label: "Render to Isometric Diagram",
     inputBrief:

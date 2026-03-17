@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import AppShellClient from "./app-shell-client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSession } from "@/lib/auth-session";
+import { getUserSubscription } from "@/lib/actions/get-user-subscription";
 
 function LayoutSkeleton() {
   return (
@@ -46,9 +47,20 @@ export default async function AppLayout({
     redirect("/login");
   }
 
+  const subscriptionResult =
+    !isAuthRoute(pathname) && session?.user?.id
+      ? await getUserSubscription()
+      : null;
+  const subscription =
+    subscriptionResult && !("error" in subscriptionResult)
+      ? subscriptionResult
+      : null;
+
   return (
     <Suspense fallback={<LayoutSkeleton />}>
-      <AppShellClient>{children}</AppShellClient>
+      <AppShellClient initialSubscription={subscription}>
+        {children}
+      </AppShellClient>
     </Suspense>
   );
 }

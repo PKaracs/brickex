@@ -22,7 +22,7 @@ const serverSchema = z.object({
   SUPABASE_SIGNED_URL_TTL_SECONDS: z.number().int().min(60).max(60 * 60 * 24 * 7).default(60 * 60),
   POLAR_ACCESS_TOKEN: z.string().min(1, "POLAR_ACCESS_TOKEN is required"),
   POLAR_WEBHOOK_SECRET: z.string().min(1, "POLAR_WEBHOOK_SECRET is required"),
-  POLAR_SUCCESS_URL: z.string().url().default("https://app.brickex.co/app/dashboard?checkout=success"),
+  POLAR_SUCCESS_URL: z.string().url().default("https://app.brickex.co/dashboard?checkout=success"),
   POLAR_ENV: z.enum(["sandbox", "production"]).default("production"),
   RESEND_API_KEY: z.string().optional(),
   GOOGLE_CLIENT_ID: z.string().optional(),

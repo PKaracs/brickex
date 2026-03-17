@@ -7,21 +7,14 @@ import { toNextJsHandler, nextCookies } from "better-auth/next-js";
 import { magicLink, organization, twoFactor, username } from "better-auth/plugins";
 import { polar, checkout, portal, webhooks } from "@polar-sh/better-auth";
 import { Polar } from "@polar-sh/sdk";
+import type { CustomerState } from "@polar-sh/sdk/models/components/customerstate";
+import type { CustomerStateSubscription } from "@polar-sh/sdk/models/components/customerstatesubscription";
 
 import * as schema from "@/db/schema";
 import { sendMagicLinkEmail, sendResetPasswordEmail, sendVerificationEmail } from "@/lib/auth-email";
 import { SUBSCRIPTION_PLANS } from "@/lib/constants/subscription-plans";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
-
-function slugify(value: string): string {
-  return value
-    .toLowerCase()
-    .trim()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-    .slice(0, 48);
-}
 
 async function createWorkspaceForUser(user: {
   id: string;
@@ -104,13 +97,6 @@ const polarClient = new Polar({
 
 type SubscriptionStatusValue = "trialing" | "active" | "past_due" | "canceled" | "expired" | "paused";
 
-const VALID_SUB_STATUSES = new Set<string>(["trialing", "active", "past_due", "canceled", "expired", "paused"]);
-
-function castSubStatus(raw: string | undefined | null): SubscriptionStatusValue | null {
-  if (!raw || !VALID_SUB_STATUSES.has(raw)) return null;
-  return raw as SubscriptionStatusValue;
-}
-
 function resolvePlanFromProductId(productId: string): {
   slug: string;
   creationLimit: number;
@@ -130,6 +116,126 @@ function resolvePlanFromProductId(productId: string): {
     return { slug: "studio", creationLimit: SUBSCRIPTION_PLANS.STUDIO.creationLimit };
   }
   return null;
+}
+
+type ResolvedPolarSubscription = {
+  plan: {
+    slug: string;
+    creationLimit: number;
+  };
+  subscription: CustomerStateSubscription;
+};
+
+type BillingSyncUser = {
+  id: string;
+  subscriptionPlan: string | null;
+  subscriptionCurrentPeriodEnd: Date | null;
+};
+
+function selectPrimaryPolarSubscription(
+  subscriptions: CustomerStateSubscription[],
+): ResolvedPolarSubscription | null {
+  const knownSubscriptions = subscriptions
+    .map((subscription) => {
+      const plan = resolvePlanFromProductId(subscription.productId);
+      return plan ? { plan, subscription } : null;
+    })
+    .filter((entry): entry is ResolvedPolarSubscription => entry !== null)
+    .sort((left, right) => right.plan.creationLimit - left.plan.creationLimit);
+
+  return knownSubscriptions[0] ?? null;
+}
+
+function getEffectiveSubscriptionStatus(
+  subscription: CustomerStateSubscription,
+): SubscriptionStatusValue {
+  return subscription.cancelAtPeriodEnd ? "canceled" : subscription.status;
+}
+
+function shouldResetUsageForSubscription(
+  user: BillingSyncUser,
+  nextSubscription: ResolvedPolarSubscription,
+): boolean {
+  const wasPaid =
+    user.subscriptionPlan === "starter" ||
+    user.subscriptionPlan === "pro" ||
+    user.subscriptionPlan === "studio";
+  const previousPeriodEnd = user.subscriptionCurrentPeriodEnd?.toISOString() ?? null;
+  const nextPeriodEnd =
+    nextSubscription.subscription.currentPeriodEnd?.toISOString() ??
+    nextSubscription.subscription.endsAt?.toISOString() ??
+    null;
+
+  return (
+    !wasPaid ||
+    user.subscriptionPlan !== nextSubscription.plan.slug ||
+    previousPeriodEnd !== nextPeriodEnd
+  );
+}
+
+async function syncUserBillingFromPolarState(customerState: CustomerState) {
+  if (!customerState.externalId) {
+    return;
+  }
+
+  const user = await db.query.users.findFirst({
+    where: eq(schema.users.id, customerState.externalId),
+    columns: {
+      id: true,
+      subscriptionPlan: true,
+      subscriptionCurrentPeriodEnd: true,
+    },
+  });
+
+  if (!user) {
+    return;
+  }
+
+  const primarySubscription = selectPrimaryPolarSubscription(
+    customerState.activeSubscriptions,
+  );
+
+  if (!primarySubscription) {
+    await db
+      .update(schema.users)
+      .set({
+        billingCustomerId: customerState.deletedAt ? null : customerState.id,
+        subscriptionProvider: customerState.deletedAt ? "none" : "polar",
+        subscriptionPlan: null,
+        subscriptionStatus: null,
+        subscriptionCurrentPeriodEnd: null,
+        creationsLimit: SUBSCRIPTION_PLANS.FREE.creationLimit,
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.users.id, user.id));
+
+    return;
+  }
+
+  const nextPeriodEnd =
+    primarySubscription.subscription.currentPeriodEnd ??
+    primarySubscription.subscription.endsAt ??
+    null;
+  const shouldResetUsage = shouldResetUsageForSubscription(
+    user,
+    primarySubscription,
+  );
+
+  await db
+    .update(schema.users)
+    .set({
+      billingCustomerId: customerState.id,
+      subscriptionProvider: "polar",
+      subscriptionPlan: primarySubscription.plan.slug,
+      subscriptionStatus: getEffectiveSubscriptionStatus(
+        primarySubscription.subscription,
+      ),
+      subscriptionCurrentPeriodEnd: nextPeriodEnd,
+      creationsLimit: primarySubscription.plan.creationLimit,
+      ...(shouldResetUsage ? { creationsUsed: 0 } : {}),
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.users.id, user.id));
 }
 
 const checkoutProducts = [
@@ -168,98 +274,8 @@ const authPlugins = [
       portal(),
       webhooks({
         secret: env.POLAR_WEBHOOK_SECRET,
-        onPayload: async (payload) => {
-          const { type, data } = payload;
-
-          if (
-            type === "subscription.created" ||
-            type === "subscription.updated"
-          ) {
-            const sub = data as Record<string, unknown>;
-            const customerId = sub.customer_id as string | undefined;
-            if (!customerId) return;
-
-            const user = await db.query.users.findFirst({
-              where: eq(schema.users.billingCustomerId, customerId),
-              columns: { id: true },
-            });
-            if (!user) return;
-
-            const productId = sub.product_id as string | undefined;
-            const status = castSubStatus(sub.status as string | undefined);
-            const currentPeriodEnd = sub.current_period_end as string | undefined;
-
-            const plan = productId
-              ? resolvePlanFromProductId(productId)
-              : null;
-
-            const isNewlyActive =
-              status === "active" && type === "subscription.created";
-
-            await db
-              .update(schema.users)
-              .set({
-                subscriptionPlan: plan?.slug ?? null,
-                subscriptionStatus: status,
-                subscriptionCurrentPeriodEnd: currentPeriodEnd
-                  ? new Date(currentPeriodEnd)
-                  : null,
-                creationsLimit: plan?.creationLimit ?? SUBSCRIPTION_PLANS.FREE.creationLimit,
-                ...(isNewlyActive ? { creationsUsed: 0 } : {}),
-                updatedAt: new Date(),
-              })
-              .where(eq(schema.users.id, user.id));
-          }
-
-          if (type === "subscription.canceled" || type === "subscription.revoked") {
-            const sub = data as Record<string, unknown>;
-            const customerId = sub.customer_id as string | undefined;
-            if (!customerId) return;
-
-            const user = await db.query.users.findFirst({
-              where: eq(schema.users.billingCustomerId, customerId),
-              columns: { id: true },
-            });
-            if (!user) return;
-
-            await db
-              .update(schema.users)
-              .set({
-                subscriptionStatus: "canceled",
-                subscriptionPlan: null,
-                creationsLimit: SUBSCRIPTION_PLANS.FREE.creationLimit,
-                updatedAt: new Date(),
-              })
-              .where(eq(schema.users.id, user.id));
-          }
-
-          if (type === "subscription.active") {
-            const sub = data as Record<string, unknown>;
-            const customerId = sub.customer_id as string | undefined;
-            if (!customerId) return;
-
-            const user = await db.query.users.findFirst({
-              where: eq(schema.users.billingCustomerId, customerId),
-              columns: { id: true },
-            });
-            if (!user) return;
-
-            const productId = sub.product_id as string | undefined;
-            const plan = productId
-              ? resolvePlanFromProductId(productId)
-              : null;
-
-            await db
-              .update(schema.users)
-              .set({
-                subscriptionStatus: "active",
-                subscriptionPlan: plan?.slug ?? null,
-                creationsLimit: plan?.creationLimit ?? SUBSCRIPTION_PLANS.FREE.creationLimit,
-                creationsUsed: 0,
-                updatedAt: new Date(),
-              })
-              .where(eq(schema.users.id, user.id));
-          }
+        onCustomerStateChanged: async (payload) => {
+          await syncUserBillingFromPolarState(payload.data);
         },
       }),
     ],
@@ -397,6 +413,14 @@ export const auth = betterAuth({
           if (!user.email) {
             return;
           }
+
+          await db
+            .update(schema.users)
+            .set({
+              creationsLimit: SUBSCRIPTION_PLANS.FREE.creationLimit,
+              updatedAt: new Date(),
+            })
+            .where(eq(schema.users.id, user.id));
 
           await createWorkspaceForUser({
             id: user.id,

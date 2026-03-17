@@ -1,5 +1,7 @@
 import "server-only";
 
+import { extname } from "path";
+
 import { and, eq, isNull, or, sql } from "drizzle-orm";
 
 import * as schema from "@/db/schema";
@@ -10,6 +12,7 @@ import { storageBuckets } from "@/lib/env";
 import {
   buildProjectAssetPath,
   getSignedDownloadUrl,
+  ingestExternalFileToStorage,
   toStorageKey,
   uploadBufferToStorage,
 } from "@/lib/storage";
@@ -18,6 +21,7 @@ interface StartProjectImageRunInput {
   projectId: string;
   type: typeof schema.toolRunTypeEnum.enumValues[number];
   toolId: string;
+  provider?: typeof schema.providerTypeEnum.enumValues[number];
   model?: string | null;
   prompt?: string | null;
   settings?: Record<string, unknown> | null;
@@ -48,6 +52,20 @@ interface FinishProjectImageRunFailureInput {
   errorMessage: string;
 }
 
+interface FinishProjectBinaryRunSuccessInput {
+  run: StartedProjectImageRun;
+  sourceUrl: string;
+  mediaType: typeof schema.mediaTypeEnum.enumValues[number];
+  assetKind?: typeof schema.assetKindEnum.enumValues[number];
+  deliverableType?: typeof schema.deliverableTypeEnum.enumValues[number];
+  deliverableTitle?: string;
+  deliverableMetadata?: Record<string, unknown> | null;
+  sourceAssetId?: string | null;
+  pathKind?: string;
+  contentType?: string;
+  promoteToHero?: boolean;
+}
+
 interface EnsureProjectSourceImageAssetInput {
   projectId: string;
   dataUrl: string;
@@ -75,6 +93,32 @@ function parseDataUrl(dataUrl: string) {
     extension,
     buffer,
   };
+}
+
+function inferExtensionFromBinary(input: {
+  sourceUrl: string;
+  contentType: string;
+}) {
+  if (input.contentType === "model/gltf-binary") {
+    return "glb";
+  }
+
+  if (input.contentType === "model/gltf+json") {
+    return "gltf";
+  }
+
+  if (input.contentType === "application/octet-stream") {
+    const fromUrl = extname(new URL(input.sourceUrl).pathname)
+      .replace(/^\./, "")
+      .toLowerCase();
+    if (fromUrl) {
+      return fromUrl;
+    }
+  }
+
+  return (
+    input.contentType.split("/")[1]?.replace(/[^a-z0-9]+/gi, "") || "bin"
+  );
 }
 
 export async function ensureProjectSourceImageAsset(
@@ -215,7 +259,7 @@ export async function startProjectImageRun(
       createdByUserId: userId,
       type: input.type,
       toolId: input.toolId,
-      provider: "google",
+      provider: input.provider ?? "google",
       model: input.model ?? null,
       status: "running",
       prompt: input.prompt ?? null,
@@ -328,6 +372,100 @@ export async function finishProjectImageRunSuccess(
     .update(schema.projects)
     .set({
       heroAssetId: assetId,
+      latestRunId: input.run.runId,
+      status: "complete",
+      updatedByUserId: input.run.userId,
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.projects.id, input.run.projectId));
+
+  return {
+    url: await getSignedDownloadUrl(toStorageKey(bucket, path)),
+    assetId,
+  };
+}
+
+export async function finishProjectBinaryRunSuccess(
+  input: FinishProjectBinaryRunSuccessInput,
+): Promise<{ url: string; assetId: string }> {
+  const contentType = input.contentType || "application/octet-stream";
+  const extension = inferExtensionFromBinary({
+    sourceUrl: input.sourceUrl,
+    contentType,
+  });
+  const { assetId, path } = buildProjectAssetPath({
+    organizationId: input.run.organizationId,
+    projectId: input.run.projectId,
+    kind: input.pathKind ?? "generated-assets",
+    originalFilename: `${input.deliverableTitle ?? "asset"}.${extension}`,
+  });
+
+  const bucket = storageBuckets.generations;
+
+  const persisted = await ingestExternalFileToStorage({
+    sourceUrl: input.sourceUrl,
+    bucket,
+    path,
+    contentType,
+  });
+
+  await db.insert(schema.assets).values({
+    id: assetId,
+    organizationId: input.run.organizationId,
+    projectId: input.run.projectId,
+    createdByUserId: input.run.userId,
+    sourceAssetId: input.sourceAssetId ?? input.run.currentHeroAssetId,
+    sourceRunId: input.run.runId,
+    bucket,
+    path,
+    assetKind: input.assetKind ?? "other",
+    mediaType: input.mediaType,
+    origin: "generation",
+    status: "ready",
+    visibility: "private",
+    originalFilename: `${input.deliverableTitle ?? "asset"}.${extension}`,
+    contentType: persisted.contentType,
+    extension,
+    byteSize: persisted.byteSize,
+    readyAt: new Date(),
+    metadata: {
+      persistedBy: "project-binary-run",
+    },
+  });
+
+  await db.insert(schema.toolRunAssets).values({
+    toolRunId: input.run.runId,
+    assetId,
+    role: "output",
+  });
+
+  await db.insert(schema.deliverables).values({
+    organizationId: input.run.organizationId,
+    projectId: input.run.projectId,
+    assetId,
+    toolRunId: input.run.runId,
+    type: input.deliverableType ?? "other",
+    status: "draft",
+    title: input.deliverableTitle ?? "Generated asset",
+    metadata: input.deliverableMetadata ?? null,
+  });
+
+  await db
+    .update(schema.toolRuns)
+    .set({
+      status: "succeeded",
+      completedAt: new Date(),
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.toolRuns.id, input.run.runId));
+
+  await db
+    .update(schema.projects)
+    .set({
+      heroAssetId:
+        input.promoteToHero === false
+          ? input.run.currentHeroAssetId
+          : assetId,
       latestRunId: input.run.runId,
       status: "complete",
       updatedByUserId: input.run.userId,

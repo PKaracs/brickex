@@ -28,7 +28,7 @@ async function createTestUser() {
     emailVerified: true,
     defaultOrganizationId: workspaceId,
     creationsUsed: 0,
-    creationsLimit: 20,
+    creationsLimit: 100,
   });
 
   await db.insert(schema.members).values({

@@ -11,6 +11,7 @@ import { getScenePrompt } from "@/lib/generation/video-prompt";
 
 export interface GenerateVideoInput {
   imageBase64: string;
+  imageMimeType?: string;
   prompt: string;
   presetId?: string;
   scenePresetId?: string;
@@ -54,7 +55,12 @@ export async function generateVideo(
         "Smooth cinematic camera movement, high quality, photorealistic, professional cinematography";
     }
 
-    const imageUrl = `data:image/jpeg;base64,${input.imageBase64}`;
+    const safeImageMimeType =
+      typeof input.imageMimeType === "string" &&
+      input.imageMimeType.startsWith("image/")
+        ? input.imageMimeType
+        : "image/jpeg";
+    const imageUrl = `data:${safeImageMimeType};base64,${input.imageBase64}`;
 
     const params: GrokVideoParams = {
       prompt: finalPrompt,

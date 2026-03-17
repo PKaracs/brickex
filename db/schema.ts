@@ -250,7 +250,7 @@ export const users = pgTable(
       withTimezone: true,
     }),
     creationsUsed: integer("creations_used").notNull().default(0),
-    creationsLimit: integer("creations_limit").notNull().default(20),
+    creationsLimit: integer("creations_limit").notNull().default(100),
     creditsBalance: integer("credits_balance").notNull().default(0),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()

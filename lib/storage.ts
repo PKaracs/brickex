@@ -90,6 +90,46 @@ export async function getSignedDownloadUrl(storageKey: string, expiresIn = env.S
   return result.data.signedUrl;
 }
 
+export async function getSignedDownloadUrls(
+  storageKeys: string[],
+  expiresIn = env.SUPABASE_SIGNED_URL_TTL_SECONDS,
+) {
+  const uniqueStorageKeys = Array.from(new Set(storageKeys));
+  if (uniqueStorageKeys.length === 0) {
+    return new Map<string, string>();
+  }
+
+  const pathsByBucket = new Map<string, string[]>();
+  for (const storageKey of uniqueStorageKeys) {
+    const { bucket, path } = parseStorageKey(storageKey);
+    const existing = pathsByBucket.get(bucket) ?? [];
+    existing.push(path);
+    pathsByBucket.set(bucket, existing);
+  }
+
+  const signedEntries = await Promise.all(
+    Array.from(pathsByBucket.entries()).map(async ([bucket, paths]) => {
+      const result = await supabaseAdmin.storage
+        .from(bucket)
+        .createSignedUrls(paths, expiresIn);
+
+      if (result.error || !result.data) {
+        throw new Error(result.error?.message || "Failed to create signed URLs");
+      }
+
+      return result.data.map((item) => {
+        if (item.error || !item.path || !item.signedUrl) {
+          throw new Error(item.error || "Failed to create signed URL");
+        }
+
+        return [toStorageKey(bucket, item.path), item.signedUrl] as const;
+      });
+    }),
+  );
+
+  return new Map<string, string>(signedEntries.flat());
+}
+
 export async function uploadBufferToStorage(input: {
   bucket: BucketName | string;
   path: string;

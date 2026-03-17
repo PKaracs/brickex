@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { TOOLS, type Tool } from "@/lib/constants/tools";
+import { TOOLS, isToolGenerationReady, type Tool } from "@/lib/constants/tools";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import { motion } from "motion/react";
@@ -22,6 +22,7 @@ const TAG_FILTERS = [
 function ToolCard({ tool, index }: { tool: Tool; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
   const Icon = tool.icon;
+  const isAvailable = isToolGenerationReady(tool.id);
 
   return (
     <Link href={`/tools/${tool.id}`}>
@@ -122,6 +123,12 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
           >
             <ArrowUpRight className="w-3.5 h-3.5 text-neutral-300" />
           </div>
+
+          {!isAvailable ? (
+            <div className="absolute top-3.5 left-3.5 z-10 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-neutral-200 backdrop-blur-sm">
+              Requires 3D model
+            </div>
+          ) : null}
         </div>
 
         {/* Content */}
@@ -205,7 +212,7 @@ export function ToolsClient() {
         <div className="mt-4 mb-4">
           <p className="text-xs text-neutral-600">
             {filteredTools.length} tool{filteredTools.length !== 1 ? "s" : ""}{" "}
-            available
+            shown
           </p>
         </div>
 

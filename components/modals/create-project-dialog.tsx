@@ -39,7 +39,7 @@ export function CreateProjectDialog({
         });
         setName("");
         onOpenChange(false);
-        router.push("/dashboard");
+        router.push("/dashboard/new");
         router.refresh();
       }
     });

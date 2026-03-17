@@ -5,7 +5,6 @@ import { Card } from "@/components/ui/card";
 import {
   Upload,
   X,
-  Download,
   FolderOpen,
   ImageIcon,
   Search,
@@ -81,14 +80,17 @@ function PickFromGalleryModal({
     getUserOutputsPaginated(0, 48).then((result) => {
       if ("images" in result) {
         setImages(
-          result.images.map((img) => ({
-            id: img.id,
-            url: img.url,
-            createdAt: new Date(img.createdAt),
-            projectId: img.projectId,
-            mode: img.mode,
-            prompt: img.prompt,
-          }))
+          result.images
+            .filter((img) => (img.mediaType ?? "image") === "image")
+            .map((img) => ({
+              id: img.id,
+              url: img.url,
+              createdAt: new Date(img.createdAt),
+              projectId: img.projectId,
+              mode: img.mode,
+              prompt: img.prompt,
+              mediaType: img.mediaType,
+            }))
         );
       }
       setIsLoading(false);
@@ -279,7 +281,6 @@ interface VideoCanvasProps {
   onFileClear: () => void;
   isGenerating: boolean;
   videoUrl: string | null;
-  onDownload: () => void;
 }
 
 export function VideoCanvas({
@@ -290,7 +291,6 @@ export function VideoCanvas({
   onFileClear,
   isGenerating,
   videoUrl,
-  onDownload,
 }: VideoCanvasProps) {
   const [isDragOver, setIsDragOver] = useState(false);
   const [blobUrl, setBlobUrl] = useState<string | null>(null);
@@ -371,17 +371,8 @@ export function VideoCanvas({
             autoPlay
             loop
             playsInline
-            className="max-w-full max-h-[calc(100%-60px)] rounded-lg shadow-2xl"
+            className="max-w-full max-h-full rounded-lg shadow-2xl"
           />
-          <div className="flex items-center gap-3 mt-4">
-            <button
-              onClick={onDownload}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white text-black text-sm font-medium hover:bg-neutral-200 transition-colors"
-            >
-              <Download className="w-4 h-4" />
-              Download
-            </button>
-          </div>
         </div>
       </Card>
     );

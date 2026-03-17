@@ -1,12 +1,7 @@
-import { Metadata } from "next";
-import WaitlistClient from "@/components/landing/waitlist-client";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Join the Waitlist — BrickEx",
-  description:
-    "Be the first to create AI-powered photorealistic renders from your architectural plans. Join the BrickEx waitlist for early access.",
-};
+import { getSignupUrl } from "@/lib/app-url";
 
 export default function WaitlistPage() {
-  return <WaitlistClient />;
+  redirect(getSignupUrl());
 }

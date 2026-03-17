@@ -9,10 +9,21 @@ import {
 } from "@/components/video/video-sidebar";
 import type { VideoScenePreset } from "@/lib/constants/video-presets";
 
-async function compressImageToBase64(
+const SUPPORTED_IMAGE_MIME_TYPES = new Set([
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+]);
+
+function normalizeImageMimeType(mimeType?: string) {
+  if (!mimeType) return "image/jpeg";
+  return SUPPORTED_IMAGE_MIME_TYPES.has(mimeType) ? mimeType : "image/jpeg";
+}
+
+async function compressImageToPayload(
   file: File,
   maxDim = 1280
-): Promise<string> {
+): Promise<{ base64: string; mimeType: string }> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     const url = URL.createObjectURL(file);
@@ -27,9 +38,12 @@ async function compressImageToBase64(
       const ctx = canvas.getContext("2d");
       if (!ctx) return reject(new Error("Canvas unavailable"));
       ctx.drawImage(img, 0, 0, w, h);
-      const dataUrl = canvas.toDataURL("image/jpeg", 0.75);
+      const mimeType = normalizeImageMimeType(file.type);
+      const quality =
+        mimeType === "image/jpeg" || mimeType === "image/webp" ? 0.82 : undefined;
+      const dataUrl = canvas.toDataURL(mimeType, quality);
       const rawBase64 = dataUrl.split(",")[1];
-      resolve(rawBase64);
+      resolve({ base64: rawBase64, mimeType });
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
@@ -39,12 +53,17 @@ async function compressImageToBase64(
   });
 }
 
-async function urlToBase64(url: string, maxDim = 1280): Promise<string> {
+async function urlToPayload(
+  url: string,
+  maxDim = 1280,
+): Promise<{ base64: string; mimeType: string }> {
   const res = await fetch(url);
   if (!res.ok) throw new Error("Failed to fetch gallery image");
   const blob = await res.blob();
-  const file = new File([blob], "gallery-image.jpg", { type: blob.type || "image/jpeg" });
-  return compressImageToBase64(file, maxDim);
+  const file = new File([blob], "gallery-image", {
+    type: normalizeImageMimeType(blob.type),
+  });
+  return compressImageToPayload(file, maxDim);
 }
 
 export function VideoClient() {
@@ -101,19 +120,25 @@ export function VideoClient() {
 
     try {
       let imageBase64: string;
+      let imageMimeType: string;
       if (imageFile) {
-        imageBase64 = await compressImageToBase64(imageFile);
+        const prepared = await compressImageToPayload(imageFile);
+        imageBase64 = prepared.base64;
+        imageMimeType = prepared.mimeType;
       } else {
-        imageBase64 = await urlToBase64(galleryUrl!);
+        const prepared = await urlToPayload(galleryUrl!);
+        imageBase64 = prepared.base64;
+        imageMimeType = prepared.mimeType;
       }
 
-      console.log(`[Video] Sending request — image: ${imageBase64.length} chars, scene: ${selectedScenePresetId ?? "none"}, motion: ${selectedPresetId ?? "none"}, prompt: "${prompt.substring(0, 50)}"`);
+      console.log(`[Video] Sending request — image: ${imageBase64.length} chars (${imageMimeType}), scene: ${selectedScenePresetId ?? "none"}, motion: ${selectedPresetId ?? "none"}, prompt: "${prompt.substring(0, 50)}"`);
 
       const response = await fetch("/api/video/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           imageBase64,
+          imageMimeType,
           prompt,
           presetId: selectedPresetId ?? undefined,
           scenePresetId: selectedScenePresetId ?? undefined,
@@ -204,7 +229,6 @@ export function VideoClient() {
             onFileClear={handleClear}
             isGenerating={isGenerating}
             videoUrl={videoUrl}
-            onDownload={handleDownload}
           />
         </div>
 

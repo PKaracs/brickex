@@ -39,7 +39,7 @@ export function GalleryFilters({
         {typeof totalRenderCount === "number" && (
           <span className="text-neutral-600">
             {" "}
-            · {totalRenderCount} {totalRenderCount === 1 ? "image" : "images"}
+            · {totalRenderCount} {totalRenderCount === 1 ? "output" : "outputs"}
           </span>
         )}
       </span>
