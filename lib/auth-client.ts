@@ -8,6 +8,7 @@ import {
   usernameClient,
 } from "better-auth/client/plugins";
 import { polarClient } from "@polar-sh/better-auth";
+import { normalizeBrickexSiteOrigin } from "@/lib/brickex-url";
 
 const resolveBaseUrl = () => {
   if (typeof window !== "undefined") {
@@ -15,7 +16,7 @@ const resolveBaseUrl = () => {
   }
 
   if (process.env.NEXT_PUBLIC_APP_URL) {
-    return process.env.NEXT_PUBLIC_APP_URL;
+    return normalizeBrickexSiteOrigin(process.env.NEXT_PUBLIC_APP_URL);
   }
 
   if (process.env.VERCEL_URL) {
