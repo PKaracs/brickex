@@ -1,9 +1,9 @@
 import contentData from "@/data/ideas/brickex-ideas-content.json";
 import ideaGalleryManifest from "@/data/ideas/idea-gallery-manifest.json";
-import architectureStylePrompts from "@/public/architecture-styles/prompts.json";
-import fullPrompts from "@/public/real-estate-full/prompts.json";
-import frontPrompts from "@/public/real-estate-front/prompts.json";
-import presetPrompts from "@/public/real-estate-presets/prompts.json";
+import architectureStylePrompts from "@/data/explore-prompts/architecture-styles.json";
+import fullPrompts from "@/data/explore-prompts/real-estate-full.json";
+import frontPrompts from "@/data/explore-prompts/real-estate-front.json";
+import presetPrompts from "@/data/explore-prompts/real-estate-presets.json";
 import {
   IDEA_CATEGORY_LABELS,
   IDEA_CATEGORY_ORDER,

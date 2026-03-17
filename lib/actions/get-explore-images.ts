@@ -1,7 +1,4 @@
 "use server";
-
-import { existsSync } from "node:fs";
-import path from "node:path";
 import { assetUrl } from "@/lib/assets";
 import {
   IDEA_CATEGORY_LABELS,
@@ -9,11 +6,11 @@ import {
   getIdeasByCategory,
 } from "@/lib/constants/idea-pages";
 import type { IdeaCategory } from "@/lib/constants/idea-topic-seeds";
-import architectureStylePrompts from "@/public/architecture-styles/prompts.json";
-import fullPrompts from "@/public/real-estate-full/prompts.json";
-import frontPrompts from "@/public/real-estate-front/prompts.json";
-import presetPrompts from "@/public/real-estate-presets/prompts.json";
-import interiorStylePrompts from "@/public/interior-styles/prompts.json";
+import architectureStylePrompts from "@/data/explore-prompts/architecture-styles.json";
+import fullPrompts from "@/data/explore-prompts/real-estate-full.json";
+import frontPrompts from "@/data/explore-prompts/real-estate-front.json";
+import presetPrompts from "@/data/explore-prompts/real-estate-presets.json";
+import interiorStylePrompts from "@/data/explore-prompts/interior-styles.json";
 
 type PropertyPromptRecord = {
   name: string;
@@ -123,10 +120,6 @@ function titleize(value: string) {
     .join(" ");
 }
 
-function localAssetExists(relativePath: string) {
-  return existsSync(path.join(process.cwd(), "public", relativePath));
-}
-
 function createExploreImage({
   id,
   url,
@@ -231,10 +224,6 @@ function buildPropertyCollection(
     }
 
     const relativePath = `${basePath}/${record.name}.png`;
-    if (!localAssetExists(relativePath)) {
-      return [];
-    }
-
     return [
       createExploreImage({
         id: `${packSlug}:${record.name}`,
@@ -270,10 +259,6 @@ function buildVariationCollection(
   return names.flatMap((name) =>
     VARIANT_ORDER.flatMap((variant) => {
       const relativePath = `${basePath}/${name}/${variant}.png`;
-      if (!localAssetExists(relativePath)) {
-        return [];
-      }
-
       const record = recordMap.get(name);
       const baseTitle = titleize(name);
 
@@ -315,10 +300,6 @@ function buildStyleCollection(
     }
 
     const relativePath = `${basePath}/${record.value}.jpg`;
-    if (!localAssetExists(relativePath)) {
-      return [];
-    }
-
     return [
       createExploreImage({
         id: `${packSlug}:${record.value}`,
@@ -336,10 +317,6 @@ function buildStyleCollection(
 function buildInteriorVariationCollection() {
   return INTERIOR_VARIATION_ENTRIES.flatMap((entry) => {
     const relativePath = `interior-variations/${entry.slug}.png`;
-    if (!localAssetExists(relativePath)) {
-      return [];
-    }
-
     return [
       createExploreImage({
         id: `landing-interior-variations:${entry.slug}`,

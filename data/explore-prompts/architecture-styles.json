@@ -1,0 +1,82 @@
+[
+  {
+    "value": "auto",
+    "label": "Auto",
+    "prompt": "FRONT-FACING architectural photograph of a single residential building facade — dead center, perfectly symmetrical, head-on. Camera: Phase One XF IQ4 or Canon EOS R5 with a tilt‑shift lens (Canon TS‑E 24mm f/3.5L II or similar), mounted on a tripod. Settings: f/8–f/11, ISO 100, low ISO, shutter speed set for correct exposure; shoot RAW and bracket 1–3 stops for highlight/shadow retention. Position: camera on the center axis of the building, level and plumb, optical center aligned with facade centerline, tilt‑shift correction applied to eliminate converging verticals; verticals perfectly straight. Lighting: golden hour or soft overcast (warm golden hour preferred), front of the facade evenly and softly lit, warm tones on materials, gentle directional side fill to reveal texture. Composition: strict symmetry, building fills frame, entrance as primary focal point, balanced window rhythm and cornice lines emphasized, clean foreground, minimal distractions, no cars or people. Materials & mood: timeless, elegant residential facade with classic proportions, clean lines, high‑end materials (stone, fine wood, glass, metal accents), natural color palette, subtle shadows to convey depth. Sky: clear or subtle clouds to complement warm light. Output: magazine-quality, photorealistic, high resolution, tack‑sharp detail across the facade."
+  },
+  {
+    "value": "modern",
+    "label": "Modern",
+    "prompt": "a beautiful residential or small commercial building in Modern architecture style. The building must be a clear, iconic example of Modern design — materials, proportions, and details that are unmistakably Modern.. FRONT-FACING VIEW — camera on center axis, straight at facade. Symmetrical, centered. Canon EOS R5, TS-E 24mm tilt-shift, f/8, ISO 100. Golden hour. Photorealistic architectural photography."
+  },
+  {
+    "value": "mediterranean",
+    "label": "Mediterranean",
+    "prompt": "a beautiful residential or small commercial building in Mediterranean architecture style. The building must be a clear, iconic example of Mediterranean design — materials, proportions, and details that are unmistakably Mediterranean.. FRONT-FACING VIEW — camera on center axis, straight at facade. Symmetrical, centered. Canon EOS R5, TS-E 24mm tilt-shift, f/8, ISO 100. Golden hour. Photorealistic architectural photography."
+  },
+  {
+    "value": "minimal",
+    "label": "Minimal",
+    "prompt": "Front-facing architectural portrait of a single minimal-style building, dead center, perfectly symmetrical composition. Iconic Minimal architecture: clean geometric volumes, flat roof, unadorned continuous white plaster façade, recessed floor-to-ceiling glazing with deep shadow reveals, thin cantilevered canopy over the entrance, subtle concrete base, warm timber slatted door/garage as a restrained accent, crisp material joints and shadow lines, minimal ornament. Entrance is the primary focal point, framed exactly on the center axis.\n\nCamera: Phase One XF IQ4 (medium format) OR Canon EOS R5 with Canon TS‑E 24mm f/3.5L II tilt‑shift lens. Tripod, remote release, bubble level. Settings: f/8–f/11, ISO 100, shutter speed to match exposure (shoot RAW). Use tilt‑shift correction and lens shift to eliminate perspective distortion; ensure verticals perfectly straight and the camera optical center aligned with the building center axis — absolute head‑on, no angle, no rotation.\n\nLighting: golden hour warm light on facade (or soft overcast for even tonality), front of facade well lit with long soft shadows to emphasize planes and reveals; warm color temperature, gentle rim light on roofline. Sky: clear or subtle high clouds for clean, editorial backdrop.\n\nComposition & processing notes: symmetrical framing, entrance centered, full facade visible from ground plane to roofline, generous negative space around building, ultra‑sharp, high dynamic range, minimal post‑processing for pure texture and accurate neutral tones — magazine-quality, photorealistic architectural portrait."
+  },
+  {
+    "value": "luxury",
+    "label": "Luxury",
+    "prompt": "a beautiful residential or small commercial building in Luxury architecture style. The building must be a clear, iconic example of Luxury design — materials, proportions, and details that are unmistakably Luxury.. FRONT-FACING VIEW — camera on center axis, straight at facade. Symmetrical, centered. Canon EOS R5, TS-E 24mm tilt-shift, f/8, ISO 100. Golden hour. Photorealistic architectural photography."
+  },
+  {
+    "value": "brutalist",
+    "label": "Brutalist",
+    "prompt": "Photorealistic, magazine-quality frontal architectural portrait of a single Brutalist building — head-on, perfectly centered and symmetrical. Iconic Brutalist features: board‑formed/raw textured concrete, massive geometric volumes, deep-set window bays, repetitive modular fenestration, exposed structural elements, cantilevered balconies and a bold central entrance set into a monumental recessed portico. Clean, uncluttered foreground, minimal signage, no cars, very few people (optional small figure at distance for scale).\n\nCamera: Phase One XF IQ4 or Canon EOS R5 with tilt‑shift lens (Canon TS‑E 24mm f/3.5L II). Settings: f/8–f/11, ISO 100, tripod, mirror lockup, RAW capture, exposure bracket for highlight/shadow retention. Position: camera placed on the building’s center axis, level, lens plane perpendicular to facade — dead center, straight on. Use tilt‑shift correction to keep verticals perfectly straight and preserve symmetry. Framing: symmetrical composition with entrance centered and acting as focal point; include full building height and a balanced amount of foreground. Sky: clear sky or subtle clouds.\n\nLighting: golden hour warm light or soft overcast daylight — front of facade well lit with warm highlights and gentle shadows to reveal concrete texture. Post: natural contrast, neutral white balance with slight warm grade, high microdetail, crisp depth, minimal distortion, no creative perspective tilt. Output: high resolution, ultra‑sharp, architectural documentary style, formal and monumental."
+  },
+  {
+    "value": "art-deco",
+    "label": "Art Deco",
+    "prompt": "a beautiful residential or small commercial building in Art Deco architecture style. The building must be a clear, iconic example of Art Deco design — materials, proportions, and details that are unmistakably Art Deco.. FRONT-FACING VIEW — camera on center axis, straight at facade. Symmetrical, centered. Canon EOS R5, TS-E 24mm tilt-shift, f/8, ISO 100. Golden hour. Photorealistic architectural photography."
+  },
+  {
+    "value": "industrial",
+    "label": "Industrial",
+    "prompt": "Photorealistic, magazine-quality front-facing architectural portrait of a small industrial-style residential/commercial building — converted warehouse/loft scale, unmistakable Industrial design: exposed red/brown brick, raw poured concrete base, matte black steel-framed factory windows with large muntins, steel roll-up door or central industrial entrance, visible steel beams, riveted plates, metal-clad parapet, simple utilitarian proportions, repeating window bays, weathered patina and crisp details. Camera: Phase One XF IQ4 OR Canon EOS R5 with tilt-shift lens (Canon TS-E 24mm f/3.5L II). Settings: f/8–f/11, ISO 100, tripod, shutter speed as required for proper exposure (use tripod for long exposures). Position: dead-center on the building’s center axis, camera level, directly in front — perfectly symmetrical composition, entrance as focal point, camera optical center aligned with facade center. Use tilt-shift correction to eliminate keystone, verticals perfectly straight, no perspective distortion. Lighting: golden-hour warm light bathing the facade (or soft overcast diffused light option), front of facade evenly and attractively lit, warm tones, soft long shadows for texture. Sky: clear or subtle clouds. Deliver crisp, high-dynamic-range detail, deep texture on materials, natural color, sharp across entire plane, editorial architectural portrait styling."
+  },
+  {
+    "value": "tropical",
+    "label": "Tropical",
+    "prompt": "a beautiful residential or small commercial building in Tropical architecture style. The building must be a clear, iconic example of Tropical design — materials, proportions, and details that are unmistakably Tropical.. FRONT-FACING VIEW — camera on center axis, straight at facade. Symmetrical, centered. Canon EOS R5, TS-E 24mm tilt-shift, f/8, ISO 100. Golden hour. Photorealistic architectural photography."
+  },
+  {
+    "value": "japanese",
+    "label": "Japanese",
+    "prompt": "a beautiful residential or small commercial building in Japanese architecture style. The building must be a clear, iconic example of Japanese design — materials, proportions, and details that are unmistakably Japanese.. FRONT-FACING VIEW — camera on center axis, straight at facade. Symmetrical, centered. Canon EOS R5, TS-E 24mm tilt-shift, f/8, ISO 100. Golden hour. Photorealistic architectural photography."
+  },
+  {
+    "value": "scandinavian",
+    "label": "Scandinavian",
+    "prompt": "Canon EOS R5 with Canon TS-E 24mm f/3.5L II (tilt‑shift) on a tripod, f/8–f/11, ISO 100, tripod, shutter speed as required; center axis aligned with building, camera positioned dead-center and level, tilt‑shift correction applied to keep verticals perfectly straight — formal head‑on facade portrait, no 3/4 angle. Photorealistic magazine-quality image of a single residential Scandinavian building: clean, minimalist proportions, light Nordic pine cladding and white lime‑wash plaster, matte black steel window frames, narrow tall glazing, recessed wood-paneled entrance centered in composition, simple pitched gable with dark standing-seam metal roof, subtle stone foundation, slim eaves. Symmetrical composition, entrance as focal point, perfectly centered on frame, minimal understated landscaping (small birch saplings, gravel path, low heather beds) that does not obscure facade. Lighting: golden hour warm light on the front facade (soft warm highlights and long gentle shadows) — alternatively soft overcast daylight for even tonal rendering; front of facade well lit with warm tones, clear sky or delicate high clouds. Ultra-detailed, high dynamic range, natural textures (wood grain, plaster texture, metal seams), crisp sharpness across the plane, neutral color balance with warm accent, subtle lens correction, minimal foreground clutter, editorial aesthetic for Architectural Digest / Dwell cover."
+  },
+  {
+    "value": "colonial",
+    "label": "Colonial",
+    "prompt": "a beautiful residential or small commercial building in Colonial architecture style. The building must be a clear, iconic example of Colonial design — materials, proportions, and details that are unmistakably Colonial.. FRONT-FACING VIEW — camera on center axis, straight at facade. Symmetrical, centered. Canon EOS R5, TS-E 24mm tilt-shift, f/8, ISO 100. Golden hour. Photorealistic architectural photography."
+  },
+  {
+    "value": "parametric",
+    "label": "Parametric",
+    "prompt": "a beautiful residential or small commercial building in Parametric architecture style. The building must be a clear, iconic example of Parametric design — materials, proportions, and details that are unmistakably Parametric.. FRONT-FACING VIEW — camera on center axis, straight at facade. Symmetrical, centered. Canon EOS R5, TS-E 24mm tilt-shift, f/8, ISO 100. Golden hour. Photorealistic architectural photography."
+  },
+  {
+    "value": "neo-classical",
+    "label": "Neo-Classical",
+    "prompt": "a beautiful residential or small commercial building in Neo-Classical architecture style. The building must be a clear, iconic example of Neo-Classical design — materials, proportions, and details that are unmistakably Neo-Classical.. FRONT-FACING VIEW — camera on center axis, straight at facade. Symmetrical, centered. Canon EOS R5, TS-E 24mm tilt-shift, f/8, ISO 100. Golden hour. Photorealistic architectural photography."
+  },
+  {
+    "value": "farmhouse",
+    "label": "Farmhouse",
+    "prompt": "Photorealistic, magazine-quality front-facing architectural photograph of a classic Farmhouse — unmistakable farmhouse vocabulary: steep gabled roof with simple eaves, central gable, white board-and-batten and horizontal clapboard siding, natural weathered wood accents, stone foundation, black metal roof or dark standing seam, symmetrical dormers, centered recessed entry with transom and sidelights, wide covered porch with tapered square columns, simple rail, flanking multi-pane windows with dark frames, farmhouse lantern sconces, modest cupola or barn door detail. Rural/landscaped foreground with trimmed gravel path and low plantings, minimal distraction.\n\nCamera: Phase One XF IQ4 150MP with a wide lens OR Canon EOS R5 with a Canon TS-E 24mm f/3.5L II tilt-shift lens; tripod; f/8–f/11; ISO 100; shutter speed varied for correct exposure; shoot RAW + 3-frame bracket for highlight/shadow preservation. Position: camera placed dead center on the building’s central axis, perfectly level, optical center aligned with facade center, no perspective convergence — use tilt-shift correction so verticals are perfectly straight. Framing: symmetrical composition, entrance as focal point, facade fills frame vertically and horizontally with balanced margins, horizon low, clear sky or subtle soft clouds.\n\nLighting: golden hour warm light on the front of the facade or soft overcast daylight — evenly lit, warm tones, soft shadows emphasizing texture and detail. Deliver hyper-detailed, high dynamic range, razor-sharp architectural portrait suitable for a magazine cover."
+  },
+  {
+    "value": "contemporary",
+    "label": "Contemporary",
+    "prompt": "a beautiful residential or small commercial building in Contemporary architecture style. The building must be a clear, iconic example of Contemporary design — materials, proportions, and details that are unmistakably Contemporary.. FRONT-FACING VIEW — camera on center axis, straight at facade. Symmetrical, centered. Canon EOS R5, TS-E 24mm tilt-shift, f/8, ISO 100. Golden hour. Photorealistic architectural photography."
+  }
+]
