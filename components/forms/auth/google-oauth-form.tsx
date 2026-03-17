@@ -17,7 +17,7 @@ export default function GoogleOAuthForm() {
       }
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard/new",
+        callbackURL: "/app/dashboard/new",
       });
     } catch (err) {
       console.error("Google sign in error:", err);

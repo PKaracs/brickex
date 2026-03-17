@@ -27,6 +27,32 @@ const authRoutes = [
   "/reset-password",
 ];
 
+const legacyAppRoutePrefixes = [
+  ...authRoutes,
+  "/dashboard",
+  "/explore",
+  "/gallery",
+  "/tools",
+  "/video",
+  "/welcome",
+  "/pricing",
+  "/unsubscribe",
+];
+
+function matchesRoutePrefix(pathname: string, prefix: string) {
+  return pathname === prefix || pathname.startsWith(`${prefix}/`);
+}
+
+function isLegacyAppRoute(pathname: string) {
+  return legacyAppRoutePrefixes.some((prefix) =>
+    matchesRoutePrefix(pathname, prefix)
+  );
+}
+
+function isCanonicalAppRoute(pathname: string) {
+  return pathname === "/app" || pathname.startsWith("/app/");
+}
+
 export default async function middleware(req: NextRequest) {
   const url = req.nextUrl;
 
@@ -93,6 +119,23 @@ export default async function middleware(req: NextRequest) {
 
   // rewrite root application to `/home` folder
   if (hostname === "localhost:3000" || hostname === "brickex.co" || hostname === "www.brickex.co") {
+    const requestHeaders = new Headers(req.headers);
+    requestHeaders.set("x-pathname", url.pathname);
+
+    if (isCanonicalAppRoute(url.pathname)) {
+      return NextResponse.next({
+        request: {
+          headers: requestHeaders,
+        },
+      });
+    }
+
+    if (isLegacyAppRoute(url.pathname)) {
+      const redirectUrl = req.nextUrl.clone();
+      redirectUrl.pathname = `/app${url.pathname}`;
+      return NextResponse.redirect(redirectUrl);
+    }
+
     return NextResponse.rewrite(
       new URL(`/landing${path === "/" ? "" : path}`, req.url)
     );

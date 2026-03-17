@@ -28,9 +28,13 @@ function isAuthRoute(pathname: string | null) {
 
   return (
     pathname === "/login" ||
+    pathname === "/app/login" ||
     pathname === "/register" ||
+    pathname === "/app/register" ||
     pathname === "/forgot-password" ||
-    pathname.startsWith("/reset-password")
+    pathname === "/app/forgot-password" ||
+    pathname.startsWith("/reset-password") ||
+    pathname.startsWith("/app/reset-password")
   );
 }
 
@@ -44,7 +48,7 @@ export default async function AppLayout({
   const session = await getSession();
 
   if (!isAuthRoute(pathname) && !session?.user?.id) {
-    redirect("/login");
+    redirect("/app/login");
   }
 
   const subscriptionResult =

@@ -95,7 +95,7 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
     startSwitching(async () => {
       await authClient.organization.setActive({ organizationId: orgId });
       setPopoverOpen(false);
-      router.push("/dashboard/new");
+      router.push("/app/dashboard/new");
       router.refresh();
     });
   }
@@ -113,7 +113,7 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
         setNewName("");
         setShowNewInput(false);
         setPopoverOpen(false);
-        router.push("/dashboard/new");
+        router.push("/app/dashboard/new");
         router.refresh();
       }
     });

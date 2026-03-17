@@ -16,6 +16,7 @@ import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 import { Button } from "@/components/ui/button";
 import { X, Sparkles, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import posthog from "posthog-js";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
@@ -218,7 +219,7 @@ function ExploreImageModal({
             <Button
               onClick={() => {
                 onOpenChange(false);
-                router.push("/dashboard/new");
+                router.push("/app/dashboard/new");
               }}
               className="w-full h-12 sm:h-13 bg-white hover:bg-neutral-200 text-black font-semibold text-base rounded-xl transition-all active:scale-[0.98]"
             >
@@ -294,6 +295,7 @@ export function ExploreClient() {
   const handleCategoryChange = useCallback(
     async (category: ExploreCategoryId) => {
       if (category === activeCategory) return;
+      posthog.capture("explore_category_changed", { category });
       setActiveCategory(category);
       setIsLoading(true);
       offsetRef.current = 0;
@@ -329,6 +331,11 @@ export function ExploreClient() {
 
   // Image click
   const handleImageClick = useCallback((image: ExploreImage) => {
+    posthog.capture("explore_image_clicked", {
+      image_id: image.id,
+      category: image.categoryLabel,
+      pack_title: image.packTitle,
+    });
     setSelectedImage(image);
     setModalOpen(true);
   }, []);

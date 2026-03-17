@@ -13,9 +13,9 @@ export default async function NewDashboardPage({ searchParams }: NewDashboardPag
   const result = await createProject();
 
   if ("error" in result) {
-    redirect("/gallery");
+    redirect("/app/gallery");
   }
 
   const checkoutQuery = query.checkout ? `?checkout=${encodeURIComponent(query.checkout)}` : "";
-  redirect(`/dashboard/${result.projectId}${checkoutQuery}`);
+  redirect(`/app/dashboard/${result.projectId}${checkoutQuery}`);
 }

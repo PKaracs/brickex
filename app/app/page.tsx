@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
 
 export default async function AppHome() {
-  redirect("/dashboard/new");
+  redirect("/app/dashboard/new");
 }

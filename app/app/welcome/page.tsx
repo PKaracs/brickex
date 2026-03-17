@@ -24,7 +24,7 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
   // If user already completed onboarding, send them to explore
   const completed = await hasCompletedOnboarding(userId);
   if (completed) {
-    redirect("/explore");
+    redirect("/app/explore");
   }
 
   const subscriptionResult = await getUserSubscription();
@@ -33,4 +33,3 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
 
   return <WelcomeClient subscription={subscription} />;
 }
-

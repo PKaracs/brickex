@@ -319,7 +319,7 @@ function PreviewPanel({
             </button>
           ) : null}
           <Link
-            href="/gallery"
+            href="/app/gallery"
             className="rounded-full bg-black/50 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white hover:bg-black/70 transition-colors"
           >
             Gallery
@@ -601,7 +601,7 @@ export function ToolDetailClient() {
         <div className="text-center space-y-3">
           <p className="text-lg text-neutral-400">Tool not found</p>
           <Link
-            href="/tools"
+            href="/app/tools"
             className="text-sm text-neutral-500 hover:text-white transition-colors underline"
           >
             Back to Tools
@@ -622,7 +622,7 @@ export function ToolDetailClient() {
       <div className="h-full flex flex-col px-5 sm:px-8 pt-5 sm:pt-6 pb-6">
         {/* Back */}
         <Link
-          href="/tools"
+          href="/app/tools"
           className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-white transition-colors mb-5 flex-shrink-0 w-fit"
         >
           <ArrowLeft className="w-3.5 h-3.5" />

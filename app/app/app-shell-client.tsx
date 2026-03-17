@@ -16,9 +16,13 @@ function isAuthRoute(pathname: string | null) {
 
   return (
     pathname === "/login" ||
+    pathname === "/app/login" ||
     pathname === "/register" ||
+    pathname === "/app/register" ||
     pathname === "/forgot-password" ||
-    pathname.startsWith("/reset-password")
+    pathname === "/app/forgot-password" ||
+    pathname.startsWith("/reset-password") ||
+    pathname.startsWith("/app/reset-password")
   );
 }
 

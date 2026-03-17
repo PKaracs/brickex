@@ -10,12 +10,15 @@ import { getScenePrompt } from "@/lib/generation/video-prompt";
 import { saveVideoToGallery } from "@/lib/generation/save-video";
 import { deductBricks } from "@/lib/actions/get-user-subscription";
 import { calculateVideoCreditCost } from "@/lib/constants/tools";
+import { getPostHogClient } from "@/lib/posthog-server";
 
 export const maxDuration = 600;
 
 export async function POST(req: NextRequest) {
+  const posthog = getPostHogClient();
+  let userId: string | undefined;
   try {
-    await requireAuth();
+    userId = await requireAuth();
 
     const body = await req.json();
     const {
@@ -45,6 +48,20 @@ export async function POST(req: NextRequest) {
         { status: 402 }
       );
     }
+
+    posthog.capture({
+      distinctId: userId,
+      event: "video_generation_started",
+      properties: {
+        duration: videoDuration,
+        brick_cost: brickCost,
+        preset_id: presetId ?? null,
+        scene_preset_id: scenePresetId ?? null,
+        aspect_ratio: aspectRatio ?? "16:9",
+        resolution: resolution ?? "720p",
+        has_custom_prompt: !!prompt,
+      },
+    });
 
     console.log("[BrickEx:Video] === Starting video generation ===");
     console.log(`[BrickEx:Video] Deducted ${brickCost} bricks (${videoDuration}s × 50/s). Remaining: ${deduction.remaining}`);
@@ -116,11 +133,28 @@ export async function POST(req: NextRequest) {
       console.error("[BrickEx:Video] Failed to save to gallery (video still returned):", saveErr);
     }
 
+    posthog.capture({
+      distinctId: userId,
+      event: "video_generation_completed",
+      properties: {
+        request_id: requestId,
+        duration: videoDuration,
+        brick_cost: brickCost,
+      },
+    });
+
     return NextResponse.json({ videoUrl: savedUrl, requestId });
   } catch (error: unknown) {
     const message =
       error instanceof Error ? error.message : "Something went wrong";
     console.error("[BrickEx:Video] Generation error:", message);
+    if (userId) {
+      posthog.capture({
+        distinctId: userId,
+        event: "video_generation_failed",
+        properties: { error: message },
+      });
+    }
     return NextResponse.json({ error: message }, { status: 500 });
   }
 }

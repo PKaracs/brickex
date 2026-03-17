@@ -215,10 +215,10 @@ export default function WelcomeClient({ subscription, isPreview }: WelcomeClient
           });
       savePromise.catch((err) => console.error("[onboarding save] failed:", err));
       // Navigate immediately — don't wait for DB
-      router.push("/explore");
+      router.push("/app/explore");
       router.refresh();
     } catch {
-      window.location.href = "/explore";
+      window.location.href = "/app/explore";
     } finally { setIsSaving(false); }
   }, [goal, contentTypes, creatorType, step, router, isPreview]);
 
@@ -234,11 +234,11 @@ export default function WelcomeClient({ subscription, isPreview }: WelcomeClient
       posthog.capture("onboarding_skipped", { step });
       seline.welcome.skipped(step);
       // Navigate immediately — don't wait for DB
-      router.push("/explore");
+      router.push("/app/explore");
       router.refresh();
     } catch {
       // Even if everything fails, get them out of here
-      window.location.href = "/explore";
+      window.location.href = "/app/explore";
     } finally { setIsSaving(false); }
   }, [goal, contentTypes, creatorType, step, router, isPreview]);
 

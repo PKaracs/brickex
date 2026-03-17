@@ -380,7 +380,7 @@ export function useAvatarUpload({
 
       onClose();
       onSuccess?.();
-      router.push("/dashboard/new");
+      router.push("/app/dashboard/new");
       router.refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Something went wrong");

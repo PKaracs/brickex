@@ -138,9 +138,9 @@ export default function LoginPageClient({
       const result = await authClient.signIn.magicLink({
         email,
         ...(name.trim() ? { name: name.trim() } : {}),
-        callbackURL: "/dashboard/new",
-        newUserCallbackURL: "/dashboard/new",
-        errorCallbackURL: "/login",
+        callbackURL: "/app/dashboard/new",
+        newUserCallbackURL: "/app/dashboard/new",
+        errorCallbackURL: "/app/login",
       });
 
       if (result.error) {

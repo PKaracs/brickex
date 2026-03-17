@@ -35,7 +35,7 @@ export default function GoogleOAuthForm() {
     try {
       await authClient.signIn.social({
         provider: "google",
-        callbackURL: "/dashboard/new",
+        callbackURL: "/app/dashboard/new",
       });
     } catch (error) {
       console.error("[OAuth] Error initiating sign-in:", error);

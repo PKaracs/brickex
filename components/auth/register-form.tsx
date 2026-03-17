@@ -69,8 +69,14 @@ export default function RegisterForm() {
 
       if (result.error) {
         setError(result.error.message || "Failed to create account");
+        posthog.capture("signup_failed", { method: "email", error: result.error.message });
         return;
       }
+
+      if (result.data?.user?.id) {
+        posthog.identify(result.data.user.id, { email: data.email, name: data.name });
+      }
+      posthog.capture("signup_success", { method: "email" });
 
       // NOTE: Signup tracking removed - handled by server-side CAPI in database hook (lib/auth.ts)
       // to prevent double-counting (see META_PIXEL_AUDIT.md)
@@ -82,7 +88,7 @@ export default function RegisterForm() {
         console.error("[Meta Tracking] Failed to save at signup:", err)
       );
 
-      router.push("/dashboard/new");
+      router.push("/app/dashboard/new");
       router.refresh();
     } catch (err) {
       setError("An unexpected error occurred");

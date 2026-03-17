@@ -55,10 +55,16 @@ export default function LoginForm() {
 
       if (result.error) {
         setError(result.error.message || "Failed to sign in");
+        posthog.capture("login_failed", { method: "email", error: result.error.message });
         return;
       }
 
-      router.push("/dashboard/new");
+      if (result.data?.user?.id) {
+        posthog.identify(result.data.user.id, { email: data.email });
+      }
+      posthog.capture("login_success", { method: "email" });
+
+      router.push("/app/dashboard/new");
       router.refresh();
     } catch (err) {
       setError("An unexpected error occurred");

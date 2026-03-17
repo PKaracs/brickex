@@ -62,6 +62,7 @@ import { updateProject } from "@/lib/actions/update-project";
 import { RENDER_MODES } from "@/lib/constants/render-modes";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import posthog from "posthog-js";
 
 type GalleryCollectionFilter = "all" | "exterior" | "interior" | "video" | "tool";
 
@@ -922,6 +923,7 @@ export function GalleryClient() {
       a.click();
       document.body.removeChild(a);
       window.URL.revokeObjectURL(url);
+      posthog.capture("gallery_image_downloaded", { image_id: image.id, media_type: image.mediaType ?? "image" });
     } catch (error) {
       console.error("Download failed:", error);
     }
@@ -1064,6 +1066,7 @@ export function GalleryClient() {
         console.error("Delete failed:", result.error);
         return;
       }
+      posthog.capture("gallery_image_deleted", { image_id: image.id, media_type: image.mediaType ?? "image" });
 
       const affectedProject = projects.find((project) =>
         project.variations.some((variation) => variation.id === image.id),

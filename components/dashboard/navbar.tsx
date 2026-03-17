@@ -87,7 +87,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
       sessionStorage.removeItem(`meta_user_data_set_${session.user.id}`);
     }
     await authClient.signOut();
-    router.push("/login");
+    router.push("/app/login");
   };
 
   const getInitials = (name: string | null | undefined) => {
@@ -105,7 +105,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
 
   const handleGenerationsClick = () => {
     if (isFreeUser) {
-      router.push("/pricing");
+      router.push("/app/pricing");
     } else {
       setSubscriptionModalOpen(true);
     }
@@ -116,7 +116,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
       {/* Left - Logo */}
       <div className="flex items-center gap-2 sm:gap-3">
         <Link
-          href="/dashboard/new"
+          href="/app/dashboard/new"
           className="flex items-center gap-2 sm:gap-3 hover:opacity-80 transition-opacity touch-manipulation"
         >
           <Image
@@ -136,7 +136,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
       {/* Center - Navigation Links (hidden on mobile) */}
       <div className="hidden md:flex items-center gap-4">
         <Link
-          href="/explore"
+          href="/app/explore"
           className={`text-sm font-medium transition-colors ${
             pathname?.includes("/explore")
               ? "text-white"
@@ -147,7 +147,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
         </Link>
         <Separator orientation="vertical" className="h-4 bg-neutral-700" />
         <Link
-          href="/dashboard/new"
+          href="/app/dashboard/new"
           className={`text-sm font-medium transition-colors ${
             pathname?.includes("/dashboard")
               ? "text-white"
@@ -158,7 +158,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
         </Link>
         <Separator orientation="vertical" className="h-4 bg-neutral-700" />
         <Link
-          href="/tools"
+          href="/app/tools"
           className={`text-sm font-medium transition-colors ${
             pathname?.includes("/tools")
               ? "text-white"
@@ -169,7 +169,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
         </Link>
         <Separator orientation="vertical" className="h-4 bg-neutral-700" />
         <Link
-          href="/gallery"
+          href="/app/gallery"
           className={`text-sm font-medium transition-colors ${
             pathname?.includes("/gallery")
               ? "text-white"
@@ -312,7 +312,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
           </SheetHeader>
           <div className="flex flex-col gap-2 pb-6">
             <Link
-              href="/explore"
+              href="/app/explore"
               onClick={() => setMobileNavOpen(false)}
               className={cn(
                 "flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors",
@@ -325,7 +325,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
               <span className="font-medium">Explore</span>
             </Link>
             <Link
-              href="/dashboard/new"
+              href="/app/dashboard/new"
               onClick={() => setMobileNavOpen(false)}
               className={cn(
                 "flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors",
@@ -338,7 +338,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
               <span className="font-medium">Create</span>
             </Link>
             <Link
-              href="/gallery"
+              href="/app/gallery"
               onClick={() => setMobileNavOpen(false)}
               className={cn(
                 "flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors",
@@ -351,7 +351,7 @@ export function Navbar({ projectId, subscription }: NavbarProps) {
               <span className="font-medium">Gallery</span>
             </Link>
             <Link
-              href="/tools"
+              href="/app/tools"
               onClick={() => setMobileNavOpen(false)}
               className={cn(
                 "flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors",

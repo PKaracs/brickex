@@ -17,15 +17,15 @@ export default function NotFound() {
             <span className="text-neutral-300">This page doesn't exist.</span>
             <br />
             <span className="text-neutral-400">
-              But that photo probably does.
+              That render never made it to the board.
             </span>
           </h1>
 
           {/* Subheadline */}
           <p className="mt-6 max-w-lg mx-auto text-base sm:text-lg leading-relaxed text-neutral-500">
-            Looks like you tried to access something that isn't real.
+            The scene you asked for isn&apos;t in this project.
             <br />
-            Good thing looking rich online is.
+            Head back to BrickEx and keep building renders, diagrams, and decks.
           </p>
 
           {/* CTA Button */}
@@ -38,14 +38,14 @@ export default function NotFound() {
             >
               <Link href="/">
                 <Home className="h-4 w-4" />
-                Go back home
+                Back to BrickEx
               </Link>
             </Button>
           </div>
 
           {/* Micro-copy */}
           <p className="mt-12 text-xs text-neutral-600">
-            No lambos were harmed in the making of this 404.
+            No elevations were lost in the making of this 404.
           </p>
         </div>
       </div>

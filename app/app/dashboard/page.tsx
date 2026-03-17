@@ -13,9 +13,9 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
   const query = await searchParams;
 
   if (!session?.user?.id) {
-    redirect("/login");
+    redirect("/app/login");
   }
 
   const checkoutQuery = query.checkout ? `?checkout=${encodeURIComponent(query.checkout)}` : "";
-  redirect(`/dashboard/new${checkoutQuery}`);
+  redirect(`/app/dashboard/new${checkoutQuery}`);
 }
