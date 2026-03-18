@@ -1,6 +1,5 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getPublicAssetUrl } from "@/lib/utils/storage";
 
 export default function BlogFooter() {
   return (
@@ -9,11 +8,11 @@ export default function BlogFooter() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-6 sm:gap-4">
           <div className="flex items-center gap-2.5">
             <Image
-              src="/brickex-logo.png"
+              src="/inverted-logo.png"
               alt="BrickEx Logo"
-              width={36}
+              width={44}
               height={36}
-              className="w-9 h-9"
+              className="w-10 h-auto"
             />
             <div className="text-lg font-bold text-gray-900">BrickEx</div>
           </div>
@@ -37,7 +36,7 @@ export default function BlogFooter() {
               Terms of Service
             </Link>
             <a
-              href="mailto:hello@richflex.co"
+              href="mailto:hello@brickex.co"
               className="min-h-[44px] flex items-center hover:text-gray-900 transition-colors active:text-gray-700"
             >
               Contact
@@ -51,4 +50,3 @@ export default function BlogFooter() {
     </footer>
   );
 }
-

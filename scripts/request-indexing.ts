@@ -1,7 +1,7 @@
 /**
  * Google Indexing Request Script
  *
- * Submits all SEO scene URLs to Google Search Console for indexing
+ * Submits all idea page URLs to Google Search Console for indexing
  * using the Web Search Indexing API.
  *
  * SETUP:
@@ -11,9 +11,9 @@
  *   4. In Google Search Console → Settings → Users and permissions → Add the service account email as Owner
  *
  * Usage:
- *   npx tsx scripts/request-indexing.ts              # Submit all scene pages + hub
+ *   npx tsx scripts/request-indexing.ts              # Submit all idea pages + hub
  *   npx tsx scripts/request-indexing.ts --dry-run    # Preview URLs without submitting
- *   npx tsx scripts/request-indexing.ts --slug monaco-yacht-harbor   # Submit single page
+ *   npx tsx scripts/request-indexing.ts --slug modern-villa-render-ideas   # Submit single page
  */
 
 import { config } from "dotenv";
@@ -22,7 +22,7 @@ config({ path: ".env" });
 import * as fs from "fs";
 import * as path from "path";
 
-const SITE_URL = "https://richflex.co";
+const SITE_URL = "https://brickex.co";
 const KEY_FILE = path.join(__dirname, "../google-indexing-key.json");
 const API_ENDPOINT = "https://indexing.googleapis.com/v3/urlNotifications:publish";
 const BATCH_DELAY_MS = 1000;
@@ -131,14 +131,14 @@ async function main() {
   if (slugFlag !== -1) {
     const targetSlug = args[slugFlag + 1];
     if (!allSlugs.includes(targetSlug)) {
-      console.error(`Scene not found: ${targetSlug}`);
+      console.error(`Idea page not found: ${targetSlug}`);
       process.exit(1);
     }
-    urls.push(`${SITE_URL}/ai-photos/${targetSlug}`);
+    urls.push(`${SITE_URL}/ideas/${targetSlug}`);
   } else {
-    urls.push(`${SITE_URL}/ai-photos`);
+    urls.push(`${SITE_URL}/ideas`);
     for (const slug of allSlugs) {
-      urls.push(`${SITE_URL}/ai-photos/${slug}`);
+      urls.push(`${SITE_URL}/ideas/${slug}`);
     }
   }
 

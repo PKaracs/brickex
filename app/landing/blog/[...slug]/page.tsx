@@ -9,13 +9,13 @@ import { cn, formatDate } from "@/lib/utils";
 import "@/styles/mdx.css";
 import { MDXContent } from "@content-collections/mdx/react";
 import { Metadata } from "next";
-import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { ChevronLeft, Clock } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-const SITE_URL = "https://richflex.co";
-const AUTHOR_NAME = "Ace Rothstein";
+const SITE_URL = "https://brickex.co";
+const AUTHOR_NAME = "BrickEx Team";
 
 // Calculate reading time
 function getReadingTime(content: string): number {
@@ -63,7 +63,7 @@ export async function generateMetadata({
   const canonicalUrl = `${SITE_URL}/blog/${slug.join("/")}`;
 
   return {
-    title: `${blog.title} | Richflex Blog`,
+    title: `${blog.title} | BrickEx Blog`,
     description: blog.description,
     authors: [{ name: AUTHOR_NAME, url: SITE_URL }],
     creator: AUTHOR_NAME,
@@ -79,7 +79,7 @@ export async function generateMetadata({
       modifiedTime: blog.publishedAt,
       authors: [AUTHOR_NAME],
       url: canonicalUrl,
-      siteName: "Richflex",
+      siteName: "BrickEx",
       locale: "en_US",
       images: [
         {
@@ -95,7 +95,7 @@ export async function generateMetadata({
       title: blog.title,
       description: blog.description,
       images: [blog.image],
-      creator: "@richflexco",
+      creator: "@brickexco",
     },
     robots: {
       index: true,
@@ -262,9 +262,7 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
                     className="w-full h-auto rounded-xl border border-gray-200 bg-gray-50 transition-colors shadow-sm"
                     sizes="(max-width: 768px) 100vw, 720px"
                     style={
-                      blog._meta.path === "how-people-signal-wealth-online"
-                        ? { maxHeight: "500px", objectFit: "cover" }
-                        : { maxHeight: "360px", objectFit: "cover" }
+                      { maxHeight: "360px", objectFit: "cover" }
                     }
                   />
                 </figure>
@@ -285,13 +283,11 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
           </div>
 
           {/* Related Articles - Hidden for pillar posts */}
-          {blog._meta.path !== "how-people-signal-wealth-online" && (
-            <RelatedArticles
-              articles={allArticles}
-              currentSlug={blog._meta.path}
-              className="mt-8 border-t border-gray-100 pt-8"
-            />
-          )}
+          <RelatedArticles
+            articles={allArticles}
+            currentSlug={blog._meta.path}
+            className="mt-8 border-t border-gray-100 pt-8"
+          />
 
           {/* Back Button */}
           <div className="flex justify-center py-6 lg:py-10">

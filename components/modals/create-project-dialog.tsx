@@ -40,7 +40,6 @@ export function CreateProjectDialog({
         setName("");
         onOpenChange(false);
         router.push("/app/dashboard/new");
-        router.refresh();
       }
     });
   }
@@ -62,8 +61,8 @@ export function CreateProjectDialog({
               Create your first project
             </DialogTitle>
             <DialogDescription className="text-neutral-400 text-sm mt-1">
-              A project is a real estate development &mdash; like &ldquo;Bugatti
-              Mansions&rdquo; or &ldquo;Mettrin Residences&rdquo;. All your
+              A project is a real estate development &mdash; like &ldquo;Sunset
+              Villas&rdquo; or &ldquo;Park Avenue Residences&rdquo;. All your
               renders, videos, and assets stay organized inside it.
             </DialogDescription>
           </DialogHeader>
@@ -80,7 +79,7 @@ export function CreateProjectDialog({
             onKeyDown={(e) => {
               if (e.key === "Enter" && name.trim()) handleCreate();
             }}
-            placeholder="e.g. Bugatti Mansions"
+            placeholder="e.g. Sunset Villas"
             className="w-full bg-neutral-800 border border-neutral-700 rounded-xl px-4 py-3 text-sm text-white placeholder:text-neutral-500 outline-none focus:border-neutral-600 transition-colors"
           />
         </div>

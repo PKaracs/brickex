@@ -7,19 +7,19 @@ import Image from "next/image";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Blog | Richflex",
+  title: "Blog | BrickEx",
   description:
-    "Discover tips, insights, and inspiration for luxury lifestyle photography and AI-powered image transformation.",
+    "Tactical SEO, rendering, and real estate marketing playbooks for developers, architects, and visualization teams.",
   alternates: {
-    canonical: "https://richflex.co/blog",
+    canonical: "https://brickex.co/blog",
   },
   openGraph: {
-    title: "Richflex Blog - Luxury Lifestyle Photography Tips & Insights",
+    title: "BrickEx Blog",
     description:
-      "Discover tips, insights, and inspiration for luxury lifestyle photography and AI-powered image transformation.",
+      "SEO, rendering, and architectural storytelling strategies built for real estate demand capture.",
     type: "website",
-    url: "https://richflex.co/blog",
-    siteName: "Richflex",
+    url: "https://brickex.co/blog",
+    siteName: "BrickEx",
   },
 };
 
@@ -49,8 +49,8 @@ export default function BlogPage() {
               Blog
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Tips, insights, and inspiration for creating stunning luxury
-              lifestyle imagery with AI.
+              Search-led content, rendering systems, and visual strategy for
+              real estate launches that need traffic and qualified inquiries.
             </p>
           </div>
 

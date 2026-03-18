@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { getSignupUrl } from "@/lib/app-url";
 import { Button } from "@/components/ui/button";
-import { getPublicAssetUrl } from "@/lib/utils/storage";
 
 export default function BlogNavbar() {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -31,11 +30,11 @@ export default function BlogNavbar() {
         <div className="flex items-center justify-between">
           <a href="/" className="flex items-center gap-2.5">
             <Image
-              src="/brickex-logo.png"
+              src="/inverted-logo.png"
               alt="BrickEx Logo"
-              width={36}
+              width={44}
               height={36}
-              className="w-8 h-8 sm:w-9 sm:h-9"
+              className="w-9 h-auto sm:w-10"
               priority
             />
             <span className="text-xl sm:text-2xl font-bold text-gray-900">
@@ -66,4 +65,3 @@ export default function BlogNavbar() {
     </header>
   );
 }
-

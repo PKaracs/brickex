@@ -4,25 +4,24 @@ import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = "https://brickex.co";
-
-  const CONTENT_LAST_UPDATED = "2026-03-02";
+  const contentLastUpdated = new Date("2026-03-18T00:00:00.000Z");
 
   const staticPages: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
-      lastModified: CONTENT_LAST_UPDATED,
+      lastModified: contentLastUpdated,
       changeFrequency: "daily",
       priority: 1,
     },
     {
       url: `${baseUrl}/blog`,
-      lastModified: CONTENT_LAST_UPDATED,
+      lastModified: contentLastUpdated,
       changeFrequency: "daily",
       priority: 0.9,
     },
     {
       url: `${baseUrl}/ideas`,
-      lastModified: CONTENT_LAST_UPDATED,
+      lastModified: contentLastUpdated,
       changeFrequency: "weekly",
       priority: 0.9,
     },
@@ -58,7 +57,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const scenePages: MetadataRoute.Sitemap = allIdeaPages.map((scene) => {
     return {
       url: `${baseUrl}/ideas/${scene.slug}`,
-      lastModified: CONTENT_LAST_UPDATED,
+      lastModified: contentLastUpdated,
       changeFrequency: "weekly" as const,
       priority: 0.8,
       ...(scene.gallery.length > 0 && {

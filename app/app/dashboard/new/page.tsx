@@ -1,6 +1,5 @@
-import { redirect } from "next/navigation";
-
-import { createProject } from "@/lib/actions/create-project";
+import DashboardLoading from "../loading";
+import { NewDashboardClient } from "./new-dashboard-client";
 
 interface NewDashboardPageProps {
   searchParams: Promise<{
@@ -8,14 +7,15 @@ interface NewDashboardPageProps {
   }>;
 }
 
-export default async function NewDashboardPage({ searchParams }: NewDashboardPageProps) {
+export default async function NewDashboardPage({
+  searchParams,
+}: NewDashboardPageProps) {
   const query = await searchParams;
-  const result = await createProject();
 
-  if ("error" in result) {
-    redirect("/app/gallery");
-  }
-
-  const checkoutQuery = query.checkout ? `?checkout=${encodeURIComponent(query.checkout)}` : "";
-  redirect(`/app/dashboard/${result.projectId}${checkoutQuery}`);
+  return (
+    <NewDashboardClient
+      checkout={query.checkout}
+      fallback={<DashboardLoading />}
+    />
+  );
 }

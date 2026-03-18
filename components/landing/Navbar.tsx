@@ -44,6 +44,12 @@ export default function Navbar() {
 
           <div className="flex items-center gap-3 sm:gap-6">
             <a
+              href="/blog"
+              className="hidden sm:inline-flex text-sm text-zinc-300 hover:text-white transition-colors"
+            >
+              Blog
+            </a>
+            <a
               href="/ideas"
               className="hidden sm:inline-flex text-sm text-zinc-300 hover:text-white transition-colors"
             >

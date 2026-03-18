@@ -46,3 +46,19 @@ next-env.d.ts
 # Google service account key (for indexing API)
 google-indexing-key.json
 .env.local
+
+# Generated image assets (served from Supabase, not local public/)
+/public/ideas-generated/
+/public/real-estate-full-variations/
+/public/real-estate-variations/
+/public/shots/
+/public/real-estate-presets/
+/public/real-estate-sketch/
+/public/textures/
+/public/real-estate-full/
+/public/real-estate-front/
+/public/interior-variations/
+/public/blog/
+/public/tool-previews/
+/public/architecture-styles/
+/public/interior-styles/

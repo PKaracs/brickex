@@ -23,7 +23,7 @@ const resolveBaseUrl = () => {
     return `https://${process.env.VERCEL_URL}`;
   }
 
-  return "http://localhost:3000";
+  return "http://localhost:3004";
 };
 
 export const authClient = createAuthClient({

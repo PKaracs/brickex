@@ -67,10 +67,14 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
   const namedProjects = workspaces.filter((w) => !w.isPlayground);
 
   const fetchWorkspaces = useCallback(async () => {
-    const res = await ensurePlaygroundAndListWorkspaces();
-    if ("workspaces" in res) {
-      setWorkspaces(res.workspaces);
-      setLoaded(true);
+    try {
+      const res = await ensurePlaygroundAndListWorkspaces();
+      if ("workspaces" in res) {
+        setWorkspaces(res.workspaces);
+        setLoaded(true);
+      }
+    } catch {
+      // Leave the current switcher state intact on transient failures.
     }
   }, []);
 
@@ -96,7 +100,6 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
       await authClient.organization.setActive({ organizationId: orgId });
       setPopoverOpen(false);
       router.push("/app/dashboard/new");
-      router.refresh();
     });
   }
 
@@ -114,7 +117,6 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
         setShowNewInput(false);
         setPopoverOpen(false);
         router.push("/app/dashboard/new");
-        router.refresh();
       }
     });
   }
@@ -241,7 +243,7 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
                     setNewName("");
                   }
                 }}
-                placeholder="e.g. Bugatti Mansions"
+                placeholder="e.g. Sunset Villas"
                 className="w-full bg-neutral-800 border border-neutral-700/60 rounded-md px-2.5 py-1.5 text-[13px] text-white placeholder:text-neutral-600 outline-none focus:border-neutral-600 transition-colors"
               />
               <div className="flex gap-1.5">

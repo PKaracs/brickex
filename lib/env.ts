@@ -7,23 +7,43 @@ import {
 } from "@/lib/brickex-url";
 
 const serverSchema = z.object({
-  NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "test", "production"])
+    .default("development"),
   DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
-  DATABASE_SSL_MODE: z.enum(["disable", "prefer", "require"]).default("require"),
+  DATABASE_SSL_MODE: z
+    .enum(["disable", "prefer", "require"])
+    .default("require"),
   DATABASE_MAX_CONNECTIONS: z.number().int().min(1).max(50).default(10),
-  BETTER_AUTH_SECRET: z.string().min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
+  BETTER_AUTH_SECRET: z
+    .string()
+    .min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
   BETTER_AUTH_URL: z.string().url("BETTER_AUTH_URL must be a valid URL"),
   AUTH_TRUSTED_ORIGINS: z.array(z.string().url()).default([]),
   AUTH_FROM_EMAIL: z.string().min(1).default("Brickex <auth@brickex.co>"),
   AUTH_REQUIRE_EMAIL_VERIFICATION: z.boolean().default(false),
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url("NEXT_PUBLIC_SUPABASE_URL must be a valid URL"),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1, "NEXT_PUBLIC_SUPABASE_ANON_KEY is required"),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1, "SUPABASE_SERVICE_ROLE_KEY is required"),
-  SUPABASE_BUCKET_PROJECT_ASSETS: z.string().min(1).default("brickex-project-assets"),
+  NEXT_PUBLIC_SUPABASE_URL: z
+    .string()
+    .url("NEXT_PUBLIC_SUPABASE_URL must be a valid URL"),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z
+    .string()
+    .min(1, "NEXT_PUBLIC_SUPABASE_ANON_KEY is required"),
+  SUPABASE_SERVICE_ROLE_KEY: z
+    .string()
+    .min(1, "SUPABASE_SERVICE_ROLE_KEY is required"),
+  SUPABASE_BUCKET_PROJECT_ASSETS: z
+    .string()
+    .min(1)
+    .default("brickex-project-assets"),
   SUPABASE_BUCKET_GENERATIONS: z.string().min(1).default("brickex-generations"),
   SUPABASE_BUCKET_EXPORTS: z.string().min(1).default("brickex-exports"),
   SUPABASE_BUCKET_PUBLIC_ASSETS: z.string().min(1).default("objects"),
-  SUPABASE_SIGNED_URL_TTL_SECONDS: z.number().int().min(60).max(60 * 60 * 24 * 7).default(60 * 60),
+  SUPABASE_SIGNED_URL_TTL_SECONDS: z
+    .number()
+    .int()
+    .min(60)
+    .max(60 * 60 * 24 * 7)
+    .default(60 * 60),
   POLAR_ACCESS_TOKEN: z.string().min(1, "POLAR_ACCESS_TOKEN is required"),
   POLAR_WEBHOOK_SECRET: z.string().min(1, "POLAR_WEBHOOK_SECRET is required"),
   POLAR_SUCCESS_URL: z
@@ -60,12 +80,15 @@ const parsed = serverSchema.parse({
   NODE_ENV: process.env.NODE_ENV,
   DATABASE_URL: process.env.DATABASE_URL,
   DATABASE_SSL_MODE: process.env.DATABASE_SSL_MODE,
-  DATABASE_MAX_CONNECTIONS: parseInteger(process.env.DATABASE_MAX_CONNECTIONS, 10),
+  DATABASE_MAX_CONNECTIONS: parseInteger(
+    process.env.DATABASE_MAX_CONNECTIONS,
+    10,
+  ),
   BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
   BETTER_AUTH_URL:
     process.env.BETTER_AUTH_URL ??
     process.env.NEXT_PUBLIC_APP_URL ??
-    "http://localhost:3000",
+    "http://localhost:3004",
   AUTH_TRUSTED_ORIGINS: parseOrigins(process.env.AUTH_TRUSTED_ORIGINS),
   AUTH_FROM_EMAIL: process.env.AUTH_FROM_EMAIL,
   AUTH_REQUIRE_EMAIL_VERIFICATION: parseBoolean(
@@ -96,13 +119,17 @@ const parsed = serverSchema.parse({
 export const env = {
   ...parsed,
   BETTER_AUTH_URL: normalizeBrickexSiteOrigin(parsed.BETTER_AUTH_URL),
-  AUTH_TRUSTED_ORIGINS: parsed.AUTH_TRUSTED_ORIGINS.map(normalizeBrickexSiteOrigin),
+  AUTH_TRUSTED_ORIGINS: parsed.AUTH_TRUSTED_ORIGINS.map(
+    normalizeBrickexSiteOrigin,
+  ),
   POLAR_SUCCESS_URL: normalizeBrickexAppPageUrl(parsed.POLAR_SUCCESS_URL),
   NEXT_PUBLIC_APP_URL: parsed.NEXT_PUBLIC_APP_URL
     ? normalizeBrickexSiteOrigin(parsed.NEXT_PUBLIC_APP_URL)
     : undefined,
   authEmailEnabled: Boolean(parsed.RESEND_API_KEY),
-  googleOAuthEnabled: Boolean(parsed.GOOGLE_CLIENT_ID && parsed.GOOGLE_CLIENT_SECRET),
+  googleOAuthEnabled: Boolean(
+    parsed.GOOGLE_CLIENT_ID && parsed.GOOGLE_CLIENT_SECRET,
+  ),
 };
 
 export const storageBuckets = {

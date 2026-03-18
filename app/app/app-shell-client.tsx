@@ -49,16 +49,28 @@ export default function AppShellClient({
     const dismissed = localStorage.getItem("brickex:onboarded");
     if (dismissed === "true") return;
 
-    ensurePlaygroundAndListWorkspaces().then((res) => {
-      if ("workspaces" in res) {
+    let cancelled = false;
+
+    void ensurePlaygroundAndListWorkspaces()
+      .then((res) => {
+        if (cancelled || !("workspaces" in res)) {
+          return;
+        }
+
         const hasRealProject = res.workspaces.some((w) => !w.isPlayground);
         if (!hasRealProject) {
           setShowOnboarding(true);
         } else {
           localStorage.setItem("brickex:onboarded", "true");
         }
-      }
-    });
+      })
+      .catch(() => {
+        // Ignore transient client fetch failures in the shell.
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, [pathname]);
 
   useEffect(() => {
@@ -66,11 +78,15 @@ export default function AppShellClient({
 
     let cancelled = false;
 
-    getUserSubscription().then((result) => {
-      if (!cancelled && !("error" in result)) {
-        setSubscription(result);
-      }
-    });
+    void getUserSubscription()
+      .then((result) => {
+        if (!cancelled && !("error" in result)) {
+          setSubscription(result);
+        }
+      })
+      .catch(() => {
+        // Keep the current subscription snapshot if refresh fails.
+      });
 
     return () => {
       cancelled = true;

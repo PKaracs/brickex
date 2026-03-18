@@ -89,7 +89,6 @@ export default function RegisterForm() {
       );
 
       router.push("/app/dashboard/new");
-      router.refresh();
     } catch (err) {
       setError("An unexpected error occurred");
       console.error(err);

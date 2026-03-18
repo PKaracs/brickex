@@ -42,7 +42,6 @@ export function SignInModal({ open, onOpenChange }: SignInModalProps) {
       }
 
       router.push("/app/dashboard/new");
-      router.refresh();
       onOpenChange(false);
     } catch (err) {
       console.error("Sign in error:", err);

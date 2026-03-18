@@ -65,7 +65,6 @@ export default function LoginForm() {
       posthog.capture("login_success", { method: "email" });
 
       router.push("/app/dashboard/new");
-      router.refresh();
     } catch (err) {
       setError("An unexpected error occurred");
       console.error(err);

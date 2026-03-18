@@ -45,7 +45,7 @@ function matchesRoutePrefix(pathname: string, prefix: string) {
 
 function isLegacyAppRoute(pathname: string) {
   return legacyAppRoutePrefixes.some((prefix) =>
-    matchesRoutePrefix(pathname, prefix)
+    matchesRoutePrefix(pathname, prefix),
   );
 }
 
@@ -92,9 +92,17 @@ export default async function middleware(req: NextRequest) {
   // Check if this is the app subdomain
   const isAppSubdomain =
     hostname === "app.brickex.co" || rawHostname.startsWith("app.localhost");
+  const isPublicSiteHost =
+    hostname === "localhost:3004" ||
+    hostname === "brickex.co" ||
+    hostname === "www.brickex.co";
 
   // Server actions posted from the app subdomain still need the /app rewrite.
-  if (req.method === "POST" && req.headers.get("next-action") && !isAppSubdomain) {
+  if (
+    req.method === "POST" &&
+    req.headers.get("next-action") &&
+    !isAppSubdomain
+  ) {
     return NextResponse.next();
   }
 
@@ -122,9 +130,21 @@ export default async function middleware(req: NextRequest) {
   }
 
   // rewrite root application to `/home` folder
-  if (hostname === "localhost:3000" || hostname === "brickex.co" || hostname === "www.brickex.co") {
+  if (isPublicSiteHost) {
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-pathname", url.pathname);
+
+    if (hostname === "www.brickex.co") {
+      const redirectUrl = req.nextUrl.clone();
+      redirectUrl.hostname = "brickex.co";
+      return NextResponse.redirect(redirectUrl, 308);
+    }
+
+    if (url.pathname === "/landing" || url.pathname.startsWith("/landing/")) {
+      const redirectUrl = req.nextUrl.clone();
+      redirectUrl.pathname = url.pathname.replace(/^\/landing/, "") || "/";
+      return NextResponse.redirect(redirectUrl, 308);
+    }
 
     if (isCanonicalAppRoute(url.pathname)) {
       return NextResponse.next({
@@ -141,7 +161,7 @@ export default async function middleware(req: NextRequest) {
     }
 
     return NextResponse.rewrite(
-      new URL(`/landing${path === "/" ? "" : path}`, req.url)
+      new URL(`/landing${path === "/" ? "" : path}`, req.url),
     );
   }
 
