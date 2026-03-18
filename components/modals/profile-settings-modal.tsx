@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Camera, Mail, Trash2, UserRound } from "lucide-react";
+import { Camera, LogOut, Mail, Trash2, UserRound } from "lucide-react";
 import { toast } from "sonner";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -55,6 +55,7 @@ export function ProfileSettingsModal({
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [removePhoto, setRemovePhoto] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   useEffect(() => {
     if (!open) return;
@@ -187,6 +188,24 @@ export function ProfileSettingsModal({
     }
   };
 
+  const handleLogout = async () => {
+    setIsSigningOut(true);
+
+    try {
+      if (session?.user?.id) {
+        sessionStorage.removeItem(`meta_user_data_set_${session.user.id}`);
+      }
+
+      await authClient.signOut();
+      onOpenChange(false);
+      router.push("/app/login");
+    } catch (error) {
+      console.error("[ProfileSettings] Logout failed:", error);
+      toast.error("Failed to log out. Try again.");
+      setIsSigningOut(false);
+    }
+  };
+
   const hasChanges =
     name.trim() !== (session?.user?.name ?? "").trim() ||
     selectedFile !== null ||
@@ -293,25 +312,39 @@ export function ProfileSettingsModal({
             </div>
           </div>
 
-          <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <div className="flex flex-col gap-2 border-t border-neutral-800 pt-2 sm:flex-row sm:items-center sm:justify-between">
             <Button
               type="button"
               variant="ghost"
-              className="border border-neutral-800 bg-neutral-900 text-neutral-300 hover:bg-neutral-800 hover:text-white"
-              onClick={() => onOpenChange(false)}
-              disabled={isSaving}
+              className="border border-red-950 bg-red-500/10 text-red-300 hover:bg-red-500/15 hover:text-red-200"
+              onClick={handleLogout}
+              isLoading={isSigningOut}
+              disabled={isSaving || isPending}
             >
-              Cancel
+              <LogOut className="h-4 w-4" />
+              Log out
             </Button>
-            <Button
-              type="button"
-              variant="white"
-              onClick={handleSave}
-              isLoading={isSaving}
-              disabled={!hasChanges || isPending}
-            >
-              Save changes
-            </Button>
+
+            <div className="flex flex-col-reverse gap-2 sm:flex-row">
+              <Button
+                type="button"
+                variant="ghost"
+                className="border border-neutral-800 bg-neutral-900 text-neutral-300 hover:bg-neutral-800 hover:text-white"
+                onClick={() => onOpenChange(false)}
+                disabled={isSaving || isSigningOut}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="button"
+                variant="white"
+                onClick={handleSave}
+                isLoading={isSaving}
+                disabled={!hasChanges || isPending || isSigningOut}
+              >
+                Save changes
+              </Button>
+            </div>
           </div>
         </div>
       </DialogContent>

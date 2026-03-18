@@ -1,11 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogContent,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import {
   Loader2,
@@ -122,7 +118,7 @@ export function SubscriptionModal({
   const usagePercent = subscription
     ? Math.min(
         100,
-        (subscription.creationsUsed / subscription.creationsLimit) * 100
+        (subscription.creationsUsed / subscription.creationsLimit) * 100,
       )
     : 0;
 
@@ -157,7 +153,7 @@ export function SubscriptionModal({
       if (projectId) {
         sessionStorage.setItem(
           SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT,
-          projectId
+          projectId,
         );
       }
 
@@ -170,12 +166,16 @@ export function SubscriptionModal({
         ...trackingData,
         purchaseEventId,
       }).catch((err) =>
-        console.error("[Meta Tracking] Failed to save tracking data:", err)
+        console.error("[Meta Tracking] Failed to save tracking data:", err),
       );
 
       sessionStorage.setItem(
         SESSION_STORAGE_KEYS.META_PURCHASE_EVENT_ID,
-        purchaseEventId
+        purchaseEventId,
+      );
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEYS.META_PURCHASE_VALUE,
+        planConfig.price.toString(),
       );
 
       trackMetaEvent(
@@ -185,7 +185,7 @@ export function SubscriptionModal({
           currency: "USD",
           value: planConfig.price,
         },
-        initiateCheckoutEventId
+        initiateCheckoutEventId,
       );
 
       tiktokEvents.initiateCheckout({
@@ -208,10 +208,13 @@ export function SubscriptionModal({
         body: JSON.stringify({
           productId: planConfig.slug,
           eventId: initiateCheckoutEventId,
+          purchaseEventId,
           checkoutValue: planConfig.price,
+          currency: "USD",
+          source: "subscription_modal",
         }),
       }).catch((err) =>
-        console.error("[Abandoned Checkout] Failed to track:", err)
+        console.error("[Abandoned Checkout] Failed to track:", err),
       );
 
       const result = await authClient.checkout({
@@ -382,7 +385,7 @@ export function SubscriptionModal({
                     "relative flex flex-col rounded-xl border p-5 transition-all",
                     isPopular
                       ? "border-green-500/40 bg-green-500/[0.03] shadow-[0_0_24px_rgba(34,197,94,0.06)]"
-                      : "border-neutral-800 bg-neutral-800/30 hover:border-neutral-700"
+                      : "border-neutral-800 bg-neutral-800/30 hover:border-neutral-700",
                   )}
                 >
                   {/* Badge */}
@@ -391,7 +394,7 @@ export function SubscriptionModal({
                       <span
                         className={cn(
                           "inline-block px-3 py-1 rounded-full text-[11px] font-semibold border",
-                          tier.badgeColor
+                          tier.badgeColor,
                         )}
                       >
                         {tier.badge}
@@ -400,7 +403,12 @@ export function SubscriptionModal({
                   )}
 
                   {/* Plan header */}
-                  <div className={cn("flex items-center gap-2 mb-4", tier.badge && "mt-1")}>
+                  <div
+                    className={cn(
+                      "flex items-center gap-2 mb-4",
+                      tier.badge && "mt-1",
+                    )}
+                  >
                     <div className={cn(tier.accentColor)}>{tier.icon}</div>
                     <span className="text-base font-semibold text-white">
                       {tier.config.name}
@@ -426,7 +434,7 @@ export function SubscriptionModal({
                     disabled={isLoading}
                     className={cn(
                       "w-full py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mb-5",
-                      tier.buttonClass
+                      tier.buttonClass,
                     )}
                   >
                     {isLoading && loadingPlan === tier.key ? (
@@ -453,7 +461,7 @@ export function SubscriptionModal({
                               ? "text-green-500"
                               : tier.key === "studio"
                                 ? "text-violet-400"
-                                : "text-neutral-500"
+                                : "text-neutral-500",
                           )}
                         />
                         <span>{benefit}</span>

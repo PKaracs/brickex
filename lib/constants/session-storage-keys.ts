@@ -4,6 +4,7 @@
  */
 export const SESSION_STORAGE_KEYS = {
   META_PURCHASE_EVENT_ID: "meta_purchase_event_id",
+  META_PURCHASE_VALUE: "meta_purchase_value",
   META_TRACKING_DATA: "meta_tracking_data",
   CHECKOUT_RETURN_PROJECT: "checkout_return_project",
 } as const;

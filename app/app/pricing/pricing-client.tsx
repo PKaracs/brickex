@@ -3,13 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import {
-  Loader2,
-  Check,
-  ArrowRight,
-  Star,
-  X,
-} from "lucide-react";
+import { Loader2, Check, ArrowRight, Star, X } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { trackMetaEvent } from "@/lib/meta-pixel";
 import { tiktokEvents } from "@/lib/tiktok-pixel";
@@ -30,7 +24,6 @@ const BEFORE_IMAGE =
 const AFTER_IMAGE =
   "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/pricing-after.png";
 
-
 // Gallery images from "how to look rich without money" blog
 const GALLERY_IMAGES = [
   "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/blog2-dating-image.png",
@@ -50,24 +43,26 @@ const testimonials = [
       "Used this for my Hinge profile. Now I get asked which yacht club I'm at.",
     name: "Jake M.",
     handle: "@flexin_jake",
-    image: "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Richflex%20(17).png",
+    image:
+      "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Richflex%20(17).png",
   },
   {
     quote:
       "I finally have photos I'm confident posting. Saved me hours and a photoshoot.",
     name: "Sarah K.",
     handle: "@sarahkflex",
-    image: "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Richflex%20(12).png",
+    image:
+      "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Richflex%20(12).png",
   },
   {
     quote:
       "Posted a Richflex pic. Got 3 DMs asking about my lifestyle. Best investment I made.",
     name: "Marcus R.",
     handle: "@marcus_rich",
-    image: "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Richflex%20(13).png",
+    image:
+      "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Richflex%20(13).png",
   },
 ];
-
 
 interface PricingPageClientProps {
   subscription: SubscriptionData | null;
@@ -80,7 +75,9 @@ export default function PricingPageClient({
 }: PricingPageClientProps) {
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedPlan, setSelectedPlan] = useState<"starter" | "pro">("starter");
+  const [selectedPlan, setSelectedPlan] = useState<"starter" | "pro">(
+    "starter",
+  );
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
 
   const starterPlan = SUBSCRIPTION_PLANS.STARTER;
@@ -120,18 +117,22 @@ export default function PricingPageClient({
       const purchaseEventId = generateEventId();
 
       const trackingData = captureMetaTrackingData();
-      
+
       // CRITICAL: Must await this! Webhook needs fbp/fbc/eventId for attribution
       await updateMetaTracking({
         ...trackingData,
         purchaseEventId,
       }).catch((err) =>
-        console.error("[Meta Tracking] Failed to save tracking data:", err)
+        console.error("[Meta Tracking] Failed to save tracking data:", err),
       );
 
       sessionStorage.setItem(
         SESSION_STORAGE_KEYS.META_PURCHASE_EVENT_ID,
-        purchaseEventId
+        purchaseEventId,
+      );
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEYS.META_PURCHASE_VALUE,
+        selectedPlanConfig.price.toString(),
       );
 
       trackMetaEvent(
@@ -141,7 +142,7 @@ export default function PricingPageClient({
           currency: "USD",
           value: selectedPlanConfig.price,
         },
-        initiateCheckoutEventId
+        initiateCheckoutEventId,
       );
 
       tiktokEvents.initiateCheckout({
@@ -165,10 +166,13 @@ export default function PricingPageClient({
         body: JSON.stringify({
           productId: selectedPlanConfig.slug,
           eventId: initiateCheckoutEventId,
+          purchaseEventId,
           checkoutValue: selectedPlanConfig.price,
+          currency: "USD",
+          source: "pricing_page",
         }),
       }).catch((err) =>
-        console.error("[Abandoned Checkout] Failed to track:", err)
+        console.error("[Abandoned Checkout] Failed to track:", err),
       );
 
       const result = await authClient.checkout({
@@ -189,7 +193,6 @@ export default function PricingPageClient({
     }
   };
 
-
   return (
     <div className="min-h-full bg-black overflow-y-auto">
       {/* Main Content */}
@@ -199,13 +202,16 @@ export default function PricingPageClient({
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold text-white mb-4 leading-tight">
             People judge you in seconds.
             <br />
-            <span className="text-neutral-400">Your photos do the talking.</span>
+            <span className="text-neutral-400">
+              Your photos do the talking.
+            </span>
           </h1>
           <p className="text-base sm:text-lg text-neutral-500 mb-2">
             Same you. Higher status photos. No photoshoot.
           </p>
           <p className="text-sm text-neutral-600">
-          Dating. Instagram. Personal brand. All upgraded.         </p>
+            Dating. Instagram. Personal brand. All upgraded.{" "}
+          </p>
         </div>
 
         {/* 2. PRICING */}
@@ -239,21 +245,29 @@ export default function PricingPageClient({
         {/* Pricing Cards */}
         <div className="max-w-3xl mx-auto grid md:grid-cols-2 gap-4 md:gap-6 mb-6">
           {/* Starter Card */}
-          <div className={`relative ${selectedPlan !== "starter" ? "hidden md:block" : ""}`}>
+          <div
+            className={`relative ${selectedPlan !== "starter" ? "hidden md:block" : ""}`}
+          >
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
               <div className="inline-block px-3 py-1 rounded-full bg-white text-black text-xs font-medium">
                 Great for Getting Started
               </div>
             </div>
 
-            <div className={`relative h-full bg-neutral-900 rounded-xl border transition-all ${
-              selectedPlan === "starter" ? "border-white/20" : "border-neutral-800/80"
-            } shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.03)] overflow-hidden`}>
+            <div
+              className={`relative h-full bg-neutral-900 rounded-xl border transition-all ${
+                selectedPlan === "starter"
+                  ? "border-white/20"
+                  : "border-neutral-800/80"
+              } shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.03)] overflow-hidden`}
+            >
               <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-neutral-700/50 to-transparent" />
-              
+
               <div className="p-6 pt-8 flex flex-col gap-4 h-full">
                 <div className="text-center">
-                  <p className="text-sm font-medium text-neutral-400 mb-3">Starter</p>
+                  <p className="text-sm font-medium text-neutral-400 mb-3">
+                    Starter
+                  </p>
                   <div className="flex items-baseline justify-center gap-2">
                     <span className="text-4xl font-bold bg-gradient-to-b from-white to-zinc-300 bg-clip-text text-transparent">
                       ${starterPlan.price}
@@ -261,7 +275,8 @@ export default function PricingPageClient({
                     <span className="text-zinc-500 text-sm">/month</span>
                   </div>
                   <p className="text-zinc-500 text-xs mt-2">
-                    {starterPlan.bricks.toLocaleString()} bricks/month · Cancel anytime
+                    {starterPlan.bricks.toLocaleString()} bricks/month · Cancel
+                    anytime
                   </p>
                 </div>
 
@@ -300,18 +315,24 @@ export default function PricingPageClient({
           </div>
 
           {/* Pro Card */}
-          <div className={`relative ${selectedPlan !== "pro" ? "hidden md:block" : ""}`}>
+          <div
+            className={`relative ${selectedPlan !== "pro" ? "hidden md:block" : ""}`}
+          >
             <div className="absolute -top-3 left-1/2 -translate-x-1/2 z-10">
               <div className="inline-block px-3 py-1 rounded-full bg-green-500 text-white text-xs font-medium">
                 Best Value
               </div>
             </div>
 
-            <div className={`relative h-full bg-neutral-900 rounded-xl border transition-all ${
-              selectedPlan === "pro" ? "border-green-500/40 md:border-green-500/40" : "border-neutral-800/80 md:border-green-500/40"
-            } shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.03)] overflow-hidden`}>
+            <div
+              className={`relative h-full bg-neutral-900 rounded-xl border transition-all ${
+                selectedPlan === "pro"
+                  ? "border-green-500/40 md:border-green-500/40"
+                  : "border-neutral-800/80 md:border-green-500/40"
+              } shadow-[0_8px_32px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.03)] overflow-hidden`}
+            >
               <div className="absolute top-0 left-4 right-4 h-px bg-gradient-to-r from-transparent via-green-500/30 to-transparent" />
-              
+
               <div className="p-6 pt-8 flex flex-col gap-4 h-full">
                 <div className="text-center">
                   <p className="text-sm font-medium text-green-400 mb-3">Pro</p>
@@ -327,7 +348,8 @@ export default function PricingPageClient({
                     </span>
                   </div>
                   <p className="text-zinc-500 text-xs mt-2">
-                    {proPlan.bricks.toLocaleString()} bricks/month · Cancel anytime
+                    {proPlan.bricks.toLocaleString()} bricks/month · Cancel
+                    anytime
                   </p>
                 </div>
 
@@ -459,8 +481,12 @@ export default function PricingPageClient({
                     />
                   </div>
                   <div>
-                    <div className="font-medium text-white text-sm">{testimonial.name}</div>
-                    <div className="text-xs text-neutral-500">{testimonial.handle}</div>
+                    <div className="font-medium text-white text-sm">
+                      {testimonial.name}
+                    </div>
+                    <div className="text-xs text-neutral-500">
+                      {testimonial.handle}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -531,7 +557,9 @@ export default function PricingPageClient({
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
               <>
-                Get Started — ${selectedPlan === "starter" ? starterPlan.price : proPlan.price}/month
+                Get Started — $
+                {selectedPlan === "starter" ? starterPlan.price : proPlan.price}
+                /month
                 <ArrowRight className="w-4 h-4" />
               </>
             )}
@@ -569,10 +597,16 @@ export default function PricingPageClient({
               © {new Date().getFullYear()} Richflex
             </p>
             <div className="flex items-center gap-6">
-              <Link href="/legal/privacy" className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
+              <Link
+                href="/legal/privacy"
+                className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+              >
                 Privacy
               </Link>
-              <Link href="/legal/terms" className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors">
+              <Link
+                href="/legal/terms"
+                className="text-sm text-neutral-500 hover:text-neutral-300 transition-colors"
+              >
                 Terms
               </Link>
             </div>

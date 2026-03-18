@@ -5,6 +5,7 @@ import { useState } from "react";
 import { Toaster } from "sonner";
 import { UserJotProvider } from "@/components/userjot-provider";
 import { SelineProvider } from "@/components/seline-provider";
+import { MetaSessionSync } from "@/components/meta-session-sync";
 import { useMetaFbclid } from "@/hooks/use-meta-fbclid";
 import { PostHogProvider } from "@/components/posthog-provider";
 
@@ -19,7 +20,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <PostHogProvider>
         <SelineProvider>
-          <UserJotProvider>{children}</UserJotProvider>
+          <UserJotProvider>
+            <MetaSessionSync />
+            {children}
+          </UserJotProvider>
         </SelineProvider>
       </PostHogProvider>
       <Toaster

@@ -12,7 +12,10 @@ import { getUserSubscription } from "@/lib/actions/get-user-subscription";
 import { addWatermark } from "@/lib/watermark";
 import { toast } from "sonner";
 import { fireFirstGenConfetti } from "@/components/ui/confetti";
-import { generateRender, generateRenderBatch } from "@/lib/actions/generate-render";
+import {
+  generateRender,
+  generateRenderBatch,
+} from "@/lib/actions/generate-render";
 import {
   generateInterior,
   generateInteriorBatch,
@@ -27,11 +30,10 @@ import {
   resolveSlotSettings,
 } from "@/lib/constants/render-modes";
 import { IMAGE_CREDIT_COST } from "@/lib/constants/tools";
-import {
-  editRenderRegion,
-  editRenderGlobal,
-} from "@/lib/actions/edit-render";
+import { SUBSCRIPTION_PLANS } from "@/lib/constants/subscription-plans";
+import { editRenderRegion, editRenderGlobal } from "@/lib/actions/edit-render";
 import { SESSION_STORAGE_KEYS } from "@/lib/constants/session-storage-keys";
+import { trackMetaEvent } from "@/lib/meta-pixel";
 
 function haptic(type: "light" | "medium" | "success" | "error") {
   try {
@@ -77,7 +79,7 @@ export function ProjectDashboard({
   // Render mode
   const [currentMode, setCurrentMode] = useState<RenderMode | null>(null);
   const [globalValues, setGlobalValues] = useState<Record<string, string>>(() =>
-    getDefaultModeValues(RENDER_MODES[0].id)
+    getDefaultModeValues(RENDER_MODES[0].id),
   );
   const [referenceFiles, setReferenceFiles] = useState<
     Record<string, File | null>
@@ -91,16 +93,16 @@ export function ProjectDashboard({
   // Generation state
   const [isGenerating, setIsGenerating] = useState(false);
   const [subscription, setSubscription] = useState<SubscriptionData | null>(
-    initialSubscription ?? null
+    initialSubscription ?? null,
   );
 
   // Per-slot edit state
   const [editHistories, setEditHistories] = useState<Record<string, string[]>>(
-    initialOutputUrl ? { "slot-0": [initialOutputUrl] } : {}
+    initialOutputUrl ? { "slot-0": [initialOutputUrl] } : {},
   );
-  const [editHistoryIndexes, setEditHistoryIndexes] = useState<Record<string, number>>(
-    initialOutputUrl ? { "slot-0": 0 } : {}
-  );
+  const [editHistoryIndexes, setEditHistoryIndexes] = useState<
+    Record<string, number>
+  >(initialOutputUrl ? { "slot-0": 0 } : {});
 
   // Edit state
   const [isEditGenerating, setIsEditGenerating] = useState(false);
@@ -128,7 +130,10 @@ export function ProjectDashboard({
   useEffect(() => {
     if (sourceUrl) {
       setSourcePreviewUrl(sourceUrl);
-    } else if (uploadedFiles.length > 0 && uploadedFiles[0].type.startsWith("image/")) {
+    } else if (
+      uploadedFiles.length > 0 &&
+      uploadedFiles[0].type.startsWith("image/")
+    ) {
       const url = URL.createObjectURL(uploadedFiles[0]);
       setSourcePreviewUrl(url);
       return () => URL.revokeObjectURL(url);
@@ -139,7 +144,7 @@ export function ProjectDashboard({
 
   useEffect(() => {
     if (replaceUrl) {
-      window.history.replaceState(null, "", `/dashboard/${project.id}`);
+      window.history.replaceState(null, "", `/app/dashboard/${project.id}`);
     }
   }, [replaceUrl, project.id]);
 
@@ -164,7 +169,7 @@ export function ProjectDashboard({
 
   const syncSubscription = useCallback(async () => {
     const updated = await getUserSubscription();
-    if ("error" in updated) return;
+    if ("error" in updated) return null;
 
     setSubscription(updated);
 
@@ -172,10 +177,28 @@ export function ProjectDashboard({
       window.dispatchEvent(
         new CustomEvent("brickex:subscription-updated", {
           detail: updated,
-        })
+        }),
       );
     }
+
+    return updated;
   }, []);
+
+  const resolvePurchaseValue = useCallback(
+    (plan: SubscriptionData["plan"] | null | undefined) => {
+      switch (plan) {
+        case "starter":
+          return SUBSCRIPTION_PLANS.STARTER.price;
+        case "pro":
+          return SUBSCRIPTION_PLANS.PRO.price;
+        case "studio":
+          return SUBSCRIPTION_PLANS.STUDIO.price;
+        default:
+          return 0;
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!checkoutSuccess) return;
@@ -186,15 +209,62 @@ export function ProjectDashboard({
 
     if (returnProjectId && returnProjectId !== project.id) {
       sessionStorage.removeItem(SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT);
-      router.replace(`/dashboard/${returnProjectId}?checkout=success`);
+      router.replace(`/app/dashboard/${returnProjectId}?checkout=success`);
       return;
     }
 
-    sessionStorage.removeItem(SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT);
-    void syncSubscription();
-    window.history.replaceState(null, "", `/dashboard/${project.id}`);
-    toast.success("Subscription active. Your BrickEx balance is updated.");
-  }, [checkoutSuccess, project.id, router, syncSubscription]);
+    let cancelled = false;
+
+    void (async () => {
+      sessionStorage.removeItem(SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT);
+
+      const updatedSubscription = await syncSubscription();
+      if (cancelled) {
+        return;
+      }
+
+      const purchaseEventId = sessionStorage.getItem(
+        SESSION_STORAGE_KEYS.META_PURCHASE_EVENT_ID,
+      );
+      const storedValue = Number.parseFloat(
+        sessionStorage.getItem(SESSION_STORAGE_KEYS.META_PURCHASE_VALUE) || "",
+      );
+      const purchaseValue =
+        Number.isFinite(storedValue) && storedValue > 0
+          ? storedValue
+          : resolvePurchaseValue(
+              updatedSubscription?.plan ?? subscription?.plan,
+            );
+
+      if (purchaseEventId && purchaseValue > 0) {
+        trackMetaEvent(
+          "Purchase",
+          {
+            content_type: "subscription",
+            currency: "USD",
+            value: purchaseValue,
+          },
+          purchaseEventId,
+        );
+      }
+
+      sessionStorage.removeItem(SESSION_STORAGE_KEYS.META_PURCHASE_EVENT_ID);
+      sessionStorage.removeItem(SESSION_STORAGE_KEYS.META_PURCHASE_VALUE);
+      window.history.replaceState(null, "", `/app/dashboard/${project.id}`);
+      toast.success("Subscription active. Your BrickEx balance is updated.");
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    checkoutSuccess,
+    project.id,
+    resolvePurchaseValue,
+    router,
+    subscription?.plan,
+    syncSubscription,
+  ]);
 
   // ============================================================
   // SOURCE HANDLERS
@@ -238,15 +308,18 @@ export function ProjectDashboard({
     setGlobalValues((prev) => ({ ...prev, [key]: value }));
   }, []);
 
-  const handleSlotOverrideChange = useCallback((slotId: string, key: string, value: string) => {
-    setSlots((prev) =>
-      prev.map((s) =>
-        s.id === slotId
-          ? { ...s, overrides: { ...s.overrides, [key]: value } }
-          : s
-      )
-    );
-  }, []);
+  const handleSlotOverrideChange = useCallback(
+    (slotId: string, key: string, value: string) => {
+      setSlots((prev) =>
+        prev.map((s) =>
+          s.id === slotId
+            ? { ...s, overrides: { ...s.overrides, [key]: value } }
+            : s,
+        ),
+      );
+    },
+    [],
+  );
 
   const handleSlotOverrideReset = useCallback((slotId: string, key: string) => {
     setSlots((prev) =>
@@ -254,7 +327,7 @@ export function ProjectDashboard({
         if (s.id !== slotId) return s;
         const { [key]: _, ...rest } = s.overrides;
         return { ...s, overrides: rest };
-      })
+      }),
     );
   }, []);
 
@@ -265,20 +338,23 @@ export function ProjectDashboard({
     });
   }, []);
 
-  const handleRemoveSlot = useCallback((slotId: string) => {
-    setSlots((prev) => {
-      if (prev.length <= 1) return prev;
-      const filtered = filtered_slots(prev, slotId);
-      return filtered;
-    });
-    setActiveSlotIndex((prev) => Math.min(prev, slots.length - 2));
-  }, [slots.length]);
+  const handleRemoveSlot = useCallback(
+    (slotId: string) => {
+      setSlots((prev) => {
+        if (prev.length <= 1) return prev;
+        const filtered = filtered_slots(prev, slotId);
+        return filtered;
+      });
+      setActiveSlotIndex((prev) => Math.min(prev, slots.length - 2));
+    },
+    [slots.length],
+  );
 
   const handleReferenceFileChange = useCallback(
     (key: string, file: File | null) => {
       setReferenceFiles((prev) => ({ ...prev, [key]: file }));
     },
-    []
+    [],
   );
 
   const handleObjectFileAdd = useCallback((key: string, file: File) => {
@@ -300,15 +376,15 @@ export function ProjectDashboard({
   // ============================================================
 
   const fileToBase64 = async (
-    file: File
+    file: File,
   ): Promise<{ base64: string; mime: string }> => {
     const ab = await file.arrayBuffer();
     return {
       base64: btoa(
         new Uint8Array(ab).reduce(
           (data, byte) => data + String.fromCharCode(byte),
-          ""
-        )
+          "",
+        ),
       ),
       mime: file.type || "image/png",
     };
@@ -324,7 +400,7 @@ export function ProjectDashboard({
         });
       } else {
         toast.error(
-          `Not enough bricks. This generation costs ${generationBrickCost.toLocaleString()} bricks.`
+          `Not enough bricks. This generation costs ${generationBrickCost.toLocaleString()} bricks.`,
         );
       }
       return;
@@ -334,7 +410,12 @@ export function ProjectDashboard({
 
     // Mark all slots as generating
     setSlots((prev) =>
-      prev.map((s) => ({ ...s, status: "generating" as const, outputUrl: null, error: null }))
+      prev.map((s) => ({
+        ...s,
+        status: "generating" as const,
+        outputUrl: null,
+        error: null,
+      })),
     );
 
     try {
@@ -353,8 +434,8 @@ export function ProjectDashboard({
         imageBase64 = btoa(
           new Uint8Array(arrayBuffer).reduce(
             (data, byte) => data + String.fromCharCode(byte),
-            ""
-          )
+            "",
+          ),
         );
       } else {
         toast.error("No source image found.");
@@ -385,16 +466,28 @@ export function ProjectDashboard({
       }));
 
       // Single batch call — GPT analysis runs ONCE, then all slots run in parallel
-      let batchResults: Array<{ slotId: string; outputUrl?: string; error?: string }>;
+      let batchResults: Array<{
+        slotId: string;
+        outputUrl?: string;
+        error?: string;
+      }>;
 
       if (activeMode.id === "interior-render") {
         batchResults = await generateInteriorBatch(
-          project.id, imageBase64, mimeType, slotInputs, objFileData,
+          project.id,
+          imageBase64,
+          mimeType,
+          slotInputs,
+          objFileData,
         );
       } else {
         batchResults = await generateRenderBatch(
-          project.id, imageBase64, mimeType,
-          activeMode.id, activeMode.label, slotInputs,
+          project.id,
+          imageBase64,
+          mimeType,
+          activeMode.id,
+          activeMode.label,
+          slotInputs,
         );
       }
 
@@ -409,10 +502,20 @@ export function ProjectDashboard({
             anySuccess = true;
             newEditHistories[slot.id] = [r.outputUrl];
             newEditHistoryIndexes[slot.id] = 0;
-            return { ...slot, status: "done" as const, outputUrl: r.outputUrl, error: null };
+            return {
+              ...slot,
+              status: "done" as const,
+              outputUrl: r.outputUrl,
+              error: null,
+            };
           }
-          return { ...slot, status: "error" as const, error: r?.error ?? "Generation failed.", outputUrl: null };
-        })
+          return {
+            ...slot,
+            status: "error" as const,
+            error: r?.error ?? "Generation failed.",
+            outputUrl: null,
+          };
+        }),
       );
 
       setEditHistories(newEditHistories);
@@ -420,7 +523,11 @@ export function ProjectDashboard({
 
       if (anySuccess) {
         haptic("success");
-        try { fireFirstGenConfetti(); } catch { /* Non-critical */ }
+        try {
+          fireFirstGenConfetti();
+        } catch {
+          /* Non-critical */
+        }
       } else {
         haptic("error");
         toast.error("All generations failed. Please try again.");
@@ -429,12 +536,18 @@ export function ProjectDashboard({
       haptic("error");
       console.error("Generation failed:", error);
       setSlots((prev) =>
-        prev.map((s) => ({ ...s, status: "error" as const, error: "Generation failed." }))
+        prev.map((s) => ({
+          ...s,
+          status: "error" as const,
+          error: "Generation failed.",
+        })),
       );
       if (!navigator.onLine) {
         toast.error("No internet connection. Please check and try again.");
       } else {
-        toast.error(error?.message || "Something went wrong. Please try again.");
+        toast.error(
+          error?.message || "Something went wrong. Please try again.",
+        );
       }
     } finally {
       setIsGenerating(false);
@@ -473,18 +586,22 @@ export function ProjectDashboard({
         return { ...prev, [slotId]: Math.min(idx + 1, history.length) };
       });
       setSlots((prev) =>
-        prev.map((s) => (s.id === slotId ? { ...s, outputUrl: url } : s))
+        prev.map((s) => (s.id === slotId ? { ...s, outputUrl: url } : s)),
       );
       setIsComparing(false);
     },
-    [activeSlotId, editHistories, editHistoryIndexes]
+    [activeSlotId, editHistories, editHistoryIndexes],
   );
 
   const handleRegionEditSubmit = useCallback(
     async (annotatedImageBase64: string, prompt: string) => {
       setIsEditGenerating(true);
       try {
-        const result = await editRenderRegion(project.id, annotatedImageBase64, prompt);
+        const result = await editRenderRegion(
+          project.id,
+          annotatedImageBase64,
+          prompt,
+        );
         if (result.error) {
           haptic("error");
           toast.error(result.error);
@@ -502,7 +619,7 @@ export function ProjectDashboard({
         await syncSubscription();
       }
     },
-    [pushToHistory, project.id, syncSubscription]
+    [pushToHistory, project.id, syncSubscription],
   );
 
   const handleGlobalEditSubmit = useCallback(async () => {
@@ -511,7 +628,7 @@ export function ProjectDashboard({
     setIsEditGenerating(true);
     try {
       const img = document.querySelector(
-        'img[alt="Generated render"]'
+        'img[alt="Generated render"]',
       ) as HTMLImageElement;
       if (!img) {
         toast.error("Could not read the current image.");
@@ -520,7 +637,10 @@ export function ProjectDashboard({
       }
 
       const maxDim = 1024;
-      const scale = Math.min(1, maxDim / Math.max(img.naturalWidth, img.naturalHeight));
+      const scale = Math.min(
+        1,
+        maxDim / Math.max(img.naturalWidth, img.naturalHeight),
+      );
       const outW = Math.round(img.naturalWidth * scale);
       const outH = Math.round(img.naturalHeight * scale);
 
@@ -534,7 +654,9 @@ export function ProjectDashboard({
         return;
       }
       ctx.drawImage(img, 0, 0, outW, outH);
-      const currentBase64 = offscreen.toDataURL("image/jpeg", 0.85).split(",")[1];
+      const currentBase64 = offscreen
+        .toDataURL("image/jpeg", 0.85)
+        .split(",")[1];
 
       const result = await editRenderGlobal(
         project.id,
@@ -558,7 +680,13 @@ export function ProjectDashboard({
       setIsEditGenerating(false);
       await syncSubscription();
     }
-  }, [editPrompt, generatedImageUrl, pushToHistory, project.id, syncSubscription]);
+  }, [
+    editPrompt,
+    generatedImageUrl,
+    pushToHistory,
+    project.id,
+    syncSubscription,
+  ]);
 
   const handleHistorySelect = useCallback(
     (index: number) => {
@@ -567,10 +695,12 @@ export function ProjectDashboard({
       if (index < 0 || index >= history.length) return;
       setEditHistoryIndexes((prev) => ({ ...prev, [slotId]: index }));
       setSlots((prev) =>
-        prev.map((s) => (s.id === slotId ? { ...s, outputUrl: history[index] } : s))
+        prev.map((s) =>
+          s.id === slotId ? { ...s, outputUrl: history[index] } : s,
+        ),
       );
     },
-    [activeSlotId, editHistories]
+    [activeSlotId, editHistories],
   );
 
   const handleToggleCompare = useCallback(() => {
@@ -593,7 +723,7 @@ export function ProjectDashboard({
   const handleNewProject = useCallback(async () => {
     const result = await createProject();
     if ("projectId" in result) {
-      router.push(`/dashboard/${result.projectId}`);
+      router.push(`/app/dashboard/${result.projectId}`);
     }
   }, [router]);
 
@@ -601,7 +731,10 @@ export function ProjectDashboard({
     if (!generatedImageUrl) return;
     try {
       let blob: Blob;
-      if (subscription?.plan === "free" && !generatedImageUrl.startsWith("data:")) {
+      if (
+        subscription?.plan === "free" &&
+        !generatedImageUrl.startsWith("data:")
+      ) {
         blob = await addWatermark(generatedImageUrl);
       } else if (generatedImageUrl.startsWith("data:")) {
         const res = await fetch(generatedImageUrl);
@@ -629,7 +762,9 @@ export function ProjectDashboard({
     try {
       const res = await fetch(generatedImageUrl);
       const blob = await res.blob();
-      const file = new File([blob], `brickex-render.png`, { type: "image/png" });
+      const file = new File([blob], `brickex-render.png`, {
+        type: "image/png",
+      });
       await navigator.share({ title: "My BrickEx render", files: [file] });
     } catch (error) {
       if (error instanceof Error && error.name !== "AbortError") {

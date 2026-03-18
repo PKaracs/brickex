@@ -200,6 +200,17 @@ export const metaTrackingSchema = z
   })
   .strict();
 
+export const checkoutTrackingSchema = z
+  .object({
+    productId: z.enum(["starter", "pro", "studio"]),
+    eventId: z.string().min(1).max(100),
+    purchaseEventId: z.string().min(1).max(100),
+    checkoutValue: z.number().finite().nonnegative().max(100000),
+    currency: z.string().trim().length(3).default("USD"),
+    source: z.string().trim().min(1).max(100).optional(),
+  })
+  .strict();
+
 // ============================================================================
 // Type Exports (for TypeScript inference)
 // ============================================================================
@@ -215,3 +226,4 @@ export type ProjectImagesConfirmInput = z.infer<
 >;
 export type StreetViewRequest = z.infer<typeof streetViewRequestSchema>;
 export type MetaTrackingInput = z.infer<typeof metaTrackingSchema>;
+export type CheckoutTrackingInput = z.infer<typeof checkoutTrackingSchema>;

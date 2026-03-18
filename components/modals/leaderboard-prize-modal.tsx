@@ -61,6 +61,7 @@ export function LeaderboardPrizeModal({
         SESSION_STORAGE_KEYS.META_PURCHASE_EVENT_ID,
         purchaseEventId,
       );
+      sessionStorage.setItem(SESSION_STORAGE_KEYS.META_PURCHASE_VALUE, "8.9");
 
       // Track InitiateCheckout via browser pixel (with event_id for dedup)
       trackMetaEvent(
@@ -85,6 +86,10 @@ export function LeaderboardPrizeModal({
         body: JSON.stringify({
           productId: "pro",
           eventId: initiateCheckoutEventId,
+          purchaseEventId,
+          checkoutValue: 8.9,
+          currency: "USD",
+          source: "leaderboard_prize_modal",
         }),
       }).catch((err) =>
         console.error("[Abandoned Checkout] Failed to track:", err),

@@ -4,17 +4,29 @@ import { eq } from "drizzle-orm";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { toNextJsHandler, nextCookies } from "better-auth/next-js";
-import { magicLink, organization, twoFactor, username } from "better-auth/plugins";
+import {
+  magicLink,
+  organization,
+  twoFactor,
+  username,
+} from "better-auth/plugins";
 import { polar, checkout, portal, webhooks } from "@polar-sh/better-auth";
 import { Polar } from "@polar-sh/sdk";
 import type { CustomerState } from "@polar-sh/sdk/models/components/customerstate";
 import type { CustomerStateSubscription } from "@polar-sh/sdk/models/components/customerstatesubscription";
 
 import * as schema from "@/db/schema";
-import { sendMagicLinkEmail, sendResetPasswordEmail, sendVerificationEmail } from "@/lib/auth-email";
+import {
+  sendMagicLinkEmail,
+  sendResetPasswordEmail,
+  sendVerificationEmail,
+} from "@/lib/auth-email";
+import { buildBrickexAppUrl } from "@/lib/brickex-url";
 import { SUBSCRIPTION_PLANS } from "@/lib/constants/subscription-plans";
 import { db } from "@/lib/db";
 import { env } from "@/lib/env";
+import { metaServerEvents } from "@/lib/meta-events-api";
+import { getMetaRequestContext, splitMetaName } from "@/lib/meta-server";
 
 async function createWorkspaceForUser(user: {
   id: string;
@@ -95,25 +107,42 @@ const polarClient = new Polar({
   server: env.POLAR_ENV === "sandbox" ? "sandbox" : "production",
 });
 
-type SubscriptionStatusValue = "trialing" | "active" | "past_due" | "canceled" | "expired" | "paused";
+type SubscriptionStatusValue =
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "expired"
+  | "paused";
 
 function resolvePlanFromProductId(productId: string): {
   slug: string;
   creationLimit: number;
+  price: number;
 } | null {
-  if (
-    productId === SUBSCRIPTION_PLANS.STARTER.productId
-  ) {
-    return { slug: "starter", creationLimit: SUBSCRIPTION_PLANS.STARTER.creationLimit };
+  if (productId === SUBSCRIPTION_PLANS.STARTER.productId) {
+    return {
+      slug: "starter",
+      creationLimit: SUBSCRIPTION_PLANS.STARTER.creationLimit,
+      price: SUBSCRIPTION_PLANS.STARTER.price,
+    };
   }
   if (productId === SUBSCRIPTION_PLANS.PRO.productId) {
-    return { slug: "pro", creationLimit: SUBSCRIPTION_PLANS.PRO.creationLimit };
+    return {
+      slug: "pro",
+      creationLimit: SUBSCRIPTION_PLANS.PRO.creationLimit,
+      price: SUBSCRIPTION_PLANS.PRO.price,
+    };
   }
   if (
     SUBSCRIPTION_PLANS.STUDIO.productId &&
     productId === SUBSCRIPTION_PLANS.STUDIO.productId
   ) {
-    return { slug: "studio", creationLimit: SUBSCRIPTION_PLANS.STUDIO.creationLimit };
+    return {
+      slug: "studio",
+      creationLimit: SUBSCRIPTION_PLANS.STUDIO.creationLimit,
+      price: SUBSCRIPTION_PLANS.STUDIO.price,
+    };
   }
   return null;
 }
@@ -122,6 +151,7 @@ type ResolvedPolarSubscription = {
   plan: {
     slug: string;
     creationLimit: number;
+    price: number;
   };
   subscription: CustomerStateSubscription;
 };
@@ -131,6 +161,26 @@ type BillingSyncUser = {
   subscriptionPlan: string | null;
   subscriptionCurrentPeriodEnd: Date | null;
 };
+
+function resolvePlanConfigFromSlug(planCode: string | null | undefined) {
+  switch (planCode) {
+    case SUBSCRIPTION_PLANS.STARTER.slug:
+      return SUBSCRIPTION_PLANS.STARTER;
+    case SUBSCRIPTION_PLANS.PRO.slug:
+      return SUBSCRIPTION_PLANS.PRO;
+    case SUBSCRIPTION_PLANS.STUDIO.slug:
+      return SUBSCRIPTION_PLANS.STUDIO;
+    default:
+      return null;
+  }
+}
+
+function buildMetaEventSourceUrl(pathname: string) {
+  return buildBrickexAppUrl(
+    env.NEXT_PUBLIC_APP_URL ?? env.BETTER_AUTH_URL,
+    pathname,
+  );
+}
 
 function selectPrimaryPolarSubscription(
   subscriptions: CustomerStateSubscription[],
@@ -160,7 +210,8 @@ function shouldResetUsageForSubscription(
     user.subscriptionPlan === "starter" ||
     user.subscriptionPlan === "pro" ||
     user.subscriptionPlan === "studio";
-  const previousPeriodEnd = user.subscriptionCurrentPeriodEnd?.toISOString() ?? null;
+  const previousPeriodEnd =
+    user.subscriptionCurrentPeriodEnd?.toISOString() ?? null;
   const nextPeriodEnd =
     nextSubscription.subscription.currentPeriodEnd?.toISOString() ??
     nextSubscription.subscription.endsAt?.toISOString() ??
@@ -238,6 +289,171 @@ async function syncUserBillingFromPolarState(customerState: CustomerState) {
     .where(eq(schema.users.id, user.id));
 }
 
+async function sendMetaCompleteRegistrationForUser(user: {
+  id: string;
+  email: string;
+  name?: string | null;
+}) {
+  const requestContext = await getMetaRequestContext();
+  const { firstName, lastName } = splitMetaName(user.name);
+
+  const result = await metaServerEvents.completeRegistration({
+    email: user.email,
+    externalId: user.id,
+    firstName,
+    lastName,
+    contentName: "signup",
+    url: buildMetaEventSourceUrl("/welcome"),
+    fbp: requestContext.fbp ?? undefined,
+    fbc: requestContext.fbc ?? undefined,
+    clientUserAgent: requestContext.userAgent || undefined,
+    clientIpAddress: requestContext.ip || undefined,
+  });
+
+  if (!result.success) {
+    console.error(
+      "[Meta CAPI] CompleteRegistration failed for:",
+      user.email,
+      result.error,
+    );
+  }
+
+  return requestContext;
+}
+
+async function sendMetaPurchaseForSubscription(
+  userId: string,
+  subscriptionId: string,
+) {
+  const user = await db.query.users.findFirst({
+    where: eq(schema.users.id, userId),
+    columns: {
+      id: true,
+      email: true,
+      name: true,
+      metaFbp: true,
+      metaFbc: true,
+      lastUserAgent: true,
+      lastIpAddress: true,
+      metaPurchaseEventId: true,
+    },
+  });
+
+  if (!user?.metaPurchaseEventId) {
+    return;
+  }
+
+  const attribution = await db.query.checkoutAttributions.findFirst({
+    where: eq(
+      schema.checkoutAttributions.purchaseEventId,
+      user.metaPurchaseEventId,
+    ),
+    columns: {
+      id: true,
+      planCode: true,
+      checkoutValue: true,
+      currency: true,
+      metaFbp: true,
+      metaFbc: true,
+      clientUserAgent: true,
+      clientIpAddress: true,
+      status: true,
+    },
+  });
+
+  if (!attribution) {
+    console.warn(
+      "[Meta CAPI] Missing checkout attribution for purchase event:",
+      user.metaPurchaseEventId,
+    );
+    return;
+  }
+
+  if (attribution.status === "purchased") {
+    console.log(
+      "[Meta CAPI] Purchase already sent (webhook retry), skipping for:",
+      user.email,
+    );
+    return;
+  }
+
+  const { firstName, lastName } = splitMetaName(user.name);
+  const planConfig = resolvePlanConfigFromSlug(attribution.planCode);
+  const fallbackPrice = planConfig?.price ?? 0;
+  const parsedPurchaseValue = Number(attribution.checkoutValue);
+  const purchaseValue =
+    Number.isFinite(parsedPurchaseValue) && parsedPurchaseValue > 0
+      ? parsedPurchaseValue
+      : fallbackPrice;
+
+  if (purchaseValue <= 0) {
+    await db
+      .update(schema.checkoutAttributions)
+      .set({
+        status: "purchase_failed",
+        providerSubscriptionId: subscriptionId,
+        lastErrorMessage: "Missing purchase value for Meta purchase event",
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.checkoutAttributions.id, attribution.id));
+
+    console.error(
+      "[Meta CAPI] Missing purchase value for:",
+      user.email,
+      attribution.planCode,
+    );
+    return;
+  }
+
+  const result = await metaServerEvents.purchase({
+    eventId: user.metaPurchaseEventId,
+    email: user.email,
+    externalId: user.id,
+    firstName,
+    lastName,
+    value: purchaseValue,
+    currency: attribution.currency || "USD",
+    contentName: attribution.planCode,
+    contentType: "subscription",
+    url: env.POLAR_SUCCESS_URL,
+    fbp: user.metaFbp || attribution.metaFbp || undefined,
+    fbc: user.metaFbc || attribution.metaFbc || undefined,
+    clientUserAgent:
+      user.lastUserAgent || attribution.clientUserAgent || undefined,
+    clientIpAddress:
+      user.lastIpAddress || attribution.clientIpAddress || undefined,
+  });
+
+  await db.transaction(async (tx) => {
+    await tx
+      .update(schema.checkoutAttributions)
+      .set({
+        status: result.success ? "purchased" : "purchase_failed",
+        providerSubscriptionId: subscriptionId,
+        completedAt: result.success ? new Date() : null,
+        lastErrorMessage: result.success
+          ? null
+          : result.error || "Meta purchase request failed",
+        updatedAt: new Date(),
+      })
+      .where(eq(schema.checkoutAttributions.id, attribution.id));
+
+    if (result.success) {
+      await tx
+        .update(schema.users)
+        .set({
+          metaPurchaseEventId: null,
+          updatedAt: new Date(),
+        })
+        .where(eq(schema.users.id, user.id));
+    }
+  });
+
+  if (!result.success) {
+    console.error("[Meta CAPI] Purchase failed for:", user.email, result.error);
+  }
+}
+
 const checkoutProducts = [
   {
     productId: SUBSCRIPTION_PLANS.STARTER.productId,
@@ -277,6 +493,14 @@ const authPlugins = [
         onCustomerStateChanged: async (payload) => {
           await syncUserBillingFromPolarState(payload.data);
         },
+        onSubscriptionActive: async (payload) => {
+          const externalId = payload.data.customer.externalId;
+          if (!externalId) {
+            return;
+          }
+
+          await sendMetaPurchaseForSubscription(externalId, payload.data.id);
+        },
       }),
     ],
   }),
@@ -311,9 +535,11 @@ export const auth = betterAuth({
   basePath: "/api/auth",
   trustedOrigins: Array.from(
     new Set(
-      [env.BETTER_AUTH_URL, env.NEXT_PUBLIC_APP_URL, ...env.AUTH_TRUSTED_ORIGINS].filter(
-        Boolean,
-      ) as string[],
+      [
+        env.BETTER_AUTH_URL,
+        env.NEXT_PUBLIC_APP_URL,
+        ...env.AUTH_TRUSTED_ORIGINS,
+      ].filter(Boolean) as string[],
     ),
   ),
   advanced: {
@@ -414,10 +640,20 @@ export const auth = betterAuth({
             return;
           }
 
+          const requestContext = await sendMetaCompleteRegistrationForUser({
+            id: user.id,
+            email: user.email,
+            name: user.name,
+          });
+
           await db
             .update(schema.users)
             .set({
               creationsLimit: SUBSCRIPTION_PLANS.FREE.creationLimit,
+              metaFbp: requestContext.fbp,
+              metaFbc: requestContext.fbc,
+              lastUserAgent: requestContext.userAgent || null,
+              lastIpAddress: requestContext.ip || null,
               updatedAt: new Date(),
             })
             .where(eq(schema.users.id, user.id));

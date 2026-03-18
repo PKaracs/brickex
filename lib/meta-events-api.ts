@@ -1,8 +1,16 @@
-import { headers } from "next/headers";
 import crypto from "crypto";
 
-const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "876888241517101";
-const ACCESS_TOKEN = process.env.META_ACCESS_TOKEN;
+import { getMetaRequestContext } from "@/lib/meta-server";
+
+function getEnvString(key: string): string | undefined {
+  const value = process.env[key];
+  if (!value) return undefined;
+  const trimmed = value.trim();
+  return trimmed.length > 0 ? trimmed : undefined;
+}
+
+const PIXEL_ID = getEnvString("NEXT_PUBLIC_META_PIXEL_ID") || "876888241517101";
+const ACCESS_TOKEN = getEnvString("META_ACCESS_TOKEN");
 const API_VERSION = "v21.0";
 
 const META_CONVERSIONS_API_URL = `https://graph.facebook.com/${API_VERSION}/${PIXEL_ID}/events`;
@@ -52,7 +60,7 @@ interface MetaEventResponse {
  * This should be called from server actions or API routes
  */
 export async function sendMetaEvent(
-  params: MetaEventParams
+  params: MetaEventParams,
 ): Promise<MetaEventResponse> {
   const eventId = params.eventId || generateEventId();
 
@@ -62,17 +70,13 @@ export async function sendMetaEvent(
   }
 
   try {
-    // Get request headers for user info (fallback if not provided)
-    const headersList = await headers();
-    const headerUserAgent = headersList.get("user-agent") || "";
-    const ip =
-      headersList.get("x-forwarded-for")?.split(",")[0] ||
-      headersList.get("x-real-ip") ||
-      "";
+    const requestContext = await getMetaRequestContext();
 
     // Use stored values if provided (better for webhook calls), otherwise use headers
-    const userAgent = params.clientUserAgent || headerUserAgent;
-    const clientIp = params.clientIpAddress || ip;
+    const userAgent = params.clientUserAgent || requestContext.userAgent;
+    const clientIp = params.clientIpAddress || requestContext.ip;
+    const fbp = params.fbp || requestContext.fbp;
+    const fbc = params.fbc || requestContext.fbc;
 
     // Build user_data object with hashed PII
     const userData: Record<string, unknown> = {};
@@ -99,11 +103,11 @@ export async function sendMetaEvent(
       userData.client_user_agent = userAgent;
     }
     // Facebook browser/click identifiers for enhanced matching
-    if (params.fbp) {
-      userData.fbp = params.fbp;
+    if (fbp) {
+      userData.fbp = fbp;
     }
-    if (params.fbc) {
-      userData.fbc = params.fbc;
+    if (fbc) {
+      userData.fbc = fbc;
     }
 
     // Build custom_data object
@@ -133,7 +137,7 @@ export async function sendMetaEvent(
           event_time: eventTime,
           event_id: eventId,
           action_source: "website",
-          event_source_url: params.url || "",
+          event_source_url: params.url || requestContext.referer || "",
           user_data: userData,
           custom_data:
             Object.keys(customData).length > 0 ? customData : undefined,
@@ -149,7 +153,7 @@ export async function sendMetaEvent(
           "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
-      }
+      },
     );
 
     const result = await response.json();
@@ -188,6 +192,9 @@ export const metaServerEvents = {
     lastName?: string;
     contentName?: string;
     url?: string;
+    fbp?: string;
+    fbc?: string;
+    clientUserAgent?: string;
     clientIpAddress?: string;
   }) => {
     return sendMetaEvent({
@@ -199,6 +206,9 @@ export const metaServerEvents = {
       lastName: params.lastName,
       contentName: params.contentName,
       url: params.url,
+      fbp: params.fbp,
+      fbc: params.fbc,
+      clientUserAgent: params.clientUserAgent,
       clientIpAddress: params.clientIpAddress,
     });
   },

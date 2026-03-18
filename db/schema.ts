@@ -195,6 +195,11 @@ export const webhookStatusEnum = pgEnum("webhook_status", [
   "ignored",
 ]);
 
+export const checkoutAttributionStatusEnum = pgEnum(
+  "checkout_attribution_status",
+  ["initiated", "purchase_failed", "purchased"],
+);
+
 export const organizations = pgTable(
   "organizations",
   {
@@ -252,6 +257,11 @@ export const users = pgTable(
     creationsUsed: integer("creations_used").notNull().default(0),
     creationsLimit: integer("creations_limit").notNull().default(100),
     creditsBalance: integer("credits_balance").notNull().default(0),
+    metaFbp: text("meta_fbp"),
+    metaFbc: text("meta_fbc"),
+    lastUserAgent: text("last_user_agent"),
+    lastIpAddress: text("last_ip_address"),
+    metaPurchaseEventId: text("meta_purchase_event_id"),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
       .defaultNow(),
@@ -363,10 +373,9 @@ export const verifications = pgTable(
   },
   (table) => ({
     identifierIdx: index("verifications_identifier_idx").on(table.identifier),
-    identifierValueUnique: uniqueIndex("verifications_identifier_value_unique").on(
-      table.identifier,
-      table.value,
-    ),
+    identifierValueUnique: uniqueIndex(
+      "verifications_identifier_value_unique",
+    ).on(table.identifier, table.value),
   }),
 );
 
@@ -419,7 +428,9 @@ export const invitations = pgTable(
       .defaultNow(),
   },
   (table) => ({
-    organizationIdx: index("invitations_organization_idx").on(table.organizationId),
+    organizationIdx: index("invitations_organization_idx").on(
+      table.organizationId,
+    ),
     emailIdx: index("invitations_email_idx").on(table.email),
   }),
 );
@@ -449,33 +460,30 @@ export const twoFactors = pgTable(
   }),
 );
 
-export const workspaceSettings = pgTable(
-  "workspace_settings",
-  {
-    organizationId: text("organization_id")
-      .primaryKey()
-      .references(() => organizations.id, { onDelete: "cascade" }),
-    timezone: text("timezone").notNull().default("Europe/Madrid"),
-    locale: text("locale").notNull().default("en"),
-    companyName: text("company_name"),
-    websiteUrl: text("website_url"),
-    brandSummary: text("brand_summary"),
-    brandVoice: text("brand_voice"),
-    primaryColor: text("primary_color"),
-    secondaryColor: text("secondary_color"),
-    accentColor: text("accent_color"),
-    defaultImageStyle: text("default_image_style"),
-    defaultVideoStyle: text("default_video_style"),
-    metadata: jsonb("metadata").$type<Record<string, unknown> | null>(),
-    createdAt: timestamp("created_at", { withTimezone: true })
-      .notNull()
-      .defaultNow(),
-    updatedAt: timestamp("updated_at", { withTimezone: true })
-      .notNull()
-      .defaultNow()
-      .$onUpdate(() => now()),
-  },
-);
+export const workspaceSettings = pgTable("workspace_settings", {
+  organizationId: text("organization_id")
+    .primaryKey()
+    .references(() => organizations.id, { onDelete: "cascade" }),
+  timezone: text("timezone").notNull().default("Europe/Madrid"),
+  locale: text("locale").notNull().default("en"),
+  companyName: text("company_name"),
+  websiteUrl: text("website_url"),
+  brandSummary: text("brand_summary"),
+  brandVoice: text("brand_voice"),
+  primaryColor: text("primary_color"),
+  secondaryColor: text("secondary_color"),
+  accentColor: text("accent_color"),
+  defaultImageStyle: text("default_image_style"),
+  defaultVideoStyle: text("default_video_style"),
+  metadata: jsonb("metadata").$type<Record<string, unknown> | null>(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .notNull()
+    .defaultNow(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .notNull()
+    .defaultNow()
+    .$onUpdate(() => now()),
+});
 
 export const subscriptions = pgTable(
   "subscriptions",
@@ -491,7 +499,9 @@ export const subscriptions = pgTable(
     providerSubscriptionId: text("provider_subscription_id"),
     planCode: text("plan_code"),
     status: subscriptionStatusEnum("status").notNull().default("trialing"),
-    currentPeriodStart: timestamp("current_period_start", { withTimezone: true }),
+    currentPeriodStart: timestamp("current_period_start", {
+      withTimezone: true,
+    }),
     currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
     cancelAt: timestamp("cancel_at", { withTimezone: true }),
     trialEndsAt: timestamp("trial_ends_at", { withTimezone: true }),
@@ -548,12 +558,18 @@ export const projects = pgTable(
     countryCode: text("country_code"),
     latitude: doublePrecision("latitude"),
     longitude: doublePrecision("longitude"),
-    heroAssetId: text("hero_asset_id").references((): AnyPgColumn => assets.id, {
-      onDelete: "set null",
-    }),
-    latestRunId: text("latest_run_id").references((): AnyPgColumn => toolRuns.id, {
-      onDelete: "set null",
-    }),
+    heroAssetId: text("hero_asset_id").references(
+      (): AnyPgColumn => assets.id,
+      {
+        onDelete: "set null",
+      },
+    ),
+    latestRunId: text("latest_run_id").references(
+      (): AnyPgColumn => toolRuns.id,
+      {
+        onDelete: "set null",
+      },
+    ),
     archivedAt: timestamp("archived_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
@@ -602,10 +618,9 @@ export const projectVersions = pgTable(
       .defaultNow(),
   },
   (table) => ({
-    projectVersionUnique: uniqueIndex("project_versions_project_version_unique").on(
-      table.projectId,
-      table.versionNumber,
-    ),
+    projectVersionUnique: uniqueIndex(
+      "project_versions_project_version_unique",
+    ).on(table.projectId, table.versionNumber),
     projectIdx: index("project_versions_project_idx").on(table.projectId),
   }),
 );
@@ -664,7 +679,9 @@ export const toolRuns = pgTable(
       table.projectId,
       table.status,
     ),
-    organizationIdx: index("tool_runs_organization_idx").on(table.organizationId),
+    organizationIdx: index("tool_runs_organization_idx").on(
+      table.organizationId,
+    ),
     providerRequestUnique: uniqueIndex("tool_runs_provider_request_unique").on(
       table.provider,
       table.providerRequestId,
@@ -690,9 +707,12 @@ export const assets = pgTable(
     createdByUserId: text("created_by_user_id").references(() => users.id, {
       onDelete: "set null",
     }),
-    sourceAssetId: text("source_asset_id").references((): AnyPgColumn => assets.id, {
-      onDelete: "set null",
-    }),
+    sourceAssetId: text("source_asset_id").references(
+      (): AnyPgColumn => assets.id,
+      {
+        onDelete: "set null",
+      },
+    ),
     sourceRunId: text("source_run_id").references(() => toolRuns.id, {
       onDelete: "set null",
     }),
@@ -702,9 +722,7 @@ export const assets = pgTable(
     mediaType: mediaTypeEnum("media_type").notNull(),
     origin: assetOriginEnum("origin").notNull(),
     status: assetStatusEnum("status").notNull().default("pending_upload"),
-    visibility: assetVisibilityEnum("visibility")
-      .notNull()
-      .default("private"),
+    visibility: assetVisibilityEnum("visibility").notNull().default("private"),
     originalFilename: text("original_filename"),
     contentType: text("content_type"),
     extension: text("extension"),
@@ -797,8 +815,14 @@ export const toolRunAttempts = pgTable(
     attemptNumber: integer("attempt_number").notNull(),
     status: toolRunStatusEnum("status").notNull(),
     providerRequestId: text("provider_request_id"),
-    requestPayload: jsonb("request_payload").$type<Record<string, unknown> | null>(),
-    responsePayload: jsonb("response_payload").$type<Record<string, unknown> | null>(),
+    requestPayload: jsonb("request_payload").$type<Record<
+      string,
+      unknown
+    > | null>(),
+    responsePayload: jsonb("response_payload").$type<Record<
+      string,
+      unknown
+    > | null>(),
     errorMessage: text("error_message"),
     startedAt: timestamp("started_at", { withTimezone: true })
       .notNull()
@@ -809,10 +833,9 @@ export const toolRunAttempts = pgTable(
       .defaultNow(),
   },
   (table) => ({
-    toolRunAttemptUnique: uniqueIndex("tool_run_attempts_run_attempt_unique").on(
-      table.toolRunId,
-      table.attemptNumber,
-    ),
+    toolRunAttemptUnique: uniqueIndex(
+      "tool_run_attempts_run_attempt_unique",
+    ).on(table.toolRunId, table.attemptNumber),
   }),
 );
 
@@ -836,7 +859,10 @@ export const toolRunAssets = pgTable(
       .defaultNow(),
   },
   (table) => ({
-    runRoleIdx: index("tool_run_assets_run_role_idx").on(table.toolRunId, table.role),
+    runRoleIdx: index("tool_run_assets_run_role_idx").on(
+      table.toolRunId,
+      table.role,
+    ),
     runAssetRoleUnique: uniqueIndex("tool_run_assets_run_asset_role_unique").on(
       table.toolRunId,
       table.assetId,
@@ -897,7 +923,9 @@ export const usageLedger = pgTable(
     organizationId: text("organization_id")
       .notNull()
       .references(() => organizations.id, { onDelete: "cascade" }),
-    userId: text("user_id").references(() => users.id, { onDelete: "set null" }),
+    userId: text("user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
     subscriptionId: text("subscription_id").references(() => subscriptions.id, {
       onDelete: "set null",
     }),
@@ -929,6 +957,69 @@ export const usageLedger = pgTable(
       table.userId,
       table.occurredAt,
     ),
+  }),
+);
+
+export const checkoutAttributions = pgTable(
+  "checkout_attributions",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => cuid()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    organizationId: text("organization_id").references(() => organizations.id, {
+      onDelete: "set null",
+    }),
+    provider: subscriptionProviderEnum("provider").notNull().default("polar"),
+    status: checkoutAttributionStatusEnum("status")
+      .notNull()
+      .default("initiated"),
+    planCode: text("plan_code").notNull(),
+    source: text("source"),
+    initiateCheckoutEventId: text("initiate_checkout_event_id").notNull(),
+    purchaseEventId: text("purchase_event_id").notNull(),
+    checkoutValue: numeric("checkout_value", {
+      precision: 10,
+      scale: 2,
+    }).notNull(),
+    currency: text("currency").notNull().default("USD"),
+    metaFbp: text("meta_fbp"),
+    metaFbc: text("meta_fbc"),
+    clientUserAgent: text("client_user_agent"),
+    clientIpAddress: text("client_ip_address"),
+    providerCheckoutId: text("provider_checkout_id"),
+    providerOrderId: text("provider_order_id"),
+    providerSubscriptionId: text("provider_subscription_id"),
+    lastErrorMessage: text("last_error_message"),
+    initiatedAt: timestamp("initiated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    completedAt: timestamp("completed_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow()
+      .$onUpdate(() => now()),
+  },
+  (table) => ({
+    userInitiatedIdx: index("checkout_attributions_user_initiated_idx").on(
+      table.userId,
+      table.initiatedAt,
+    ),
+    organizationIdx: index("checkout_attributions_organization_idx").on(
+      table.organizationId,
+    ),
+    statusIdx: index("checkout_attributions_status_idx").on(table.status),
+    initiateEventUnique: uniqueIndex(
+      "checkout_attributions_initiate_event_unique",
+    ).on(table.initiateCheckoutEventId),
+    purchaseEventUnique: uniqueIndex(
+      "checkout_attributions_purchase_event_unique",
+    ).on(table.purchaseEventId),
   }),
 );
 
@@ -981,8 +1072,13 @@ export const auditLogs = pgTable(
       .defaultNow(),
   },
   (table) => ({
-    entityIdx: index("audit_logs_entity_idx").on(table.entityType, table.entityId),
-    organizationIdx: index("audit_logs_organization_idx").on(table.organizationId),
+    entityIdx: index("audit_logs_entity_idx").on(
+      table.entityType,
+      table.entityId,
+    ),
+    organizationIdx: index("audit_logs_organization_idx").on(
+      table.organizationId,
+    ),
   }),
 );
 
@@ -1001,22 +1097,27 @@ export const usersRelations = relations(users, ({ many, one }) => ({
   assets: many(assets),
   toolRuns: many(toolRuns),
   usageEntries: many(usageLedger),
+  checkoutAttributions: many(checkoutAttributions),
   auditLogs: many(auditLogs),
   twoFactor: one(twoFactors),
 }));
 
-export const organizationsRelations = relations(organizations, ({ many, one }) => ({
-  settings: one(workspaceSettings),
-  members: many(members),
-  invitations: many(invitations),
-  projects: many(projects),
-  assets: many(assets),
-  toolRuns: many(toolRuns),
-  subscription: one(subscriptions),
-  usageEntries: many(usageLedger),
-  deliverables: many(deliverables),
-  auditLogs: many(auditLogs),
-}));
+export const organizationsRelations = relations(
+  organizations,
+  ({ many, one }) => ({
+    settings: one(workspaceSettings),
+    members: many(members),
+    invitations: many(invitations),
+    projects: many(projects),
+    assets: many(assets),
+    toolRuns: many(toolRuns),
+    subscription: one(subscriptions),
+    usageEntries: many(usageLedger),
+    checkoutAttributions: many(checkoutAttributions),
+    deliverables: many(deliverables),
+    auditLogs: many(auditLogs),
+  }),
+);
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, {
@@ -1065,20 +1166,26 @@ export const twoFactorsRelations = relations(twoFactors, ({ one }) => ({
   }),
 }));
 
-export const workspaceSettingsRelations = relations(workspaceSettings, ({ one }) => ({
-  organization: one(organizations, {
-    fields: [workspaceSettings.organizationId],
-    references: [organizations.id],
+export const workspaceSettingsRelations = relations(
+  workspaceSettings,
+  ({ one }) => ({
+    organization: one(organizations, {
+      fields: [workspaceSettings.organizationId],
+      references: [organizations.id],
+    }),
   }),
-}));
+);
 
-export const subscriptionsRelations = relations(subscriptions, ({ one, many }) => ({
-  organization: one(organizations, {
-    fields: [subscriptions.organizationId],
-    references: [organizations.id],
+export const subscriptionsRelations = relations(
+  subscriptions,
+  ({ one, many }) => ({
+    organization: one(organizations, {
+      fields: [subscriptions.organizationId],
+      references: [organizations.id],
+    }),
+    usageEntries: many(usageLedger),
   }),
-  usageEntries: many(usageLedger),
-}));
+);
 
 export const projectsRelations = relations(projects, ({ many, one }) => ({
   organization: one(organizations, {
@@ -1111,17 +1218,20 @@ export const projectsRelations = relations(projects, ({ many, one }) => ({
   usageEntries: many(usageLedger),
 }));
 
-export const projectVersionsRelations = relations(projectVersions, ({ many, one }) => ({
-  project: one(projects, {
-    fields: [projectVersions.projectId],
-    references: [projects.id],
+export const projectVersionsRelations = relations(
+  projectVersions,
+  ({ many, one }) => ({
+    project: one(projects, {
+      fields: [projectVersions.projectId],
+      references: [projects.id],
+    }),
+    createdBy: one(users, {
+      fields: [projectVersions.createdByUserId],
+      references: [users.id],
+    }),
+    toolRuns: many(toolRuns),
   }),
-  createdBy: one(users, {
-    fields: [projectVersions.createdByUserId],
-    references: [users.id],
-  }),
-  toolRuns: many(toolRuns),
-}));
+);
 
 export const assetsRelations = relations(assets, ({ many, one }) => ({
   organization: one(organizations, {
@@ -1194,12 +1304,15 @@ export const toolRunsRelations = relations(toolRuns, ({ many, one }) => ({
   usageEntries: many(usageLedger),
 }));
 
-export const toolRunAttemptsRelations = relations(toolRunAttempts, ({ one }) => ({
-  toolRun: one(toolRuns, {
-    fields: [toolRunAttempts.toolRunId],
-    references: [toolRuns.id],
+export const toolRunAttemptsRelations = relations(
+  toolRunAttempts,
+  ({ one }) => ({
+    toolRun: one(toolRuns, {
+      fields: [toolRunAttempts.toolRunId],
+      references: [toolRuns.id],
+    }),
   }),
-}));
+);
 
 export const toolRunAssetsRelations = relations(toolRunAssets, ({ one }) => ({
   toolRun: one(toolRuns, {
@@ -1254,6 +1367,20 @@ export const usageLedgerRelations = relations(usageLedger, ({ one }) => ({
   }),
 }));
 
+export const checkoutAttributionsRelations = relations(
+  checkoutAttributions,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [checkoutAttributions.userId],
+      references: [users.id],
+    }),
+    organization: one(organizations, {
+      fields: [checkoutAttributions.organizationId],
+      references: [organizations.id],
+    }),
+  }),
+);
+
 export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
   organization: one(organizations, {
     fields: [auditLogs.organizationId],
@@ -1292,5 +1419,6 @@ export type ToolRunAttempt = typeof toolRunAttempts.$inferSelect;
 export type ToolRunAsset = typeof toolRunAssets.$inferSelect;
 export type Deliverable = typeof deliverables.$inferSelect;
 export type UsageLedgerEntry = typeof usageLedger.$inferSelect;
+export type CheckoutAttribution = typeof checkoutAttributions.$inferSelect;
 export type WebhookEvent = typeof webhookEvents.$inferSelect;
 export type AuditLog = typeof auditLogs.$inferSelect;

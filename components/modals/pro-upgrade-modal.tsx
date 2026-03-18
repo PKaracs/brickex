@@ -63,7 +63,7 @@ export function ProUpgradeModal({
       if (projectId) {
         sessionStorage.setItem(
           SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT,
-          projectId
+          projectId,
         );
       }
 
@@ -73,19 +73,23 @@ export function ProUpgradeModal({
 
       // Capture and save Meta tracking data
       const trackingData = captureMetaTrackingData();
-      
+
       // CRITICAL: Must await this! Webhook needs fbp/fbc/eventId for attribution
       await updateMetaTracking({
         ...trackingData,
         purchaseEventId,
       }).catch((err) =>
-        console.error("[Meta Tracking] Failed to save tracking data:", err)
+        console.error("[Meta Tracking] Failed to save tracking data:", err),
       );
 
       // Store purchaseEventId in sessionStorage
       sessionStorage.setItem(
         SESSION_STORAGE_KEYS.META_PURCHASE_EVENT_ID,
-        purchaseEventId
+        purchaseEventId,
+      );
+      sessionStorage.setItem(
+        SESSION_STORAGE_KEYS.META_PURCHASE_VALUE,
+        proPlan.price.toString(),
       );
 
       // Track InitiateCheckout
@@ -96,7 +100,7 @@ export function ProUpgradeModal({
           currency: "USD",
           value: proPlan.price,
         },
-        initiateCheckoutEventId
+        initiateCheckoutEventId,
       );
 
       // Track checkout initiation (TikTok)
@@ -116,15 +120,19 @@ export function ProUpgradeModal({
         body: JSON.stringify({
           productId: proPlan.slug,
           eventId: initiateCheckoutEventId,
+          purchaseEventId,
+          checkoutValue: proPlan.price,
+          currency: "USD",
+          source: "pro_upgrade_modal",
         }),
       }).catch((err) =>
-        console.error("[Abandoned Checkout] Failed to track:", err)
+        console.error("[Abandoned Checkout] Failed to track:", err),
       );
 
       // TODO: Update this when you add the product to Polar
       if (!proPlan.productId) {
         toast.error(
-          "Pro plan not yet available. Please contact support or wait until your limit resets."
+          "Pro plan not yet available. Please contact support or wait until your limit resets.",
         );
         setIsLoading(false);
         return;
@@ -252,4 +260,3 @@ export function ProUpgradeModal({
     </Dialog>
   );
 }
-
