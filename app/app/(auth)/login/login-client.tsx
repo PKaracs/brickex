@@ -5,16 +5,13 @@ import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import {
-  AlertCircle,
   ArrowRight,
   CheckCircle2,
   Link as LinkIcon,
   Mail,
-  Shield,
 } from "lucide-react";
 
-import LoginForm from "@/components/auth/login-form";
-import RegisterForm from "@/components/auth/register-form";
+import GoogleOAuthForm from "@/components/auth/google-oauth-form";
 import { authClient } from "@/lib/auth-client";
 import { assetUrl } from "@/lib/assets";
 import { BlurFade } from "@/components/ui/blur-fade";
@@ -50,8 +47,6 @@ const VILLA_IMAGES = [
 
 const IMAGE_CYCLE_MS = 4000;
 
-type AuthMode = "magic" | "signin" | "signup";
-
 interface LoginPageClientProps {
   authError?: string;
   magicLinkEnabled: boolean;
@@ -86,19 +81,10 @@ function getMarketingSiteUrl() {
   return "/";
 }
 
-function tabClasses(active: boolean) {
-  return active
-    ? "bg-white text-black shadow-[0_0_0_1px_rgba(255,255,255,0.06)]"
-    : "bg-transparent text-neutral-400 hover:bg-white/5 hover:text-white";
-}
-
 export default function LoginPageClient({
   authError,
   magicLinkEnabled,
 }: LoginPageClientProps) {
-  const [authMode, setAuthMode] = useState<AuthMode>(
-    magicLinkEnabled ? "magic" : "signin",
-  );
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -116,12 +102,6 @@ export default function LoginPageClient({
   useEffect(() => {
     setError(toErrorMessage(authError));
   }, [authError]);
-
-  useEffect(() => {
-    if (!magicLinkEnabled && authMode === "magic") {
-      setAuthMode("signin");
-    }
-  }, [authMode, magicLinkEnabled]);
 
   const handleMagicLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -241,7 +221,7 @@ export default function LoginPageClient({
                 <div className="mb-4 flex items-center gap-2">
                   <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1">
                     <span className="text-xs font-medium text-white/60">
-                      {magicLinkEnabled ? "Auth Ready" : "Password Login Ready"}
+                      {magicLinkEnabled ? "Magic Link Ready" : "Google Login Ready"}
                     </span>
                   </div>
                 </div>
@@ -250,47 +230,12 @@ export default function LoginPageClient({
                 </h1>
                 <p className="text-sm text-neutral-500">
                   {magicLinkEnabled
-                    ? "Use a magic link or switch to email and password."
-                    : "Magic link email is not configured yet, so use email and password for now."}
+                    ? "Use a magic link or continue with Google."
+                    : "Magic link email is not configured yet, so continue with Google for now."}
                 </p>
               </div>
 
-              <div className="mb-6 flex gap-2 rounded-2xl border border-neutral-800 bg-black/20 p-1">
-                {magicLinkEnabled && (
-                  <button
-                    type="button"
-                    className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition ${tabClasses(
-                      authMode === "magic",
-                    )}`}
-                    onClick={() => {
-                      setAuthMode("magic");
-                      setError(toErrorMessage(authError));
-                    }}
-                  >
-                    Magic Link
-                  </button>
-                )}
-                <button
-                  type="button"
-                  className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition ${tabClasses(
-                    authMode === "signin",
-                  )}`}
-                  onClick={() => setAuthMode("signin")}
-                >
-                  Sign In
-                </button>
-                <button
-                  type="button"
-                  className={`flex-1 rounded-xl px-3 py-2 text-sm font-medium transition ${tabClasses(
-                    authMode === "signup",
-                  )}`}
-                  onClick={() => setAuthMode("signup")}
-                >
-                  Create Account
-                </button>
-              </div>
-
-              {magicLinkEnabled && authMode === "magic" && isSubmitted ? (
+              {magicLinkEnabled && isSubmitted ? (
                 <div className="space-y-6">
                   <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10">
                     <CheckCircle2 className="h-8 w-8 text-emerald-400" />
@@ -319,7 +264,7 @@ export default function LoginPageClient({
                 </div>
               ) : null}
 
-              {magicLinkEnabled && authMode === "magic" && !isSubmitted ? (
+              {magicLinkEnabled && !isSubmitted ? (
                 <form onSubmit={handleMagicLinkSubmit} className="space-y-4">
                   <div className="rounded-xl border border-neutral-800 bg-black/20 p-3 text-sm text-neutral-300">
                     <div className="flex items-start gap-2">
@@ -371,37 +316,22 @@ export default function LoginPageClient({
                 </form>
               ) : null}
 
-              {authMode === "signin" ? (
-                <div className="space-y-4">
-                  {!magicLinkEnabled ? (
-                    <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-100">
-                      <div className="flex items-start gap-2">
-                        <Shield className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-300" />
-                        <div className="space-y-1">
-                          <p>Magic-link email is not configured.</p>
-                          <p className="text-amber-200/80">
-                            Create an account below, then sign in with email and
-                            password.
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : null}
-                  <LoginForm />
-                </div>
-              ) : null}
+              <div className="my-6 flex items-center gap-3">
+                <div className="h-px flex-1 bg-neutral-800" />
+                <span className="text-xs uppercase tracking-[0.18em] text-neutral-500">
+                  Or
+                </span>
+                <div className="h-px flex-1 bg-neutral-800" />
+              </div>
 
-              {authMode === "signup" ? (
-                <div className="space-y-4">
-                  {!magicLinkEnabled ? (
-                    <div className="rounded-xl border border-neutral-800 bg-black/20 p-3 text-sm text-neutral-300">
-                      No mail provider is needed for password signup. Create the
-                      account here, then log in immediately.
-                    </div>
-                  ) : null}
-                  <RegisterForm />
-                </div>
-              ) : null}
+              <div className="space-y-4">
+                {!magicLinkEnabled ? (
+                  <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-100">
+                    Magic-link email is not configured. Google sign-in is still available.
+                  </div>
+                ) : null}
+                <GoogleOAuthForm />
+              </div>
 
               <div className="mt-6 border-t border-neutral-800 pt-6">
                 <Button

@@ -6,6 +6,7 @@ import { Toaster } from "sonner";
 import { UserJotProvider } from "@/components/userjot-provider";
 import { SelineProvider } from "@/components/seline-provider";
 import { useMetaFbclid } from "@/hooks/use-meta-fbclid";
+import { PostHogProvider } from "@/components/posthog-provider";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient());
@@ -16,9 +17,11 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <SelineProvider>
-        <UserJotProvider>{children}</UserJotProvider>
-      </SelineProvider>
+      <PostHogProvider>
+        <SelineProvider>
+          <UserJotProvider>{children}</UserJotProvider>
+        </SelineProvider>
+      </PostHogProvider>
       <Toaster
         position="top-center"
         toastOptions={{

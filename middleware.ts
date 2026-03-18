@@ -15,7 +15,7 @@ export const config = {
      * 3. /_static (inside /public)
      * 4. all root files inside /public (e.g. /favicon.ico)
      */
-    "/((?!api/|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)",
+    "/((?!api/|ingest(?:/|$)|_next/|_static/|_vercel|[\\w-]+\\.\\w+).*)",
   ],
 };
 
@@ -63,7 +63,11 @@ export default async function middleware(req: NextRequest) {
   }
 
   // IMPORTANT: Skip ALL API routes - let them pass through without any rewriting
-  if (url.pathname.startsWith("/api/")) {
+  if (
+    url.pathname.startsWith("/api/") ||
+    url.pathname === "/ingest" ||
+    url.pathname.startsWith("/ingest/")
+  ) {
     return NextResponse.next();
   }
 
