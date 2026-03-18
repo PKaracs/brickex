@@ -134,9 +134,10 @@ export default async function middleware(req: NextRequest) {
     const requestHeaders = new Headers(req.headers);
     requestHeaders.set("x-pathname", url.pathname);
 
-    if (hostname === "www.brickex.co") {
+    // Align with the production host Vercel is already enforcing.
+    if (hostname === "brickex.co") {
       const redirectUrl = req.nextUrl.clone();
-      redirectUrl.hostname = "brickex.co";
+      redirectUrl.hostname = "www.brickex.co";
       return NextResponse.redirect(redirectUrl, 308);
     }
 

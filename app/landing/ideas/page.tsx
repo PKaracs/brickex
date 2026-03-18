@@ -13,7 +13,7 @@ import {
   IDEA_CATEGORY_LABELS,
 } from "@/lib/constants/idea-pages";
 
-const SITE_URL = "https://brickex.co";
+const SITE_URL = "https://www.brickex.co";
 
 export const metadata: Metadata = {
   title: "AI Real Estate Render Ideas | BrickEx",

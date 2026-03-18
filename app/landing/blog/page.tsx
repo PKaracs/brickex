@@ -11,14 +11,14 @@ export const metadata: Metadata = {
   description:
     "Tactical SEO, rendering, and real estate marketing playbooks for developers, architects, and visualization teams.",
   alternates: {
-    canonical: "https://brickex.co/blog",
+    canonical: "https://www.brickex.co/blog",
   },
   openGraph: {
     title: "BrickEx Blog",
     description:
       "SEO, rendering, and architectural storytelling strategies built for real estate demand capture.",
     type: "website",
-    url: "https://brickex.co/blog",
+    url: "https://www.brickex.co/blog",
     siteName: "BrickEx",
   },
 };

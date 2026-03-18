@@ -22,7 +22,7 @@ config({ path: ".env" });
 import * as fs from "fs";
 import * as path from "path";
 
-const SITE_URL = "https://brickex.co";
+const SITE_URL = "https://www.brickex.co";
 const KEY_FILE = path.join(__dirname, "../google-indexing-key.json");
 const API_ENDPOINT = "https://indexing.googleapis.com/v3/urlNotifications:publish";
 const BATCH_DELAY_MS = 1000;

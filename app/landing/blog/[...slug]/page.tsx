@@ -14,7 +14,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-const SITE_URL = "https://brickex.co";
+const SITE_URL = "https://www.brickex.co";
 const AUTHOR_NAME = "BrickEx Team";
 
 // Calculate reading time

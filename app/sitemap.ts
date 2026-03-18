@@ -3,7 +3,7 @@ import { allIdeaPages } from "@/lib/constants/idea-pages";
 import { MetadataRoute } from "next";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://brickex.co";
+  const baseUrl = "https://www.brickex.co";
   const contentLastUpdated = new Date("2026-03-18T00:00:00.000Z");
 
   const staticPages: MetadataRoute.Sitemap = [

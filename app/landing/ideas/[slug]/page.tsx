@@ -10,7 +10,7 @@ import {
   getIdeaHeroImage,
 } from "@/lib/constants/idea-pages";
 
-const SITE_URL = "https://brickex.co";
+const SITE_URL = "https://www.brickex.co";
 
 interface IdeaPageProps {
   params: Promise<{ slug: string }>;
