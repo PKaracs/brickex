@@ -403,8 +403,21 @@ interface MobileBottomBarProps {
   hasGeneratedImage?: boolean;
   subscription?: SubscriptionData | null;
   currentMode: RenderMode | null;
+  onModeChange: (mode: RenderMode) => void;
   globalValues: Record<string, string>;
   onGlobalValueChange: (key: string, value: string) => void;
+  referenceFiles?: Record<string, File | null>;
+  onReferenceFileChange?: (key: string, file: File | null) => void;
+  objectFiles?: Record<string, File[]>;
+  onObjectFileAdd?: (key: string, file: File) => void;
+  onObjectFileRemove?: (key: string, index: number) => void;
+  slots: AngleSlot[];
+  activeSlotIndex: number;
+  onActiveSlotChange: (index: number) => void;
+  onSlotOverrideChange: (slotId: string, key: string, value: string) => void;
+  onSlotOverrideReset: (slotId: string, key: string) => void;
+  onAddSlot: () => void;
+  onRemoveSlot: (slotId: string) => void;
   editPrompt?: string;
   onEditPromptChange?: (value: string) => void;
   onGlobalEditSubmit?: () => void;
@@ -421,8 +434,21 @@ export const MobileBottomBar = memo(function MobileBottomBar({
   hasGeneratedImage = false,
   subscription,
   currentMode,
+  onModeChange,
   globalValues,
   onGlobalValueChange,
+  referenceFiles,
+  onReferenceFileChange,
+  objectFiles,
+  onObjectFileAdd,
+  onObjectFileRemove,
+  slots,
+  activeSlotIndex,
+  onActiveSlotChange,
+  onSlotOverrideChange,
+  onSlotOverrideReset,
+  onAddSlot,
+  onRemoveSlot,
   editPrompt = "",
   onEditPromptChange,
   onGlobalEditSubmit,
@@ -548,13 +574,72 @@ export const MobileBottomBar = memo(function MobileBottomBar({
               {activeMode.label} Settings
             </SheetTitle>
           </SheetHeader>
-          <div className="flex-1 overflow-y-auto px-4 pb-6">
-            <ModeSettingsForm
-              settings={globalSettings}
-              values={globalValues}
-              onChange={onGlobalValueChange}
+          <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-4">
+            {/* Mode selector */}
+            <ModeSelectorCard
+              currentMode={currentMode}
+              onModeChange={onModeChange}
+            />
+
+            {/* Global prompt */}
+            <div className="space-y-2">
+              <h4 className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
+                Prompt
+              </h4>
+              <Textarea
+                placeholder="Describe what you want to generate..."
+                value={globalValues.customPrompt ?? ""}
+                onChange={(e) => onGlobalValueChange("customPrompt", e.target.value)}
+                disabled={isGenerating}
+                className="bg-neutral-800/50 border-neutral-700/40 text-white placeholder:text-neutral-600 resize-none h-20 text-xs focus:border-neutral-600 rounded-xl disabled:cursor-not-allowed"
+              />
+            </div>
+
+            {/* Global settings */}
+            {globalSettings.length > 0 && (
+              <ModeSettingsForm
+                settings={globalSettings}
+                values={globalValues}
+                onChange={onGlobalValueChange}
+                disabled={isGenerating}
+                referenceFiles={referenceFiles}
+                onReferenceFileChange={onReferenceFileChange}
+                objectFiles={objectFiles}
+                onObjectFileAdd={onObjectFileAdd}
+                onObjectFileRemove={onObjectFileRemove}
+                isOverrideMode
+              />
+            )}
+
+            {/* Angle slots */}
+            <AngleSlotAccordion
+              slots={slots}
+              modeId={activeMode.id}
+              globalValues={globalValues}
+              activeSlotIndex={activeSlotIndex}
+              onActiveSlotChange={onActiveSlotChange}
+              onSlotOverrideChange={onSlotOverrideChange}
+              onSlotOverrideReset={onSlotOverrideReset}
+              onRemoveSlot={onRemoveSlot}
               disabled={isGenerating}
             />
+
+            {/* Add angle button */}
+            {slots.length < MAX_SLOTS && (
+              <button
+                onClick={onAddSlot}
+                disabled={isGenerating}
+                className={cn(
+                  "w-full flex items-center justify-center gap-2 py-2 rounded-lg border border-dashed transition-all",
+                  "border-neutral-700/50 text-neutral-500 text-xs font-medium",
+                  "hover:border-neutral-600 hover:text-neutral-400 hover:bg-neutral-800/30",
+                  isGenerating && "opacity-50 cursor-not-allowed"
+                )}
+              >
+                <Plus className="w-3 h-3" />
+                Add Angle ({slots.length}/{MAX_SLOTS})
+              </button>
+            )}
           </div>
           <div className="p-4 border-t border-neutral-800">
             <Button
