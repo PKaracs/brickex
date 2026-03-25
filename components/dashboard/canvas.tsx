@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, memo } from "react";
+import { useState, useEffect, useRef, useCallback, memo, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import {
   Upload,
@@ -23,16 +23,17 @@ import {
   Monitor,
   SplitSquareHorizontal,
   Download,
+  Search,
+  Check,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
   DialogContent,
-  DialogHeader,
-  DialogTitle,
 } from "@/components/ui/dialog";
 import { GalleryListImage } from "@/components/gallery/gallery-list-card";
 import { getUserOutputsPaginated } from "@/lib/actions/get-user-outputs";
+import { RENDER_MODES } from "@/lib/constants/render-modes";
 import Image from "next/image";
 
 import type { AngleSlot } from "@/lib/constants/render-modes";
@@ -97,68 +98,201 @@ function PickFromGalleryModal({
 }) {
   const [images, setImages] = useState<GalleryListImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     if (!open) return;
     setIsLoading(true);
-    getUserOutputsPaginated(0, 24).then((result) => {
+    setSearchQuery("");
+    getUserOutputsPaginated(0, 48).then((result) => {
       if ("images" in result) {
         setImages(
-          result.images.map((img) => ({
-            id: img.id,
-            url: img.url,
-            createdAt: new Date(img.createdAt),
-            projectId: img.projectId,
-            mode: img.mode,
-            prompt: img.prompt,
-          }))
+          result.images
+            .filter((img) => (img.mediaType ?? "image") === "image")
+            .map((img) => ({
+              id: img.id,
+              url: img.url,
+              createdAt: new Date(img.createdAt),
+              projectId: img.projectId,
+              mode: img.mode,
+              prompt: img.prompt,
+              mediaType: img.mediaType,
+            }))
         );
       }
       setIsLoading(false);
     });
   }, [open]);
 
+  const filteredImages = useMemo(() => {
+    if (!searchQuery.trim()) return images;
+    const q = searchQuery.toLowerCase();
+    return images.filter((img) => {
+      const mode = img.mode
+        ? RENDER_MODES.find((m) => m.id === img.mode)
+        : null;
+      return (
+        img.prompt?.toLowerCase().includes(q) ||
+        mode?.label.toLowerCase().includes(q)
+      );
+    });
+  }, [images, searchQuery]);
+
+  const getModeLabel = (modeId?: string) => {
+    if (!modeId) return null;
+    return RENDER_MODES.find((m) => m.id === modeId)?.label ?? null;
+  };
+
+  const formatDate = (date: Date) =>
+    date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl w-full max-h-[80vh] bg-neutral-950 border-neutral-800 text-white">
-        <DialogHeader>
-          <DialogTitle className="text-lg font-semibold">
-            Pick from your gallery
-          </DialogTitle>
-        </DialogHeader>
-        <div className="overflow-y-auto scrollbar-none">
+      <DialogContent
+        showXIcon={false}
+        className="max-w-3xl w-full md:w-[88vw] max-h-[85vh] bg-neutral-950 border-neutral-800 p-0 overflow-hidden flex flex-col"
+      >
+        <div className="flex-shrink-0 px-5 pt-5 pb-0 space-y-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-white">Your Gallery</h2>
+              <p className="text-sm text-neutral-500 mt-0.5">
+                {isLoading
+                  ? "Loading your images..."
+                  : `${images.length} image${images.length !== 1 ? "s" : ""} available`}
+              </p>
+            </div>
+            <button
+              onClick={() => onOpenChange(false)}
+              className="w-8 h-8 rounded-full bg-neutral-800/80 border border-neutral-700/50 flex items-center justify-center hover:bg-neutral-700 transition-colors"
+            >
+              <X className="w-4 h-4 text-neutral-400" />
+            </button>
+          </div>
+
+          {!isLoading && images.length > 0 && (
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-500" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search by prompt or mode..."
+                className="w-full bg-neutral-900/80 border border-neutral-800 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-neutral-600 transition-colors"
+              />
+            </div>
+          )}
+        </div>
+
+        <div className="flex-1 overflow-y-auto scrollbar-none px-5 pb-5 pt-4">
           {isLoading ? (
-            <div className="grid grid-cols-3 gap-2 p-1">
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} className="aspect-square bg-neutral-800 rounded-lg animate-pulse" />
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {Array.from({ length: 9 }).map((_, i) => (
+                <div key={i} className="space-y-2">
+                  <div className="aspect-square bg-neutral-800/60 rounded-xl animate-pulse" />
+                  <div className="space-y-1.5 px-0.5">
+                    <div className="h-3 w-16 bg-neutral-800/60 rounded animate-pulse" />
+                    <div className="h-2.5 w-24 bg-neutral-800/40 rounded animate-pulse" />
+                  </div>
+                </div>
               ))}
             </div>
           ) : images.length === 0 ? (
-            <div className="py-12 text-center">
-              <ImageIcon className="w-10 h-10 text-neutral-600 mx-auto mb-3" />
-              <p className="text-sm text-neutral-500">No images yet. Generate some first!</p>
+            <div className="py-20 text-center">
+              <div className="w-16 h-16 rounded-2xl bg-neutral-800/50 border border-neutral-700/50 flex items-center justify-center mx-auto mb-4">
+                <ImageIcon className="w-7 h-7 text-neutral-600" />
+              </div>
+              <p className="text-sm font-medium text-neutral-400">No images yet</p>
+              <p className="text-xs text-neutral-600 mt-1">
+                Generate some renders first, then pick them here
+              </p>
+            </div>
+          ) : filteredImages.length === 0 ? (
+            <div className="py-16 text-center">
+              <Search className="w-8 h-8 text-neutral-700 mx-auto mb-3" />
+              <p className="text-sm text-neutral-500">
+                No results for &ldquo;{searchQuery}&rdquo;
+              </p>
             </div>
           ) : (
-            <div className="grid grid-cols-3 gap-2 p-1">
-              {images.map((img) => (
-                <button
-                  key={img.id}
-                  onClick={() => {
-                    onSelect(img.url);
-                    onOpenChange(false);
-                  }}
-                  className="relative aspect-square rounded-lg overflow-hidden border border-neutral-800 hover:border-neutral-600 transition-colors group"
-                >
-                  <Image
-                    src={img.url}
-                    alt=""
-                    fill
-                    sizes="200px"
-                    className="object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
-                </button>
-              ))}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {filteredImages.map((img) => {
+                const modeLabel = getModeLabel(img.mode);
+                const isHovered = hoveredId === img.id;
+
+                return (
+                  <button
+                    key={img.id}
+                    onClick={() => {
+                      onSelect(img.url);
+                      onOpenChange(false);
+                    }}
+                    onMouseEnter={() => setHoveredId(img.id)}
+                    onMouseLeave={() => setHoveredId(null)}
+                    className="group text-left rounded-xl overflow-hidden transition-all duration-200 hover:scale-[1.02] focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-white/20"
+                  >
+                    <div
+                      className={cn(
+                        "relative aspect-square rounded-xl overflow-hidden border transition-all duration-200",
+                        isHovered
+                          ? "border-white/25 shadow-[0_0_20px_rgba(255,255,255,0.06)]"
+                          : "border-neutral-800/80"
+                      )}
+                    >
+                      <Image
+                        src={img.url}
+                        alt=""
+                        fill
+                        sizes="(max-width: 640px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+
+                      <div
+                        className={cn(
+                          "absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent transition-opacity duration-200",
+                          isHovered ? "opacity-100" : "opacity-0"
+                        )}
+                      />
+
+                      <div
+                        className={cn(
+                          "absolute inset-0 flex items-center justify-center transition-opacity duration-200",
+                          isHovered ? "opacity-100" : "opacity-0"
+                        )}
+                      >
+                        <div className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center shadow-lg">
+                          <Check className="w-5 h-5 text-black" />
+                        </div>
+                      </div>
+
+                      {modeLabel && (
+                        <div
+                          className={cn(
+                            "absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/70 backdrop-blur-sm transition-opacity duration-200",
+                            isHovered ? "opacity-100" : "opacity-0"
+                          )}
+                        >
+                          <span className="text-[10px] font-medium text-neutral-300">
+                            {modeLabel}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="pt-2 px-0.5">
+                      <p className="text-[11px] text-neutral-500">
+                        {formatDate(img.createdAt)}
+                      </p>
+                      {img.prompt && (
+                        <p className="text-xs text-neutral-400 mt-0.5 line-clamp-1">
+                          {img.prompt}
+                        </p>
+                      )}
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

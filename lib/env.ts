@@ -88,7 +88,7 @@ const parsed = serverSchema.parse({
   BETTER_AUTH_URL:
     process.env.BETTER_AUTH_URL ??
     process.env.NEXT_PUBLIC_APP_URL ??
-    "http://localhost:3004",
+    "http://localhost:3000",
   AUTH_TRUSTED_ORIGINS: parseOrigins(process.env.AUTH_TRUSTED_ORIGINS),
   AUTH_FROM_EMAIL: process.env.AUTH_FROM_EMAIL,
   AUTH_REQUIRE_EMAIL_VERIFICATION: parseBoolean(

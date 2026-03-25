@@ -93,7 +93,7 @@ export default async function middleware(req: NextRequest) {
   const isAppSubdomain =
     hostname === "app.brickex.co" || rawHostname.startsWith("app.localhost");
   const isPublicSiteHost =
-    hostname === "localhost:3004" ||
+    hostname === "localhost:3000" ||
     hostname === "brickex.co" ||
     hostname === "www.brickex.co";
 

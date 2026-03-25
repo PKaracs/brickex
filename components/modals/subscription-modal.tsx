@@ -40,20 +40,17 @@ const PLAN_TIERS: {
   config: (typeof SUBSCRIPTION_PLANS)[keyof typeof SUBSCRIPTION_PLANS];
   icon: React.ReactNode;
   badge: string | null;
-  badgeColor: string;
-  accentColor: string;
-  buttonClass: string;
+  featured: boolean;
+  buttonVariant: "default" | "white";
   benefits: string[];
 }[] = [
   {
     key: "starter",
     config: SUBSCRIPTION_PLANS.STARTER,
-    icon: <Zap className="w-5 h-5" />,
+    icon: <Zap className="w-4 h-4" />,
     badge: null,
-    badgeColor: "",
-    accentColor: "text-white",
-    buttonClass:
-      "bg-white text-black hover:bg-neutral-200 active:bg-neutral-300",
+    featured: false,
+    buttonVariant: "default",
     benefits: [
       `${SUBSCRIPTION_PLANS.STARTER.bricks.toLocaleString()} bricks per month`,
       "Exterior + Interior modes",
@@ -65,12 +62,10 @@ const PLAN_TIERS: {
   {
     key: "pro",
     config: SUBSCRIPTION_PLANS.PRO,
-    icon: <Crown className="w-5 h-5" />,
-    badge: "Most Popular",
-    badgeColor: "bg-green-500/15 text-green-400 border-green-500/25",
-    accentColor: "text-green-400",
-    buttonClass:
-      "bg-green-500 text-white hover:bg-green-400 active:bg-green-600 shadow-lg shadow-green-500/20",
+    icon: <Crown className="w-4 h-4" />,
+    badge: "Popular",
+    featured: true,
+    buttonVariant: "white",
     benefits: [
       `${SUBSCRIPTION_PLANS.PRO.bricks.toLocaleString()} bricks per month`,
       "Everything in Starter",
@@ -83,12 +78,10 @@ const PLAN_TIERS: {
   {
     key: "studio",
     config: SUBSCRIPTION_PLANS.STUDIO,
-    icon: <Building2 className="w-5 h-5" />,
-    badge: "For Teams",
-    badgeColor: "bg-violet-500/15 text-violet-400 border-violet-500/25",
-    accentColor: "text-violet-400",
-    buttonClass:
-      "bg-violet-500 text-white hover:bg-violet-400 active:bg-violet-600 shadow-lg shadow-violet-500/20",
+    icon: <Building2 className="w-4 h-4" />,
+    badge: "Teams",
+    featured: false,
+    buttonVariant: "default",
     benefits: [
       `${SUBSCRIPTION_PLANS.STUDIO.bricks.toLocaleString()} bricks per month`,
       "Everything in Pro",
@@ -272,24 +265,24 @@ export function SubscriptionModal({
   if (isPaidUser) {
     return (
       <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
-        <DialogContent className="max-w-md w-full md:w-[90vw] bg-neutral-900 border-neutral-800 flex flex-col p-4 md:p-6 overflow-hidden">
-          <DialogTitle className="text-lg md:text-xl text-white flex items-center justify-between pr-10 md:pr-0">
-            <span>Your Plan</span>
-            <span className="text-xs md:text-sm font-normal text-neutral-400">
+        <DialogContent className="max-w-md w-full md:w-[90vw] bg-neutral-950 border-neutral-800/60 flex flex-col p-5 md:p-6 overflow-hidden rounded-2xl">
+          <DialogTitle className="text-lg text-white flex items-center justify-between pr-10 md:pr-0">
+            <span className="font-semibold tracking-tight">Your Plan</span>
+            <span className="text-[11px] font-normal text-neutral-500 tracking-wide">
               {subscription?.creationsUsed ?? 0} /{" "}
               {subscription?.creationsLimit ?? 4000} bricks used
             </span>
           </DialogTitle>
 
-          <div className="flex-1 overflow-y-auto py-4 md:py-6 space-y-5">
+          <div className="flex-1 overflow-y-auto py-4 md:py-5 space-y-4">
             <div className="space-y-3">
-              <div className="relative h-1.5 bg-neutral-800 rounded-full overflow-hidden">
+              <div className="relative h-1 bg-neutral-800/80 rounded-full overflow-hidden">
                 <div
-                  className="absolute inset-y-0 left-0 rounded-full transition-all duration-500 bg-white"
+                  className="absolute inset-y-0 left-0 rounded-full transition-all duration-500 bg-neutral-300"
                   style={{ width: `${Math.max(usagePercent, 2)}%` }}
                 />
               </div>
-              <p className="text-sm text-neutral-400">
+              <p className="text-[13px] text-neutral-500">
                 {subscription?.creationsRemaining === 0
                   ? "No bricks remaining this period"
                   : `${subscription?.creationsRemaining} brick${subscription?.creationsRemaining !== 1 ? "s" : ""} remaining`}
@@ -297,8 +290,8 @@ export function SubscriptionModal({
             </div>
 
             {subscription?.currentPeriodEnd && (
-              <div className="flex items-center gap-2 text-sm text-neutral-400">
-                <Calendar className="w-4 h-4 text-neutral-500" />
+              <div className="flex items-center gap-2 text-[13px] text-neutral-500">
+                <Calendar className="w-3.5 h-3.5 text-neutral-600" />
                 <span>
                   {subscription.subscriptionStatus === "canceled"
                     ? "Access until"
@@ -312,21 +305,21 @@ export function SubscriptionModal({
             )}
 
             {error && (
-              <div className="p-3 rounded-lg bg-neutral-800 border border-neutral-700">
-                <p className="text-sm text-neutral-300 flex items-center gap-2">
-                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <div className="p-3 rounded-xl bg-neutral-900 ring-1 ring-neutral-800">
+                <p className="text-sm text-neutral-400 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0 text-neutral-500" />
                   {error}
                 </p>
               </div>
             )}
           </div>
 
-          <div className="flex-shrink-0 pt-4 border-t border-neutral-800 flex flex-col gap-2">
+          <div className="flex-shrink-0 pt-4 border-t border-neutral-800/40 flex flex-col gap-2">
             <Button
               onClick={handleManageSubscription}
               disabled={isLoading}
               variant="default"
-              className="w-full h-12 md:h-10"
+              className="w-full"
             >
               {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
               Manage Subscription
@@ -334,7 +327,7 @@ export function SubscriptionModal({
             <Button
               variant="ghost"
               onClick={handleClose}
-              className="w-full h-12 md:h-10 text-neutral-400"
+              className="w-full text-neutral-500 hover:text-neutral-300"
             >
               Close
             </Button>
@@ -347,137 +340,116 @@ export function SubscriptionModal({
   return (
     <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
       <DialogContent
-        className="w-full max-w-4xl bg-neutral-900 border-neutral-800 p-0 max-h-[92vh] flex flex-col overflow-hidden"
+        className="w-full max-w-[880px] bg-neutral-950 border-neutral-800/60 p-0 max-h-[92vh] flex flex-col overflow-hidden rounded-2xl"
         showXIcon={false}
       >
         <DialogTitle className="sr-only">Choose Your Plan</DialogTitle>
 
         {/* Header */}
-        <div className="flex-shrink-0 px-6 pt-6 pb-4 border-b border-neutral-800">
-          <div className="flex items-center justify-between">
+        <div className="flex-shrink-0 px-8 pt-8 pb-6">
+          <div className="flex items-start justify-between">
             <div>
-              <h2 className="text-xl font-semibold text-white">
-                Choose your plan
-              </h2>
-              <p className="text-sm text-neutral-500 mt-1">
-                Upgrade to unlock more bricks and premium features.
+              <div className="flex items-center gap-2.5 mb-2">
+                <h2 className="text-lg font-semibold text-white tracking-tight">
+                  Upgrade your plan
+                </h2>
+              </div>
+              <p className="text-sm text-neutral-500">
+                Unlock more bricks and premium features.
               </p>
             </div>
             <button
               onClick={handleClose}
-              className="p-2 rounded-lg text-neutral-500 hover:text-neutral-300 hover:bg-neutral-800 transition-colors"
+              className="p-2 -m-2 rounded-xl text-neutral-600 hover:text-neutral-400 transition-colors"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Plans grid */}
-        <div className="flex-1 overflow-y-auto px-6 py-6">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {PLAN_TIERS.map((tier) => {
-              const isPopular = tier.key === "pro";
-
-              return (
-                <div
-                  key={tier.key}
-                  className={cn(
-                    "relative flex flex-col rounded-xl border p-5 transition-all",
-                    isPopular
-                      ? "border-green-500/40 bg-green-500/[0.03] shadow-[0_0_24px_rgba(34,197,94,0.06)]"
-                      : "border-neutral-800 bg-neutral-800/30 hover:border-neutral-700",
-                  )}
-                >
-                  {/* Badge */}
-                  {tier.badge && (
-                    <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                      <span
-                        className={cn(
-                          "inline-block px-3 py-1 rounded-full text-[11px] font-semibold border",
-                          tier.badgeColor,
-                        )}
-                      >
-                        {tier.badge}
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Plan header */}
-                  <div
-                    className={cn(
-                      "flex items-center gap-2 mb-4",
-                      tier.badge && "mt-1",
-                    )}
-                  >
-                    <div className={cn(tier.accentColor)}>{tier.icon}</div>
-                    <span className="text-base font-semibold text-white">
-                      {tier.config.name}
+        <div className="flex-1 overflow-y-auto px-8 pt-4 pb-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {PLAN_TIERS.map((tier) => (
+              <div
+                key={tier.key}
+                className={cn(
+                  "relative flex flex-col rounded-xl p-5 transition-all",
+                  tier.featured
+                    ? "bg-neutral-800/50 ring-1 ring-neutral-700/80"
+                    : "bg-neutral-900/50 ring-1 ring-neutral-800/60 hover:ring-neutral-700/60",
+                )}
+              >
+                {/* Badge */}
+                {tier.badge && (
+                  <div className="absolute -top-2.5 left-5">
+                    <span className="inline-block px-2.5 py-0.5 rounded-md text-[10px] font-semibold tracking-wide uppercase bg-neutral-800 text-neutral-300 ring-1 ring-neutral-700/50">
+                      {tier.badge}
                     </span>
                   </div>
+                )}
 
-                  {/* Price */}
-                  <div className="mb-5">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-bold text-white">
-                        ${tier.config.price}
-                      </span>
-                      <span className="text-sm text-neutral-500">/month</span>
-                    </div>
-                    <p className="text-xs text-neutral-500 mt-1">
-                      {tier.config.bricks.toLocaleString()} bricks included
-                    </p>
-                  </div>
-
-                  {/* CTA */}
-                  <button
-                    onClick={() => handleUpgrade(tier.key)}
-                    disabled={isLoading}
-                    className={cn(
-                      "w-full py-2.5 rounded-lg text-sm font-semibold transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mb-5",
-                      tier.buttonClass,
-                    )}
-                  >
-                    {isLoading && loadingPlan === tier.key ? (
-                      <Loader2 className="w-4 h-4 animate-spin" />
-                    ) : (
-                      `Get ${tier.config.name}`
-                    )}
-                  </button>
-
-                  {/* Divider */}
-                  <div className="h-px bg-neutral-700/50 mb-4" />
-
-                  {/* Benefits */}
-                  <ul className="space-y-2.5 flex-1">
-                    {tier.benefits.map((benefit) => (
-                      <li
-                        key={benefit}
-                        className="flex items-start gap-2.5 text-sm text-neutral-300"
-                      >
-                        <Check
-                          className={cn(
-                            "w-4 h-4 flex-shrink-0 mt-0.5",
-                            isPopular
-                              ? "text-green-500"
-                              : tier.key === "studio"
-                                ? "text-violet-400"
-                                : "text-neutral-500",
-                          )}
-                        />
-                        <span>{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
+                {/* Plan header */}
+                <div
+                  className={cn(
+                    "flex items-center gap-2 mb-4",
+                    tier.badge && "mt-1",
+                  )}
+                >
+                  <span className="text-neutral-400">{tier.icon}</span>
+                  <span className="text-sm font-semibold text-white">
+                    {tier.config.name}
+                  </span>
                 </div>
-              );
-            })}
+
+                {/* Price */}
+                <div className="mb-5">
+                  <div className="flex items-baseline gap-0.5">
+                    <span className="text-[28px] font-bold text-white tracking-tight">
+                      ${tier.config.price}
+                    </span>
+                    <span className="text-xs text-neutral-500 ml-1">/mo</span>
+                  </div>
+                  <p className="text-[11px] text-neutral-500 mt-1.5 tracking-wide">
+                    {tier.config.bricks.toLocaleString()} bricks included
+                  </p>
+                </div>
+
+                {/* CTA */}
+                <Button
+                  onClick={() => handleUpgrade(tier.key)}
+                  disabled={isLoading}
+                  variant={tier.buttonVariant}
+                  className="w-full mb-5"
+                >
+                  {isLoading && loadingPlan === tier.key ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    `Get ${tier.config.name}`
+                  )}
+                </Button>
+
+                {/* Benefits */}
+                <ul className="space-y-2.5 flex-1">
+                  {tier.benefits.map((benefit) => (
+                    <li
+                      key={benefit}
+                      className="flex items-start gap-2 text-[13px] text-neutral-400"
+                    >
+                      <Check className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-neutral-600" />
+                      <span>{benefit}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
           </div>
 
           {/* Error */}
           {error && (
-            <div className="mt-4 p-3 rounded-lg bg-neutral-800 border border-neutral-700">
-              <p className="text-sm text-neutral-300 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+            <div className="mt-4 p-3 rounded-xl bg-neutral-900 ring-1 ring-neutral-800">
+              <p className="text-sm text-neutral-400 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 text-neutral-500" />
                 {error}
               </p>
             </div>
@@ -485,13 +457,13 @@ export function SubscriptionModal({
         </div>
 
         {/* Footer */}
-        <div className="flex-shrink-0 px-6 py-4 border-t border-neutral-800 flex items-center justify-between">
-          <p className="text-xs text-neutral-600">
+        <div className="flex-shrink-0 px-8 py-4 border-t border-neutral-800/40 flex items-center justify-between">
+          <p className="text-[11px] text-neutral-600 tracking-wide">
             Secure payment &middot; Cancel anytime
           </p>
           <button
             onClick={handleClose}
-            className="text-xs text-neutral-500 hover:text-neutral-300 transition-colors py-1 px-3 rounded-md hover:bg-neutral-800"
+            className="text-[11px] text-neutral-600 hover:text-neutral-400 transition-colors py-1.5 px-3 rounded-lg hover:bg-neutral-800/50"
           >
             Maybe later
           </button>

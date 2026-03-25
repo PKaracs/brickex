@@ -62,3 +62,6 @@ google-indexing-key.json
 /public/tool-previews/
 /public/architecture-styles/
 /public/interior-styles/
+
+# Capstone / thesis documents
+/capstone/

@@ -646,10 +646,18 @@ export const auth = betterAuth({
             name: user.name,
           });
 
+          const COMPLIMENTARY_CREDITS: Record<string, number> = {
+            "robert.polding@ie.edu": 5000,
+          };
+
+          const signupCreationsLimit =
+            COMPLIMENTARY_CREDITS[user.email] ??
+            SUBSCRIPTION_PLANS.FREE.creationLimit;
+
           await db
             .update(schema.users)
             .set({
-              creationsLimit: SUBSCRIPTION_PLANS.FREE.creationLimit,
+              creationsLimit: signupCreationsLimit,
               metaFbp: requestContext.fbp,
               metaFbc: requestContext.fbc,
               lastUserAgent: requestContext.userAgent || null,
