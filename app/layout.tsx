@@ -4,7 +4,6 @@ import "../styles/globals.css";
 import { DM_Sans } from "next/font/google";
 import { Providers } from "@/components/providers";
 import { MetaPixel } from "@/lib/meta-pixel";
-import { TikTokPixel } from "@/lib/tiktok-pixel";
 import { JsonLd } from "@/components/seo/json-ld";
 
 const dmSans = DM_Sans({
@@ -153,7 +152,6 @@ export default function RootLayout({
       </head>
       <body className={`${dmSans.variable} font-sans`}>
         <MetaPixel />
-        <TikTokPixel />
         <Providers>{children}</Providers>
       </body>
     </html>

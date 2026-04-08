@@ -34,7 +34,6 @@ const legacyAppRoutePrefixes = [
   "/gallery",
   "/tools",
   "/video",
-  "/welcome",
   "/pricing",
   "/unsubscribe",
 ];

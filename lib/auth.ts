@@ -303,7 +303,7 @@ async function sendMetaCompleteRegistrationForUser(user: {
     firstName,
     lastName,
     contentName: "signup",
-    url: buildMetaEventSourceUrl("/welcome"),
+    url: buildMetaEventSourceUrl("/app/explore"),
     fbp: requestContext.fbp ?? undefined,
     fbc: requestContext.fbc ?? undefined,
     clientUserAgent: requestContext.userAgent || undefined,

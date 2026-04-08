@@ -16,7 +16,6 @@ import {
 import { cn } from "@/lib/utils";
 import { authClient } from "@/lib/auth-client";
 import { trackMetaEvent } from "@/lib/meta-pixel";
-import { tiktokEvents } from "@/lib/tiktok-pixel";
 import { captureMetaTrackingData, generateEventId } from "@/lib/meta-tracking";
 import { updateMetaTracking } from "@/lib/actions/update-meta-tracking";
 import { seline } from "@/lib/seline";
@@ -180,12 +179,6 @@ export function SubscriptionModal({
         },
         initiateCheckoutEventId,
       );
-
-      tiktokEvents.initiateCheckout({
-        content_type: "subscription",
-        currency: "USD",
-        value: planConfig.price,
-      });
 
       seline.checkout.started(planConfig.slug, "subscription_modal");
 

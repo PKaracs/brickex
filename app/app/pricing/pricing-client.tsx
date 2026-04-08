@@ -6,7 +6,6 @@ import Link from "next/link";
 import { Loader2, Check, ArrowRight, Star, X } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 import { trackMetaEvent } from "@/lib/meta-pixel";
-import { tiktokEvents } from "@/lib/tiktok-pixel";
 import { captureMetaTrackingData, generateEventId } from "@/lib/meta-tracking";
 import { updateMetaTracking } from "@/lib/actions/update-meta-tracking";
 import { seline } from "@/lib/seline";
@@ -17,51 +16,37 @@ import { SUBSCRIPTION_PLANS } from "@/lib/constants/subscription-plans";
 import type { ABVariant } from "@/lib/ab-test-constants";
 import { useSyncVariant } from "@/hooks/use-ab-variant";
 import posthog from "posthog-js";
+import { assetUrl } from "@/lib/assets";
 
-// Before/After images (from TransformationHero)
-const BEFORE_IMAGE =
-  "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/pricing-before.jpg";
-const AFTER_IMAGE =
-  "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/pricing-after.png";
+const BEFORE_IMAGE = assetUrl("real-estate-sketch/modern-white-villa-sketch.png");
+const AFTER_IMAGE = assetUrl("real-estate-front/modern-white-villa.png");
 
-// Gallery images from "how to look rich without money" blog
-const GALLERY_IMAGES = [
-  "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/blog2-dating-image.png",
-  "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/blog2-ai-luxury-travel-photo-without-travel.png",
-  "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/landing-after.png",
-  "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/blog2-gstaad-traveling.png",
-  "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/blog2-mansion.png",
-  "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/blog2-fake-rich.png",
-  "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/blog2-luxury-dating-profile-photo-ai.png",
-  "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/blog2-fake-rich-ai-private-jet-photo.png",
-];
-
-// Testimonials with profile images (2 fun/status + 1 grounded)
 const testimonials = [
   {
-    quote:
-      "Used this for my Hinge profile. Now I get asked which yacht club I'm at.",
-    name: "Jake M.",
-    handle: "@flexin_jake",
-    image:
-      "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Richflex%20(17).png",
+    quote: "Cut our visualization turnaround from 2 weeks to 20 minutes. Clients love seeing options before we break ground.",
+    name: "James O.",
+    handle: "Real Estate Developer",
+    image: assetUrl("real-estate-front/alpine-chalet-front.png"),
   },
   {
-    quote:
-      "I finally have photos I'm confident posting. Saved me hours and a photoshoot.",
-    name: "Sarah K.",
-    handle: "@sarahkflex",
-    image:
-      "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Richflex%20(12).png",
+    quote: "We use BrickEx to pre-sell off-plan units. The renders are so realistic buyers can't tell they're AI.",
+    name: "Sofia M.",
+    handle: "Property Marketing",
+    image: assetUrl("real-estate-front/tropical-villa-pool.png"),
   },
   {
-    quote:
-      "Posted a Richflex pic. Got 3 DMs asking about my lifestyle. Best investment I made.",
-    name: "Marcus R.",
-    handle: "@marcus_rich",
-    image:
-      "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Richflex%20(13).png",
+    quote: "Finally a tool that understands architectural context. The interior renders alone are worth the subscription.",
+    name: "Daniel R.",
+    handle: "Architect",
+    image: assetUrl("real-estate-front/modern-white-villa.png"),
   },
+];
+
+const GALLERY_IMAGES = [
+  assetUrl("real-estate-front/modern-white-villa.png"),
+  assetUrl("real-estate-front/alpine-chalet-front.png"),
+  assetUrl("real-estate-front/tropical-villa-pool.png"),
+  assetUrl("real-estate-sketch/modern-white-villa-sketch.png"),
 ];
 
 interface PricingPageClientProps {
@@ -144,12 +129,6 @@ export default function PricingPageClient({
         },
         initiateCheckoutEventId,
       );
-
-      tiktokEvents.initiateCheckout({
-        content_type: "subscription",
-        currency: "USD",
-        value: selectedPlanConfig.price,
-      });
 
       seline.checkout.started(selectedPlanConfig.slug, "pricing_page", variant);
 

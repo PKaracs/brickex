@@ -1,17 +1,8 @@
-export interface FlexBreakdown {
-  outfit: number;
-  watch: number;
-  location: number;
-  vehicle: number;
-  accessories: number;
-}
-
 export interface GenerationResult {
   generationId: string;
   outputKey: string;
   outputUrl?: string;
   flexWorth?: number;
-  flexBreakdown?: FlexBreakdown;
 }
 
 export interface GenerationError {
@@ -24,8 +15,6 @@ export interface GenerationError {
   redirectToPricing?: boolean;
 }
 
-import type { TeleportSelection } from "@/lib/types/teleport";
-
 export interface PromptSettings {
   frameSize: string;
   shotType: string;
@@ -36,9 +25,6 @@ export interface PromptSettings {
   templateName?: string;
   templateDescription?: string;
   objectNames?: string[];
-  multiPerson?: boolean;
-  personCount?: number;
-  teleport?: TeleportSelection;
 }
 
 export interface ProjectWithRelations {

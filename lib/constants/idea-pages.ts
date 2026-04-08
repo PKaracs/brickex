@@ -14,7 +14,12 @@ import {
   ideaTopicSeeds,
 } from "./idea-topic-seeds";
 
-type PromptRecord = { name?: string; value?: string; label?: string; prompt: string };
+type PromptRecord = {
+  name?: string;
+  value?: string;
+  label?: string;
+  prompt: string;
+};
 
 type GalleryAspectRatio = "cinema" | "portrait" | "square";
 
@@ -86,13 +91,20 @@ const VARIANT_LABELS: Record<IdeaImageVariant, string> = {
 };
 
 const VARIANT_DESCRIPTIONS: Record<IdeaImageVariant, string> = {
-  morning: "Early morning lighting study with soft sunrise color and calm atmosphere.",
-  night: "Night rendering study with warm interior glow and premium twilight contrast.",
-  overcast: "Moody overcast rendering study for dramatic material and facade reading.",
-  lifestyle: "Lifestyle marketing variation with people, vehicles, and lived-in cues.",
+  morning:
+    "Early morning lighting study with soft sunrise color and calm atmosphere.",
+  night:
+    "Night rendering study with warm interior glow and premium twilight contrast.",
+  overcast:
+    "Moody overcast rendering study for dramatic material and facade reading.",
+  lifestyle:
+    "Lifestyle marketing variation with people, vehicles, and lived-in cues.",
 };
 
-const BASE_VARIATION_PROMPTS: Record<Exclude<IdeaImageVariant, "lifestyle">, string> = {
+const BASE_VARIATION_PROMPTS: Record<
+  Exclude<IdeaImageVariant, "lifestyle">,
+  string
+> = {
   night: `Transform this property photograph to NIGHTTIME.
 
 KEEP the exact same building, angle, perspective, composition, and every architectural detail identical.
@@ -172,7 +184,10 @@ function toPromptMap(records: PromptRecord[], key: "name" | "value") {
 const fullPromptMap = toPromptMap(fullPrompts as PromptRecord[], "name");
 const presetPromptMap = toPromptMap(presetPrompts as PromptRecord[], "name");
 const frontPromptMap = toPromptMap(frontPrompts as PromptRecord[], "name");
-const stylePromptMap = toPromptMap(architectureStylePrompts as PromptRecord[], "value");
+const stylePromptMap = toPromptMap(
+  architectureStylePrompts as PromptRecord[],
+  "value",
+);
 
 function titleize(value: string) {
   return value
@@ -221,7 +236,9 @@ function buildVariationPrompt(
         : FULL_LIFESTYLE_SCENES[ref.name];
 
     if (!scene) {
-      throw new Error(`Missing lifestyle prompt scene for ${ref.kind}:${ref.name}`);
+      throw new Error(
+        `Missing lifestyle prompt scene for ${ref.kind}:${ref.name}`,
+      );
     }
 
     return buildLifestylePrompt(basePrompt, scene);
@@ -273,7 +290,11 @@ function buildImageFromAssetRef(ref: IdeaAssetRef): IdeaGalleryImage {
       );
     }
     case "fullVariation": {
-      const basePrompt = getPromptOrThrow(fullPromptMap, ref.name, "full variation");
+      const basePrompt = getPromptOrThrow(
+        fullPromptMap,
+        ref.name,
+        "full variation",
+      );
       return makeBaseImage(
         ref.name,
         `/real-estate-full-variations/${ref.name}/${ref.variant}.png`,
@@ -293,7 +314,11 @@ function buildImageFromAssetRef(ref: IdeaAssetRef): IdeaGalleryImage {
       );
     }
     case "presetVariation": {
-      const basePrompt = getPromptOrThrow(presetPromptMap, ref.name, "preset variation");
+      const basePrompt = getPromptOrThrow(
+        presetPromptMap,
+        ref.name,
+        "preset variation",
+      );
       return makeBaseImage(
         ref.name,
         `/real-estate-variations/${ref.name}/${ref.variant}.png`,
@@ -379,11 +404,14 @@ const generatedContentMap = new Map(
 );
 
 const generatedGalleryMap = new Map(
-  Object.entries(ideaGalleryManifest as Record<string, IdeaGalleryManifestEntry>),
+  Object.entries(
+    ideaGalleryManifest as Record<string, IdeaGalleryManifestEntry>,
+  ),
 );
 
 export const allIdeaPages: IdeaPage[] = ideaTopicSeeds.map((seed) => {
-  const generated = generatedContentMap.get(seed.slug) ?? createFallbackContent(seed);
+  const generated =
+    generatedContentMap.get(seed.slug) ?? createFallbackContent(seed);
   const generatedGallery = generatedGalleryMap.get(seed.slug)?.images ?? [];
 
   return {

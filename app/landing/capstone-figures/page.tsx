@@ -7,10 +7,11 @@ export default function CapstoneFiguresPage() {
         <GarrettFivePlanes />
         <p className="text-xs text-zinc-500 mt-4 text-center italic max-w-2xl mx-auto">
           Garrett&apos;s five-plane model applied to BrickEx. Each plane
-          constrains the one above it: strategic decisions about target users and
-          business model determine which features are included (scope), which in
-          turn determine how the workflow is organized (structure), how the
-          interface is laid out (skeleton), and how it looks and feels (surface).
+          constrains the one above it: strategic decisions about target users
+          and business model determine which features are included (scope),
+          which in turn determine how the workflow is organized (structure), how
+          the interface is laid out (skeleton), and how it looks and feels
+          (surface).
         </p>
       </section>
 
@@ -57,6 +58,21 @@ export default function CapstoneFiguresPage() {
           User journey from acquisition to value realization. Each stage
           includes feedback mechanisms, reversibility, and measurable completion
           signals.
+        </p>
+      </section>
+
+      {/* FIGURE: Information Architecture / Site Map */}
+      <section className="max-w-6xl mx-auto">
+        <p className="text-xs text-zinc-500 mb-4 font-mono">
+          INFORMATION ARCHITECTURE
+        </p>
+        <InformationArchitecture />
+        <p className="text-xs text-zinc-500 mt-4 text-center italic max-w-2xl mx-auto">
+          BrickEx information architecture and page hierarchy. Color coding
+          indicates page purpose: blue for acquisition, purple for
+          authentication, green for onboarding, neutral for core workflow, amber
+          for monetization, and red for legal. Arrows show primary navigation
+          flows and cross-links between sections.
         </p>
       </section>
     </div>
@@ -536,9 +552,7 @@ function PostHogEventMap() {
   return (
     <div>
       <div className="flex items-baseline gap-3 mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">
-          PostHog Event Map
-        </h2>
+        <h2 className="text-2xl font-bold tracking-tight">PostHog Event Map</h2>
         <span className="text-sm text-zinc-400">
           {total} events across {groups.length} lifecycle stages
         </span>
@@ -586,11 +600,20 @@ function UserJourney() {
     {
       phase: "Activation",
       steps: [
-        { label: "Sign Up (Google / Magic Link / Email)", type: "action" as const },
+        {
+          label: "Sign Up (Google / Magic Link / Email)",
+          type: "action" as const,
+        },
         { label: "Welcome Onboarding", type: "page" as const },
         { label: "Create Project + Upload Source", type: "action" as const },
-        { label: "Configure Settings (style, lighting, materials)", type: "action" as const },
-        { label: "Generate → First Render (wow moment)", type: "milestone" as const },
+        {
+          label: "Configure Settings (style, lighting, materials)",
+          type: "action" as const,
+        },
+        {
+          label: "Generate → First Render (wow moment)",
+          type: "milestone" as const,
+        },
       ],
     },
     {
@@ -599,9 +622,18 @@ function UserJourney() {
         { label: "Review Variants → Select Best", type: "action" as const },
         { label: "Region / Global Edit (refine)", type: "action" as const },
         { label: "Add Angle Slots (multi-angle set)", type: "action" as const },
-        { label: "Video Generation (motion + scene presets)", type: "action" as const },
-        { label: "Tools (exploded diagram, floorplan, 3D...)", type: "action" as const },
-        { label: "Gallery: Download / Share / Manage", type: "action" as const },
+        {
+          label: "Video Generation (motion + scene presets)",
+          type: "action" as const,
+        },
+        {
+          label: "Tools (exploded diagram, floorplan, 3D...)",
+          type: "action" as const,
+        },
+        {
+          label: "Gallery: Download / Share / Manage",
+          type: "action" as const,
+        },
       ],
     },
     {
@@ -609,7 +641,10 @@ function UserJourney() {
       steps: [
         { label: "Credits Exhausted → Pricing Page", type: "page" as const },
         { label: "Select Plan → Checkout (Polar)", type: "action" as const },
-        { label: "Purchase Confirmed → Meta CAPI event", type: "milestone" as const },
+        {
+          label: "Purchase Confirmed → Meta CAPI event",
+          type: "milestone" as const,
+        },
       ],
     },
   ];
@@ -618,7 +653,8 @@ function UserJourney() {
     entry: "bg-blue-500/10 border-blue-500/20 text-blue-300",
     page: "bg-purple-500/10 border-purple-500/20 text-purple-300",
     action: "bg-white/5 border-white/10 text-zinc-300",
-    milestone: "bg-emerald-500/10 border-emerald-500/20 text-emerald-300 font-semibold",
+    milestone:
+      "bg-emerald-500/10 border-emerald-500/20 text-emerald-300 font-semibold",
   };
 
   return (
@@ -676,6 +712,202 @@ function UserJourney() {
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border bg-emerald-500/10 border-emerald-500/20" />
           Milestone
+        </span>
+      </div>
+    </div>
+  );
+}
+
+/* ─── Information Architecture (Tree Sitemap) ─── */
+function InformationArchitecture() {
+  const branches = [
+    {
+      label: "Public",
+      color: "border-blue-400 bg-blue-500/20 text-blue-200",
+      children: [
+        "Landing Page",
+        "Ideas (×40 SEO)",
+        "AI Photos",
+        "Blog",
+        "Terms",
+        "Privacy",
+      ],
+      childColor: "border-blue-500/30 bg-blue-500/10 text-blue-300",
+    },
+    {
+      label: "Auth",
+      color: "border-purple-400 bg-purple-500/20 text-purple-200",
+      children: [
+        "Login / Signup",
+        "Google OAuth",
+        "Magic Link",
+        "Email + Password",
+      ],
+      childColor: "border-purple-500/30 bg-purple-500/10 text-purple-300",
+    },
+    {
+      label: "Onboarding",
+      color: "border-green-400 bg-green-500/20 text-green-200",
+      children: [
+        "Welcome Flow",
+        "Playground Assigned",
+        "100 Free Bricks",
+      ],
+      childColor: "border-green-500/30 bg-green-500/10 text-green-300",
+    },
+    {
+      label: "Create",
+      color: "border-white/60 bg-white/10 text-white",
+      children: [
+        "New Project",
+        "Project Dashboard",
+        "Mode (Ext / Int)",
+        "Angle Slots (×5)",
+        "Settings Sidebar",
+        "Region / Global Edit",
+      ],
+      childColor: "border-white/20 bg-white/5 text-zinc-300",
+    },
+    {
+      label: "Video",
+      color: "border-white/60 bg-white/10 text-white",
+      children: [
+        "Video Generator",
+        "Motion Presets (11)",
+        "Scene Presets (6)",
+        "Duration / Ratio",
+      ],
+      childColor: "border-white/20 bg-white/5 text-zinc-300",
+    },
+    {
+      label: "Tools",
+      color: "border-white/60 bg-white/10 text-white",
+      children: [
+        "Tools Catalog (8)",
+        "Tool Page",
+        "Exploded Diagram",
+        "Floorplan → Interior",
+        "Image → 3D",
+        "Moodboard → Render",
+        "Isometric View",
+        "Landscape Gen",
+      ],
+      childColor: "border-white/20 bg-white/5 text-zinc-300",
+    },
+    {
+      label: "Explore",
+      color: "border-white/60 bg-white/10 text-white",
+      children: [
+        "Masonry Grid",
+        "Category Cards",
+        '"Generate Yours"',
+      ],
+      childColor: "border-white/20 bg-white/5 text-zinc-300",
+    },
+    {
+      label: "Gallery",
+      color: "border-white/60 bg-white/10 text-white",
+      children: [
+        "Ext / Int / Video / Tool",
+        "Sort & Filter",
+        "Download / Share",
+        "Preview Modal",
+      ],
+      childColor: "border-white/20 bg-white/5 text-zinc-300",
+    },
+    {
+      label: "Pricing",
+      color: "border-amber-400 bg-amber-500/20 text-amber-200",
+      children: [
+        "Starter ($29)",
+        "Pro ($49)",
+        "Studio ($99)",
+        "Polar Checkout",
+      ],
+      childColor: "border-amber-500/30 bg-amber-500/10 text-amber-300",
+    },
+  ];
+
+  return (
+    <div>
+      <h2 className="text-2xl font-bold tracking-tight mb-1">
+        Information Architecture
+      </h2>
+      <p className="text-sm text-zinc-400 mb-8">
+        BrickEx Page Hierarchy &amp; Navigation Flows
+      </p>
+
+      <div className="flex flex-col items-center">
+        {/* Root node */}
+        <div className="px-8 py-3 rounded-full border-2 border-white bg-white/10 text-white font-bold text-lg tracking-tight">
+          brickex.co
+        </div>
+
+        {/* Vertical line from root */}
+        <div className="w-px h-8 bg-zinc-600" />
+
+        {/* Horizontal connector spanning all branches */}
+        <div className="w-full h-px bg-zinc-600" />
+
+        {/* Branches */}
+        <div className="w-full grid gap-0" style={{ gridTemplateColumns: `repeat(${branches.length}, 1fr)` }}>
+          {branches.map((branch) => (
+            <div key={branch.label} className="flex flex-col items-center">
+              {/* Vertical line down to section node */}
+              <div className="w-px h-6 bg-zinc-600" />
+
+              {/* Section node */}
+              <div
+                className={`px-3 py-1.5 rounded-lg border text-xs font-bold text-center whitespace-nowrap ${branch.color}`}
+              >
+                {branch.label}
+              </div>
+
+              {/* Vertical line down to children */}
+              <div className="w-px h-4 bg-zinc-700" />
+
+              {/* Child pages */}
+              <div className="flex flex-col items-center gap-1">
+                {branch.children.map((child, ci) => (
+                  <div key={child} className="flex flex-col items-center">
+                    <div
+                      className={`px-2 py-1 rounded-md border text-center whitespace-nowrap ${branch.childColor}`}
+                      style={{ fontSize: "10px" }}
+                    >
+                      {child}
+                    </div>
+                    {ci < branch.children.length - 1 && (
+                      <div className="w-px h-1 bg-zinc-800" />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Legend */}
+      <div className="flex flex-wrap justify-center gap-5 text-xs text-zinc-500 mt-10 pt-4 border-t border-zinc-800">
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded border-2 border-blue-400 bg-blue-500/20" />
+          Acquisition
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded border-2 border-purple-400 bg-purple-500/20" />
+          Authentication
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded border-2 border-green-400 bg-green-500/20" />
+          Onboarding
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded border-2 border-white/60 bg-white/10" />
+          Core Workflow
+        </span>
+        <span className="flex items-center gap-1.5">
+          <span className="w-3 h-3 rounded border-2 border-amber-400 bg-amber-500/20" />
+          Monetization
         </span>
       </div>
     </div>
