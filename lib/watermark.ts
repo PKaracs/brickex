@@ -26,12 +26,12 @@ function loadImage(url: string): Promise<HTMLImageElement> {
 /**
  * Add watermark to an image
  * @param imageUrl - URL of the image to watermark
- * @param appUrl - App URL to display in watermark (unused, kept for compatibility)
+ * @param appUrl -
  * @returns Promise that resolves to a Blob of the watermarked image
  */
 export async function addWatermark(
   imageUrl: string,
-  appUrl?: string
+  appUrl?: string,
 ): Promise<Blob> {
   try {
     // Load both images
@@ -50,10 +50,8 @@ export async function addWatermark(
       throw new Error("Failed to get canvas context");
     }
 
-    // Draw main image
     ctx.drawImage(mainImage, 0, 0);
 
-    // Watermark dimensions and positioning
     const padding = 96;
     const logoHeight = 320;
     const logoAspectRatio = logoImage.width / logoImage.height;
@@ -62,7 +60,6 @@ export async function addWatermark(
     const urlPadding = 48;
     const urlText = "brickex.co";
 
-    // Measure URL text width
     ctx.font = `${urlFontSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif`;
     const urlTextMetrics = ctx.measureText(urlText);
     const urlTextWidth = urlTextMetrics.width;
@@ -72,25 +69,16 @@ export async function addWatermark(
     const watermarkHeight =
       logoHeight + urlFontSize + urlPadding * 2 + padding * 2;
 
-    // Position: top-right corner
     const watermarkX = canvas.width - watermarkWidth - padding;
     const watermarkY = padding;
 
-    // Draw semi-transparent background
     ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
-    ctx.fillRect(
-      watermarkX,
-      watermarkY,
-      watermarkWidth,
-      watermarkHeight
-    );
+    ctx.fillRect(watermarkX, watermarkY, watermarkWidth, watermarkHeight);
 
-    // Draw logo (centered horizontally in watermark container)
     const logoX = watermarkX + (watermarkWidth - logoWidth) / 2;
     const logoY = watermarkY + padding;
     ctx.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight);
 
-    // Draw URL text (centered below logo)
     ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
     ctx.textAlign = "center";
     ctx.textBaseline = "top";
@@ -98,7 +86,6 @@ export async function addWatermark(
     const urlY = logoY + logoHeight + urlPadding;
     ctx.fillText(urlText, urlX, urlY);
 
-    // Convert canvas to blob
     return new Promise((resolve, reject) => {
       canvas.toBlob(
         (blob) => {
@@ -109,7 +96,7 @@ export async function addWatermark(
           }
         },
         "image/png",
-        1.0
+        1.0,
       );
     });
   } catch (error) {
@@ -117,4 +104,3 @@ export async function addWatermark(
     throw error;
   }
 }
-

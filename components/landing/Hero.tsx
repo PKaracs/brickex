@@ -2,7 +2,15 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
-import { ArrowRight, ChevronDown, Sparkles, Building2, ChevronRight, Zap, Upload } from "lucide-react";
+import {
+  ArrowRight,
+  ChevronDown,
+  Sparkles,
+  Building2,
+  ChevronRight,
+  Zap,
+  Upload,
+} from "lucide-react";
 import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
 import { ShimmerButton } from "@/components/ui/shimmer-button";
 import { Marquee } from "@/components/ui/marquee";
@@ -32,14 +40,38 @@ const SHOWCASE_PAIRS = [
 ];
 
 const GALLERY_IMAGES = [
-  { src: assetUrl("real-estate-presets/hollywood-hills-modern.png"), label: "Hollywood Hills" },
-  { src: assetUrl("real-estate-presets/maldives-overwater.png"), label: "Maldives Villa" },
-  { src: assetUrl("real-estate-presets/mediterranean-villa.png"), label: "Mediterranean" },
-  { src: assetUrl("real-estate-full/classic-white-mansion.png"), label: "Neoclassical" },
-  { src: assetUrl("real-estate-full/luxury-glass-skyscraper.png"), label: "Glass Tower" },
-  { src: assetUrl("real-estate-full/desert-modern-house.png"), label: "Desert Modern" },
-  { src: assetUrl("real-estate-presets/japanese-zen-house.png"), label: "Zen House" },
-  { src: assetUrl("real-estate-full/miami-condo-tower.png"), label: "Miami Tower" },
+  {
+    src: assetUrl("real-estate-presets/hollywood-hills-modern.png"),
+    label: "Hollywood Hills",
+  },
+  {
+    src: assetUrl("real-estate-presets/maldives-overwater.png"),
+    label: "Maldives Villa",
+  },
+  {
+    src: assetUrl("real-estate-presets/mediterranean-villa.png"),
+    label: "Mediterranean",
+  },
+  {
+    src: assetUrl("real-estate-full/classic-white-mansion.png"),
+    label: "Neoclassical",
+  },
+  {
+    src: assetUrl("real-estate-full/luxury-glass-skyscraper.png"),
+    label: "Glass Tower",
+  },
+  {
+    src: assetUrl("real-estate-full/desert-modern-house.png"),
+    label: "Desert Modern",
+  },
+  {
+    src: assetUrl("real-estate-presets/japanese-zen-house.png"),
+    label: "Zen House",
+  },
+  {
+    src: assetUrl("real-estate-full/miami-condo-tower.png"),
+    label: "Miami Tower",
+  },
 ];
 
 const MOCK_SETTINGS = [
@@ -80,8 +112,13 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
     };
 
     const timers = cycle();
-    const interval = setInterval(() => { cycle(); }, 5000);
-    return () => { timers.forEach(clearTimeout); clearInterval(interval); };
+    const interval = setInterval(() => {
+      cycle();
+    }, 5000);
+    return () => {
+      timers.forEach(clearTimeout);
+      clearInterval(interval);
+    };
   }, []);
 
   const pair = SHOWCASE_PAIRS[pairIndex];
@@ -91,7 +128,12 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
       {/* Layer 1: Full-bleed background + headline */}
       <div className="relative min-h-[100svh] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img src={HERO_BG} alt="" className="absolute inset-0 w-full h-full object-cover" loading="eager" />
+          <img
+            src={HERO_BG}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            loading="eager"
+          />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#0c0c0c]" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent" />
         </div>
@@ -116,28 +158,49 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
           <BlurFade inView delay={0.3}>
             <div className="mt-7 sm:mt-8 flex flex-col items-center gap-3">
               <a href={signupUrl}>
-                <ShimmerButton shimmerColor="#ffffff" shimmerSize="0.05em" background="rgba(255,255,255,0.1)" className="px-8 py-3.5 text-sm sm:text-base font-semibold">
+                <ShimmerButton
+                  shimmerColor="#ffffff"
+                  shimmerSize="0.05em"
+                  background="rgba(255,255,255,0.1)"
+                  className="px-8 py-3.5 text-sm sm:text-base font-semibold"
+                >
                   Start Free
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </ShimmerButton>
               </a>
-              <p className="text-xs sm:text-sm text-white/40">Create an account or sign in to start rendering now.</p>
+              <p className="text-xs sm:text-sm text-white/40">
+                Create an account or sign in to start rendering now.
+              </p>
             </div>
           </BlurFade>
 
           <BlurFade inView delay={0.4}>
             <div className="mt-8 flex items-center justify-center gap-3">
               <div className="flex -space-x-2">
-                {["Richflex%20(5)", "Richflex%20(17)", "Richflex%20(18)"].map((name, i) => (
-                  <div key={i} className="relative w-8 h-8 rounded-full border-2 border-black/50 overflow-hidden bg-zinc-800">
-                    <Image src={`https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/${name}.png`} alt="User" fill className="object-cover" />
-                  </div>
-                ))}
+                {["Richflex%20(5)", "Richflex%20(17)", "Richflex%20(18)"].map(
+                  (name, i) => (
+                    <div
+                      key={i}
+                      className="relative w-8 h-8 rounded-full border-2 border-black/50 overflow-hidden bg-zinc-800"
+                    >
+                      <Image
+                        src={`https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/${name}.png`}
+                        alt="User"
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  ),
+                )}
                 <div className="w-8 h-8 rounded-full border-2 border-black/50 bg-zinc-800 flex items-center justify-center">
-                  <span className="text-[10px] font-semibold text-neutral-400">10K+</span>
+                  <span className="text-[10px] font-semibold text-neutral-400">
+                    10K+
+                  </span>
                 </div>
               </div>
-              <p className="text-xs text-white/40">Used by architects, developers & agencies</p>
+              <p className="text-xs text-white/40">
+                Used by architects, developers & agencies
+              </p>
             </div>
           </BlurFade>
         </div>
@@ -155,24 +218,32 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
       >
         <div className="max-w-5xl mx-auto">
           <div className="bg-zinc-900/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/10 shadow-[0_20px_80px_rgba(0,0,0,0.6)] overflow-hidden">
-
             {/* Dashboard navbar */}
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5 bg-black/40">
               <div className="flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center">
                   <img src="/brickex-logo.png" alt="" className="w-4 h-4" />
                 </div>
-                <span className="text-xs font-bold text-white/80 tracking-tight">BrickEx</span>
+                <span className="text-xs font-bold text-white/80 tracking-tight">
+                  BrickEx
+                </span>
               </div>
               <div className="hidden sm:flex items-center gap-4">
                 {["Explore", "Create", "Gallery"].map((tab) => (
-                  <span key={tab} className={`text-[10px] font-medium ${tab === "Create" ? "text-white" : "text-white/30"}`}>{tab}</span>
+                  <span
+                    key={tab}
+                    className={`text-[10px] font-medium ${tab === "Create" ? "text-white" : "text-white/30"}`}
+                  >
+                    {tab}
+                  </span>
                 ))}
               </div>
               <div className="flex items-center gap-2">
                 <div className="flex items-center gap-1 px-1.5 py-0.5 rounded bg-amber-500/10">
                   <Zap className="w-2.5 h-2.5 text-amber-400 fill-amber-400" />
-                  <span className="text-[9px] font-bold text-amber-400">47</span>
+                  <span className="text-[9px] font-bold text-amber-400">
+                    47
+                  </span>
                 </div>
                 <div className="w-5 h-5 rounded-full bg-zinc-700" />
               </div>
@@ -180,7 +251,6 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
 
             {/* Dashboard body: canvas + sidebar */}
             <div className="flex min-h-[320px] sm:min-h-[400px] lg:min-h-[460px]">
-
               {/* Canvas area (left) */}
               <div className="flex-1 flex flex-col min-w-0">
                 {/* Image thumbnails strip */}
@@ -189,10 +259,16 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                     <div
                       key={i}
                       className={`w-10 h-7 rounded overflow-hidden border transition-all ${
-                        i === pairIndex ? "border-white/40" : "border-white/10 opacity-40"
+                        i === pairIndex
+                          ? "border-white/40"
+                          : "border-white/10 opacity-40"
                       }`}
                     >
-                      <img src={p.sketch} alt="" className="w-full h-full object-cover" />
+                      <img
+                        src={p.sketch}
+                        alt=""
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                   ))}
                   <div className="w-7 h-7 rounded border border-dashed border-white/15 flex items-center justify-center">
@@ -238,12 +314,16 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                         {showRender ? (
                           <>
                             <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            <span className="text-[9px] font-medium text-white/80">BrickEx Render</span>
+                            <span className="text-[9px] font-medium text-white/80">
+                              BrickEx Render
+                            </span>
                           </>
                         ) : (
                           <>
                             <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                            <span className="text-[9px] font-medium text-white/50">SketchUp Input</span>
+                            <span className="text-[9px] font-medium text-white/50">
+                              SketchUp Input
+                            </span>
                           </>
                         )}
                       </motion.div>
@@ -253,22 +333,40 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                   {/* Progress dots */}
                   <div className="absolute top-3 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1">
                     {SHOWCASE_PAIRS.map((_, i) => (
-                      <div key={i} className={`h-1 rounded-full transition-all duration-500 ${i === pairIndex ? "w-5 bg-white/60" : "w-1 bg-white/15"}`} />
+                      <div
+                        key={i}
+                        className={`h-1 rounded-full transition-all duration-500 ${i === pairIndex ? "w-5 bg-white/60" : "w-1 bg-white/15"}`}
+                      />
                     ))}
                   </div>
                 </div>
 
                 {/* Bottom toolbar */}
                 <div className="flex items-center justify-center gap-0.5 px-3 py-2 border-t border-white/5">
-                  {["Select", "Comment", "Shape", "Eraser", "|", "Undo", "Redo", "|", "Fullscreen", "Compare", "Download"].map((tool, i) => (
+                  {[
+                    "Select",
+                    "Comment",
+                    "Shape",
+                    "Eraser",
+                    "|",
+                    "Undo",
+                    "Redo",
+                    "|",
+                    "Fullscreen",
+                    "Compare",
+                    "Download",
+                  ].map((tool, i) =>
                     tool === "|" ? (
                       <div key={i} className="w-px h-4 bg-white/10 mx-1" />
                     ) : (
-                      <div key={i} className={`w-6 h-6 rounded flex items-center justify-center ${tool === "Select" ? "bg-white/10" : ""}`}>
+                      <div
+                        key={i}
+                        className={`w-6 h-6 rounded flex items-center justify-center ${tool === "Select" ? "bg-white/10" : ""}`}
+                      >
                         <div className="w-2.5 h-2.5 rounded-sm bg-white/20" />
                       </div>
-                    )
-                  ))}
+                    ),
+                  )}
                 </div>
               </div>
 
@@ -281,8 +379,12 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                       <Building2 className="w-3.5 h-3.5 text-white/60" />
                     </div>
                     <div className="flex-1 min-w-0 text-left">
-                      <div className="text-[10px] font-semibold text-white/80">Exterior Render</div>
-                      <div className="text-[8px] text-white/30">Photorealistic exterior</div>
+                      <div className="text-[10px] font-semibold text-white/80">
+                        Exterior Render
+                      </div>
+                      <div className="text-[8px] text-white/30">
+                        Photorealistic exterior
+                      </div>
                     </div>
                     <ChevronRight className="w-3 h-3 text-white/20" />
                   </button>
@@ -290,10 +392,14 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                   {/* Settings */}
                   {MOCK_SETTINGS.map((s) => (
                     <div key={s.label} className="space-y-1">
-                      <span className="text-[8px] font-medium text-white/30 uppercase tracking-wider">{s.label}</span>
+                      <span className="text-[8px] font-medium text-white/30 uppercase tracking-wider">
+                        {s.label}
+                      </span>
                       <div className="flex items-center gap-2 p-1.5 rounded-md border border-white/5 bg-white/[0.02]">
                         <div className="w-5 h-5 rounded bg-white/5" />
-                        <span className="text-[9px] text-white/60 font-medium">{s.value}</span>
+                        <span className="text-[9px] text-white/60 font-medium">
+                          {s.value}
+                        </span>
                         <ChevronDown className="w-2.5 h-2.5 text-white/20 ml-auto" />
                       </div>
                     </div>
@@ -304,9 +410,13 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                 <div className="p-3 border-t border-white/5">
                   <div className="w-full h-8 rounded-lg bg-white flex items-center justify-center gap-1.5">
                     <Sparkles className="w-3 h-3 text-black" />
-                    <span className="text-[10px] font-semibold text-black">Generate</span>
+                    <span className="text-[10px] font-semibold text-black">
+                      Generate
+                    </span>
                   </div>
-                  <p className="text-[7px] text-white/20 text-center mt-1.5">1 free render included</p>
+                  <p className="text-[7px] text-white/20 text-center mt-1.5">
+                    1 free render included
+                  </p>
                 </div>
               </div>
             </div>
@@ -318,12 +428,25 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
       <div className="relative pb-8 sm:pb-16">
         <BlurFade inView delay={0.1}>
           <div className="relative">
-            <Marquee className="max-w-full [--duration:45s] [--gap:0.75rem]" pauseOnHover>
+            <Marquee
+              className="max-w-full [--duration:45s] [--gap:0.75rem]"
+              pauseOnHover
+            >
               {GALLERY_IMAGES.map((img, idx) => (
-                <div key={idx} className="group relative flex-shrink-0 w-64 sm:w-80 aspect-[16/10] rounded-xl overflow-hidden border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]">
-                  <img src={img.src} alt={img.label} className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                <div
+                  key={idx}
+                  className="group relative flex-shrink-0 w-64 sm:w-80 aspect-[16/10] rounded-xl overflow-hidden border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
+                >
+                  <img
+                    src={img.src}
+                    alt={img.label}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    loading="lazy"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <span className="absolute bottom-3 left-3 text-xs font-medium text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">{img.label}</span>
+                  <span className="absolute bottom-3 left-3 text-xs font-medium text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    {img.label}
+                  </span>
                 </div>
               ))}
             </Marquee>

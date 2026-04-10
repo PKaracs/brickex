@@ -65,3 +65,9 @@ google-indexing-key.json
 
 # Capstone / thesis documents
 /capstone/
+
+# AI editor config (Cursor, Claude, Codex)
+.cursor/
+.claude/
+.codex/
+AGENTS.md
