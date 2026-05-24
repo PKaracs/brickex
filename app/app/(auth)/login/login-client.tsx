@@ -7,6 +7,7 @@ import { AnimatePresence, motion } from "motion/react";
 import {
   ArrowRight,
   CheckCircle2,
+  KeyRound,
   Link as LinkIcon,
   Mail,
 } from "lucide-react";
@@ -81,16 +82,26 @@ function getMarketingSiteUrl() {
   return "/";
 }
 
+type AuthMode = "magic" | "password";
+type PasswordIntent = "signin" | "signup";
+
 export default function LoginPageClient({
   authError,
   magicLinkEnabled,
 }: LoginPageClientProps) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isPasswordLoading, setIsPasswordLoading] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
   const [error, setError] = useState<string | null>(toErrorMessage(authError));
+  const [mode, setMode] = useState<AuthMode>(
+    magicLinkEnabled ? "magic" : "password",
+  );
+  const [passwordIntent, setPasswordIntent] =
+    useState<PasswordIntent>("signin");
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -102,6 +113,51 @@ export default function LoginPageClient({
   useEffect(() => {
     setError(toErrorMessage(authError));
   }, [authError]);
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) return;
+
+    setIsPasswordLoading(true);
+    setError(null);
+
+    try {
+      if (passwordIntent === "signup") {
+        const result = await authClient.signUp.email({
+          email,
+          password,
+          name: name.trim() || email.split("@")[0],
+          callbackURL: "/app/dashboard/new",
+        });
+
+        if (result.error) {
+          throw new Error(result.error.message || "Sign-up failed");
+        }
+      } else {
+        const result = await authClient.signIn.email({
+          email,
+          password,
+          callbackURL: "/app/dashboard/new",
+        });
+
+        if (result.error) {
+          throw new Error(result.error.message || "Invalid email or password");
+        }
+      }
+
+      window.location.assign("/app/dashboard/new");
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : passwordIntent === "signup"
+            ? "Sign-up failed"
+            : "Sign-in failed",
+      );
+    } finally {
+      setIsPasswordLoading(false);
+    }
+  };
 
   const handleMagicLinkSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -235,6 +291,41 @@ export default function LoginPageClient({
                 </p>
               </div>
 
+              {magicLinkEnabled && !isSubmitted ? (
+                <div className="mb-4 flex rounded-xl border border-neutral-800 bg-black/20 p-1">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("magic");
+                      setError(null);
+                    }}
+                    className={`flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                      mode === "magic"
+                        ? "bg-neutral-800 text-white"
+                        : "text-neutral-400 hover:text-white"
+                    }`}
+                  >
+                    <LinkIcon className="mr-1.5 inline h-3.5 w-3.5" />
+                    Magic link
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMode("password");
+                      setError(null);
+                    }}
+                    className={`flex-1 rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+                      mode === "password"
+                        ? "bg-neutral-800 text-white"
+                        : "text-neutral-400 hover:text-white"
+                    }`}
+                  >
+                    <KeyRound className="mr-1.5 inline h-3.5 w-3.5" />
+                    Password
+                  </button>
+                </div>
+              ) : null}
+
               {magicLinkEnabled && isSubmitted ? (
                 <div className="space-y-6">
                   <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10">
@@ -264,7 +355,7 @@ export default function LoginPageClient({
                 </div>
               ) : null}
 
-              {magicLinkEnabled && !isSubmitted ? (
+              {magicLinkEnabled && !isSubmitted && mode === "magic" ? (
                 <form onSubmit={handleMagicLinkSubmit} className="space-y-4">
                   <div className="rounded-xl border border-neutral-800 bg-black/20 p-3 text-sm text-neutral-300">
                     <div className="flex items-start gap-2">
@@ -313,6 +404,118 @@ export default function LoginPageClient({
                     Email me a magic link
                     <LinkIcon className="ml-2 h-4 w-4" />
                   </Button>
+                </form>
+              ) : null}
+
+              {!isSubmitted && mode === "password" ? (
+                <form onSubmit={handlePasswordSubmit} className="space-y-4">
+                  <div className="rounded-xl border border-neutral-800 bg-black/20 p-3 text-sm text-neutral-300">
+                    <div className="flex items-start gap-2">
+                      <KeyRound className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
+                      <p>
+                        {passwordIntent === "signup"
+                          ? "Create an account with your email and a password. Your workspace will be set up automatically."
+                          : "Sign in with your email and password. Account must already exist."}
+                      </p>
+                    </div>
+                  </div>
+
+                  {passwordIntent === "signup" ? (
+                    <div className="space-y-2">
+                      <Input
+                        type="text"
+                        placeholder="Your name (optional)"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="h-11 border-neutral-800 bg-neutral-900 text-white placeholder:text-neutral-600 focus:border-neutral-600 focus:ring-0"
+                        autoComplete="name"
+                      />
+                    </div>
+                  ) : null}
+
+                  <div className="space-y-2">
+                    <Input
+                      type="email"
+                      placeholder="you@example.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-11 border-neutral-800 bg-neutral-900 text-white placeholder:text-neutral-600 focus:border-neutral-600 focus:ring-0"
+                      required
+                      autoComplete="email"
+                    />
+                  </div>
+
+                  <div className="space-y-2">
+                    <Input
+                      type="password"
+                      placeholder={
+                        passwordIntent === "signup"
+                          ? "Choose a password (min. 8 characters)"
+                          : "Password"
+                      }
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="h-11 border-neutral-800 bg-neutral-900 text-white placeholder:text-neutral-600 focus:border-neutral-600 focus:ring-0"
+                      required
+                      minLength={passwordIntent === "signup" ? 8 : undefined}
+                      autoComplete={
+                        passwordIntent === "signup"
+                          ? "new-password"
+                          : "current-password"
+                      }
+                    />
+                  </div>
+
+                  {error && (
+                    <div className="rounded-xl border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-300">
+                      {error}
+                    </div>
+                  )}
+
+                  <Button
+                    type="submit"
+                    variant="white"
+                    size="default"
+                    className="w-full"
+                    isLoading={isPasswordLoading}
+                  >
+                    {passwordIntent === "signup"
+                      ? "Create account"
+                      : "Sign in"}
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+
+                  <div className="pt-1 text-center text-xs text-neutral-500">
+                    {passwordIntent === "signup" ? (
+                      <>
+                        Already have an account?{" "}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPasswordIntent("signin");
+                            setError(null);
+                          }}
+                          className="font-medium text-white hover:underline"
+                        >
+                          Sign in
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        No account yet?{" "}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setPasswordIntent("signup");
+                            setError(null);
+                          }}
+                          className="font-medium text-white hover:underline"
+                        >
+                          Create one
+                        </button>
+                      </>
+                    )}
+                  </div>
                 </form>
               ) : null}
 

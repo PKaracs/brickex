@@ -71,3 +71,4 @@ google-indexing-key.json
 .claude/
 .codex/
 AGENTS.md
+.env*.local

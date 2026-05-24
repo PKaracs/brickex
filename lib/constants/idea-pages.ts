@@ -4,6 +4,7 @@ import architectureStylePrompts from "@/data/explore-prompts/architecture-styles
 import fullPrompts from "@/data/explore-prompts/real-estate-full.json";
 import frontPrompts from "@/data/explore-prompts/real-estate-front.json";
 import presetPrompts from "@/data/explore-prompts/real-estate-presets.json";
+import { assetUrl } from "@/lib/assets";
 import {
   IDEA_CATEGORY_LABELS,
   IDEA_CATEGORY_ORDER,
@@ -282,7 +283,7 @@ function buildImageFromAssetRef(ref: IdeaAssetRef): IdeaGalleryImage {
       const prompt = getPromptOrThrow(fullPromptMap, ref.name, "full");
       return makeBaseImage(
         ref.name,
-        `/real-estate-full/${ref.name}.png`,
+        assetUrl(`real-estate-full/${ref.name}.png`),
         prompt,
         "cinema",
         undefined,
@@ -297,7 +298,7 @@ function buildImageFromAssetRef(ref: IdeaAssetRef): IdeaGalleryImage {
       );
       return makeBaseImage(
         ref.name,
-        `/real-estate-full-variations/${ref.name}/${ref.variant}.png`,
+        assetUrl(`real-estate-full-variations/${ref.name}/${ref.variant}.png`),
         buildVariationPrompt(basePrompt, ref),
         "cinema",
         VARIANT_LABELS[ref.variant],
@@ -308,7 +309,7 @@ function buildImageFromAssetRef(ref: IdeaAssetRef): IdeaGalleryImage {
       const prompt = getPromptOrThrow(presetPromptMap, ref.name, "preset");
       return makeBaseImage(
         ref.name,
-        `/real-estate-presets/${ref.name}.png`,
+        assetUrl(`real-estate-presets/${ref.name}.png`),
         prompt,
         "cinema",
       );
@@ -321,7 +322,7 @@ function buildImageFromAssetRef(ref: IdeaAssetRef): IdeaGalleryImage {
       );
       return makeBaseImage(
         ref.name,
-        `/real-estate-variations/${ref.name}/${ref.variant}.png`,
+        assetUrl(`real-estate-variations/${ref.name}/${ref.variant}.png`),
         buildVariationPrompt(basePrompt, ref),
         "cinema",
         VARIANT_LABELS[ref.variant],
@@ -332,7 +333,7 @@ function buildImageFromAssetRef(ref: IdeaAssetRef): IdeaGalleryImage {
       const prompt = getPromptOrThrow(frontPromptMap, ref.name, "front");
       return makeBaseImage(
         ref.name,
-        `/real-estate-front/${ref.name}.png`,
+        assetUrl(`real-estate-front/${ref.name}.png`),
         prompt,
         "cinema",
       );
@@ -341,7 +342,7 @@ function buildImageFromAssetRef(ref: IdeaAssetRef): IdeaGalleryImage {
       const prompt = getPromptOrThrow(stylePromptMap, ref.name, "style");
       return makeBaseImage(
         ref.name,
-        `/architecture-styles/${ref.name}.jpg`,
+        assetUrl(`architecture-styles/${ref.name}.jpg`),
         prompt,
         "square",
         "Style Study",

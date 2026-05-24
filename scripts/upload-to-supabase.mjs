@@ -17,6 +17,8 @@ const DIRS_TO_UPLOAD = [
   "real-estate-front",
   "interior-variations",
   "blog",
+  "architecture-styles",
+  "tool-previews",
 ];
 
 async function createBucket() {
