@@ -1,3 +1,6 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -8,6 +11,8 @@ import {
   Zap,
   Upload,
 } from "lucide-react";
+import { motion, AnimatePresence } from "motion/react";
+import { Marquee } from "@/components/ui/marquee";
 import { StaticReveal as BlurFade } from "@/components/landing/StaticReveal";
 import { getSignupUrl } from "@/lib/app-url";
 import { assetUrl } from "@/lib/assets";
@@ -49,6 +54,22 @@ const GALLERY_IMAGES = [
     src: assetUrl("real-estate-full/classic-white-mansion.png"),
     label: "Neoclasica",
   },
+  {
+    src: assetUrl("real-estate-full/luxury-glass-skyscraper.png"),
+    label: "Torre de cristal",
+  },
+  {
+    src: assetUrl("real-estate-full/desert-modern-house.png"),
+    label: "Moderna en el desierto",
+  },
+  {
+    src: assetUrl("real-estate-presets/japanese-zen-house.png"),
+    label: "Casa zen",
+  },
+  {
+    src: assetUrl("real-estate-full/miami-condo-tower.png"),
+    label: "Torre en Miami",
+  },
 ];
 
 const MOCK_SETTINGS = [
@@ -67,7 +88,30 @@ interface HeroProps {
 
 export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
   const signupUrl = getSignupUrl();
-  const pairIndex = 0;
+  const [pairIndex, setPairIndex] = useState(0);
+  const [showRender, setShowRender] = useState(false);
+
+  useEffect(() => {
+    const cycle = () => {
+      setShowRender(false);
+      const showTimer = window.setTimeout(() => setShowRender(true), 1500);
+      const nextTimer = window.setTimeout(() => {
+        setPairIndex((prev) => (prev + 1) % SHOWCASE_PAIRS.length);
+      }, 5000);
+      return [showTimer, nextTimer];
+    };
+
+    const timers = cycle();
+    const interval = window.setInterval(() => {
+      cycle();
+    }, 5000);
+
+    return () => {
+      timers.forEach(window.clearTimeout);
+      window.clearInterval(interval);
+    };
+  }, []);
+
   const pair = SHOWCASE_PAIRS[pairIndex];
 
   return (
@@ -154,7 +198,7 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
           </BlurFade>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">
           <ChevronDown className="h-6 w-6 text-white/30" />
         </div>
       </div>
@@ -230,38 +274,72 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                   </div>
                 </div>
 
-                {/* Main canvas */}
+                {/* Main canvas with transition */}
                 <div className="flex-1 relative overflow-hidden bg-zinc-950">
-                  <Image
-                    src={pair.render}
-                    alt={`${pair.label} render`}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 720px"
-                    quality={62}
-                    className="object-cover"
-                  />
-                  <div
-                    className="absolute inset-y-0 left-0 w-[38%] overflow-hidden border-r border-white/60"
-                    aria-hidden="true"
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={`sketch-${pairIndex}`}
+                      className="absolute inset-0"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.6 }}
+                    >
+                      <Image
+                        src={pair.sketch}
+                        alt={`${pair.label} sketch`}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 720px"
+                        quality={65}
+                        className="object-cover"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
+
+                  <motion.div
+                    key={`render-${pairIndex}-${showRender}`}
+                    className="absolute inset-0"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: showRender ? 1 : 0 }}
+                    transition={{ duration: 1.2, ease: "easeInOut" }}
                   >
                     <Image
-                      src={pair.sketch}
-                      alt=""
+                      src={pair.render}
+                      alt={`${pair.label} render`}
                       fill
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 720px"
-                      quality={58}
+                      quality={70}
                       className="object-cover"
                     />
-                  </div>
+                  </motion.div>
 
                   {/* Status pill */}
                   <div className="absolute bottom-3 left-3 z-10">
-                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/60 backdrop-blur-sm border border-white/10">
-                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                      <span className="text-[9px] font-medium text-white/80">
-                        Entrada de SketchUp a render BrickEx
-                      </span>
-                    </div>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={showRender ? "render" : "sketch"}
+                        initial={{ opacity: 0, y: 4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -4 }}
+                        className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/60 backdrop-blur-sm border border-white/10"
+                      >
+                        {showRender ? (
+                          <>
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                            <span className="text-[9px] font-medium text-white/80">
+                              Render BrickEx
+                            </span>
+                          </>
+                        ) : (
+                          <>
+                            <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
+                            <span className="text-[9px] font-medium text-white/50">
+                              Entrada SketchUp
+                            </span>
+                          </>
+                        )}
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
 
                   {/* Progress dots */}
@@ -362,28 +440,31 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
       <div className="relative pb-8 sm:pb-16">
         <BlurFade inView delay={0.1}>
           <div className="relative">
-            <div className="flex max-w-full gap-3 overflow-x-auto px-4 pb-2 scrollbar-none sm:px-6">
+            <Marquee
+              className="max-w-full [--duration:45s] [--gap:0.75rem]"
+              pauseOnHover
+            >
               {GALLERY_IMAGES.map((img, idx) => (
                 <div
                   key={idx}
-                  className="relative flex-shrink-0 w-64 sm:w-80 aspect-[16/10] rounded-xl overflow-hidden border border-white/10"
+                  className="group relative flex-shrink-0 w-64 sm:w-80 aspect-[16/10] rounded-xl overflow-hidden border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
                 >
                   <Image
                     src={img.src}
                     alt={img.label}
                     fill
                     sizes="(max-width: 640px) 16rem, 20rem"
-                    quality={58}
+                    quality={65}
                     loading="lazy"
-                    className="object-cover"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
-                  <span className="absolute bottom-3 left-3 text-xs font-medium text-white">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <span className="absolute bottom-3 left-3 text-xs font-medium text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                     {img.label}
                   </span>
                 </div>
               ))}
-            </div>
+            </Marquee>
             <div className="pointer-events-none absolute inset-y-0 left-0 w-24 sm:w-40 bg-gradient-to-r from-[#0c0c0c] z-10" />
             <div className="pointer-events-none absolute inset-y-0 right-0 w-24 sm:w-40 bg-gradient-to-l from-[#0c0c0c] z-10" />
           </div>

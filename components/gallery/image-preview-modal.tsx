@@ -3,6 +3,7 @@
 import { useCallback, useMemo, useState } from "react";
 import Image from "next/image";
 import { ModelViewerPreview } from "@/components/ui/model-viewer-preview";
+import { AutoplayVideo } from "@/components/ui/autoplay-video";
 import {
   Box,
   ChevronLeft,
@@ -210,13 +211,10 @@ export function ImagePreviewModal({
                 <div className="absolute inset-6 md:inset-10 bottom-28 md:bottom-10 flex items-center justify-center">
                   <div className="w-full max-w-5xl rounded-[28px] border border-neutral-800 bg-neutral-950/90 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.45)]">
                     <div className="overflow-hidden rounded-[22px] border border-neutral-800 bg-black">
-                      <video
+                      <AutoplayVideo
                         key={currentItem.id}
                         src={currentItem.url}
                         controls
-                        loop
-                        playsInline
-                        preload="metadata"
                         poster={project.original?.url}
                         className="max-h-[72vh] w-full object-contain"
                       />

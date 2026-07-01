@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { StaticReveal as BlurFade } from "@/components/landing/StaticReveal";
 import { ImageCompare } from "@/components/ui/image-compare";
@@ -57,15 +58,24 @@ export default function InteriorShowcase() {
             <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-zinc-900/50 shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
               <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent z-10" />
 
-              <ImageCompare
-                key={style.key}
-                beforeImage={EMPTY_ROOM}
-                afterImage={style.image}
-                beforeLabel="Habitacion vacia"
-                afterLabel={style.label}
-                className="aspect-[16/9] rounded-2xl"
-                initialPosition={35}
-              />
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={style.key}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <ImageCompare
+                    beforeImage={EMPTY_ROOM}
+                    afterImage={style.image}
+                    beforeLabel="Habitacion vacia"
+                    afterLabel={style.label}
+                    className="aspect-[16/9] rounded-2xl"
+                    initialPosition={35}
+                  />
+                </motion.div>
+              </AnimatePresence>
             </div>
 
             {/* Style pills */}
@@ -79,12 +89,16 @@ export default function InteriorShowcase() {
                       key={s.key}
                       onClick={() => selectStyle(i)}
                       className={cn(
-                        "relative flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium",
+                        "relative flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300",
                         isActive ? "text-white" : "text-zinc-500 hover:text-zinc-300"
                       )}
                     >
                       {isActive && (
-                        <span className="absolute inset-0 rounded-full border border-white/20 bg-white/10" />
+                        <motion.div
+                          layoutId="activeInteriorStyle"
+                          className="absolute inset-0 rounded-full border border-white/20 bg-white/10"
+                          transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                        />
                       )}
                       <Icon className="relative z-10 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       <span className="relative z-10">{s.label}</span>

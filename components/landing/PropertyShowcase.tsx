@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { StaticReveal as BlurFade } from "@/components/landing/StaticReveal";
 import {
@@ -45,6 +46,8 @@ const VARIATIONS: { key: VariationKey; label: string; icon: typeof Sun }[] = [
   { key: "lifestyle", label: "Escenificado", icon: Users },
 ];
 
+const INTERVAL_MS = 4000;
+
 function getImagePath(property: PropertyData, variation: VariationKey): string {
   const base = property.baseDir || "real-estate-full";
   const vars = property.variationsDir || "real-estate-full-variations";
@@ -62,18 +65,46 @@ function getThumbnailPath(property: PropertyData): string {
 export default function PropertyShowcase() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [variationIndex, setVariationIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const activeVariation = VARIATION_ORDER[variationIndex];
   const property = PROPERTIES[currentIndex];
 
+  const advance = useCallback(() => {
+    setVariationIndex((prev) => {
+      const next = prev + 1;
+      if (next >= VARIATION_ORDER.length) {
+        setCurrentIndex((ci) => (ci + 1) % PROPERTIES.length);
+        return 0;
+      }
+      return next;
+    });
+  }, []);
+
+  useEffect(() => {
+    if (isPaused) return;
+    timerRef.current = setInterval(advance, INTERVAL_MS);
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isPaused, advance]);
+
+  const pause = useCallback(() => setIsPaused(true), []);
+  const resume = useCallback(() => setIsPaused(false), []);
+
   const goToProperty = useCallback((index: number) => {
     setCurrentIndex(index);
     setVariationIndex(0);
+    setIsPaused(true);
+    window.setTimeout(() => setIsPaused(false), 6000);
   }, []);
 
   const goToVariation = useCallback((key: VariationKey) => {
     const idx = VARIATION_ORDER.indexOf(key);
     if (idx !== -1) setVariationIndex(idx);
+    setIsPaused(true);
+    window.setTimeout(() => setIsPaused(false), 6000);
   }, []);
 
   const prev = useCallback(() => {
@@ -114,7 +145,11 @@ export default function PropertyShowcase() {
 
         {/* Main Showcase */}
         <BlurFade inView delay={0.2}>
-          <div className="relative">
+          <div
+            className="relative"
+            onMouseEnter={pause}
+            onMouseLeave={resume}
+          >
             {/* Image Container */}
             <div className="relative rounded-2xl overflow-hidden border border-white/10 bg-zinc-900/50 shadow-[0_8px_60px_rgba(0,0,0,0.5)]">
               {/* Top shine line */}
@@ -122,24 +157,34 @@ export default function PropertyShowcase() {
 
               {/* Progress bar */}
               <div className="absolute top-0 left-0 right-0 h-[2px] z-20">
-                <div
+                <motion.div
                   className="h-full bg-white/40"
-                  style={{ width: `${progressPercent}%` }}
+                  animate={{ width: `${progressPercent}%` }}
+                  transition={{ duration: 0.5, ease: "easeOut" }}
                 />
               </div>
 
               {/* Image */}
               <div className="relative aspect-[16/9] w-full">
-                <Image
-                  key={`${property.slug}-${activeVariation}`}
-                  src={imagePath}
-                  alt={`${property.label} — vista ${activeVariation}`}
-                  fill
-                  sizes="(max-width: 768px) 100vw, 1152px"
-                  quality={64}
-                  loading="lazy"
-                  className="object-cover"
-                />
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={`${property.slug}-${activeVariation}`}
+                    initial={{ opacity: 0, scale: 1.02 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8, ease: "easeInOut" }}
+                    className="absolute inset-0"
+                  >
+                    <Image
+                      src={imagePath}
+                      alt={`${property.label} — vista ${activeVariation}`}
+                      fill
+                      sizes="(max-width: 768px) 100vw, 1152px"
+                      quality={70}
+                      className="object-cover"
+                    />
+                  </motion.div>
+                </AnimatePresence>
 
                 {/* Gradient overlays */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent z-[1]" />
@@ -165,12 +210,22 @@ export default function PropertyShowcase() {
                 <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-7 z-[2]">
                   <div className="flex items-end justify-between">
                     <div>
-                      <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">
-                        {property.label}
-                      </h3>
-                      <p className="text-sm text-white/50 mt-0.5">
-                        {property.location}
-                      </p>
+                      <AnimatePresence mode="wait">
+                        <motion.div
+                          key={property.slug}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -10 }}
+                          transition={{ duration: 0.3 }}
+                        >
+                          <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-white">
+                            {property.label}
+                          </h3>
+                          <p className="text-sm text-white/50 mt-0.5">
+                            {property.location}
+                          </p>
+                        </motion.div>
+                      </AnimatePresence>
                     </div>
 
                     {/* Dot indicators */}
@@ -180,7 +235,7 @@ export default function PropertyShowcase() {
                           key={i}
                           onClick={() => goToProperty(i)}
                           className={cn(
-                            "h-1.5 rounded-full",
+                            "h-1.5 rounded-full transition-all duration-300",
                             i === currentIndex
                               ? "w-6 bg-white"
                               : "w-1.5 bg-white/30 hover:bg-white/50"
@@ -205,14 +260,18 @@ export default function PropertyShowcase() {
                       key={v.key}
                       onClick={() => goToVariation(v.key)}
                       className={cn(
-                        "relative flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium",
+                        "relative flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-xs sm:text-sm font-medium transition-all duration-300",
                         isActive
                           ? "text-white"
                           : "text-zinc-500 hover:text-zinc-300"
                       )}
                     >
                       {isActive && (
-                        <span className="absolute inset-0 rounded-full border border-white/20 bg-white/10" />
+                        <motion.div
+                          layoutId="activeVariation"
+                          className="absolute inset-0 rounded-full border border-white/20 bg-white/10"
+                          transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                        />
                       )}
                       <Icon className="relative z-10 h-3.5 w-3.5 sm:h-4 sm:w-4" />
                       <span className="relative z-10">{v.label}</span>
@@ -229,9 +288,9 @@ export default function PropertyShowcase() {
                   key={p.slug}
                   onClick={() => goToProperty(i)}
                   className={cn(
-                    "relative flex-shrink-0 w-20 sm:w-24 lg:w-28 aspect-[16/9] rounded-lg overflow-hidden border",
+                    "relative flex-shrink-0 w-20 sm:w-24 lg:w-28 aspect-[16/9] rounded-lg overflow-hidden border transition-all duration-300",
                     i === currentIndex
-                      ? "border-white/40 ring-1 ring-white/20"
+                      ? "border-white/40 ring-1 ring-white/20 scale-105"
                       : "border-white/10 opacity-50 hover:opacity-80 hover:border-white/20"
                   )}
                 >

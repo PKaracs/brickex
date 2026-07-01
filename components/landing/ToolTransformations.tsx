@@ -13,15 +13,15 @@ function TransformationArrow() {
 
   return (
     <div className="relative flex min-h-[116px] items-center justify-center overflow-visible px-0.5 sm:min-h-[124px] sm:px-1 md:min-h-[136px]">
-      <span className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.045] blur-xl" />
-      <span className="absolute left-1/2 top-1/2 h-px w-9 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-transparent via-white/25 to-transparent blur-[1px] sm:w-12" />
+      <span className="absolute left-1/2 top-1/2 h-10 w-10 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/[0.045] blur-xl transition-all duration-500 group-hover:h-14 group-hover:w-14 group-hover:bg-white/[0.08]" />
+      <span className="absolute left-1/2 top-1/2 h-px w-9 -translate-x-1/2 -translate-y-1/2 bg-gradient-to-r from-transparent via-white/25 to-transparent blur-[1px] transition-all duration-500 group-hover:w-12 group-hover:via-white/45 sm:w-12 sm:group-hover:w-16" />
 
       <svg
         aria-hidden="true"
         viewBox="0 0 150 82"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
-        className="relative z-10 h-7 w-10 shrink-0 -rotate-[8deg] overflow-visible drop-shadow-[0_0_14px_rgba(255,255,255,0.22)] sm:h-8 sm:w-14 md:h-10 md:w-[4.5rem]"
+        className="relative z-10 h-7 w-10 shrink-0 -rotate-[8deg] overflow-visible drop-shadow-[0_0_14px_rgba(255,255,255,0.22)] transition-transform duration-500 ease-out group-hover:translate-x-1 group-hover:-translate-y-0.5 group-hover:rotate-[-2deg] sm:h-8 sm:w-14 md:h-10 md:w-[4.5rem]"
       >
         <defs>
           <linearGradient
@@ -90,9 +90,9 @@ function PreviewPane({
           alt={alt}
           fill
           sizes="(max-width: 767px) 42vw, (max-width: 1279px) 42vw, 260px"
-          quality={55}
+          quality={65}
           loading="lazy"
-          className="object-cover"
+          className="object-cover transition-transform duration-700 group-hover:scale-[1.035]"
         />
         <div className="absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-black/45 to-transparent" />
         <span className="absolute left-2 top-2 rounded-md border border-white/10 bg-black/45 px-2 py-0.5 text-[9px] font-medium uppercase tracking-[0.14em] text-white/65 backdrop-blur-md sm:left-3 sm:top-3 sm:px-2.5 sm:py-1 sm:text-[10px] sm:tracking-[0.18em]">
@@ -138,7 +138,7 @@ export default function ToolTransformations() {
 
             return (
               <BlurFade key={tool.id} inView delay={0.12 + index * 0.035}>
-                <article className="group h-full rounded-2xl border border-white/10 bg-zinc-900/45 p-3 shadow-[0_8px_48px_rgba(0,0,0,0.35)] sm:p-4">
+                <article className="group h-full rounded-2xl border border-white/10 bg-zinc-900/45 p-3 shadow-[0_8px_48px_rgba(0,0,0,0.35)] transition-colors duration-300 hover:border-white/20 hover:bg-zinc-900/65 sm:p-4">
                   <div className="mb-4 flex min-h-[72px] items-start gap-3">
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.05]">
                       <Icon className="h-[18px] w-[18px] text-white/70" />

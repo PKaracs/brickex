@@ -1,3 +1,7 @@
+"use client";
+
+import { Marquee } from "@/components/ui/marquee";
+
 const SOFTWARE = [
   { name: "SketchUp", font: "font-bold tracking-tight" },
   { name: "AutoCAD", font: "font-bold tracking-widest uppercase" },
@@ -22,21 +26,21 @@ export default function CompatibilityMarquee() {
           </p>
         </div>
 
-        <div className="relative overflow-hidden">
-          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 sm:gap-x-14">
+        <div className="relative">
+          <Marquee className="max-w-full [--duration:35s]" pauseOnHover>
             {SOFTWARE.map((sw, idx) => (
               <div
                 key={idx}
-                className="flex h-14 items-center justify-center sm:h-16"
+                className="mx-6 sm:mx-10 flex items-center justify-center h-16 sm:h-20"
               >
                 <span
-                  className={`select-none whitespace-nowrap text-2xl text-zinc-600 sm:text-3xl lg:text-4xl ${sw.font}`}
+                  className={`text-2xl sm:text-3xl lg:text-4xl text-zinc-600 hover:text-zinc-400 transition-colors duration-300 select-none whitespace-nowrap ${sw.font}`}
                 >
                   {sw.name}
                 </span>
               </div>
             ))}
-          </div>
+          </Marquee>
 
           <div className="pointer-events-none absolute inset-y-0 left-0 h-full w-24 sm:w-40 bg-gradient-to-r from-[#0c0c0c]" />
           <div className="pointer-events-none absolute inset-y-0 right-0 h-full w-24 sm:w-40 bg-gradient-to-l from-[#0c0c0c]" />

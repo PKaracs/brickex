@@ -9,7 +9,7 @@ function getEnvString(key: string): string | undefined {
   return trimmed.length > 0 ? trimmed : undefined;
 }
 
-const PIXEL_ID = getEnvString("NEXT_PUBLIC_META_PIXEL_ID") || "876888241517101";
+const PIXEL_ID = getEnvString("NEXT_PUBLIC_META_PIXEL_ID") || "26452206291101030";
 const ACCESS_TOKEN = getEnvString("META_ACCESS_TOKEN");
 const API_VERSION = "v21.0";
 

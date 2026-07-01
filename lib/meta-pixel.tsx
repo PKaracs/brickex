@@ -10,7 +10,7 @@ declare global {
   }
 }
 
-const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "876888241517101";
+const PIXEL_ID = process.env.NEXT_PUBLIC_META_PIXEL_ID || "26452206291101030";
 
 // Generate unique event ID for deduplication with Conversions API
 function generateEventId(): string {

@@ -12,6 +12,7 @@ import {
   VIDEO_SCENE_PRESETS,
   type VideoScenePreset,
 } from "@/lib/constants/video-presets";
+import { AutoplayVideo } from "@/components/ui/autoplay-video";
 
 function ScenePresetCard({
   preset,
@@ -43,12 +44,8 @@ function ScenePresetCard({
         )}
       >
         {preset.previewUrl ? (
-          <video
+          <AutoplayVideo
             src={preset.previewUrl}
-            muted
-            loop
-            playsInline
-            autoPlay
             className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (

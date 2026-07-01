@@ -18,6 +18,7 @@ import {
 import { GalleryListImage } from "@/components/gallery/gallery-list-card";
 import { getUserOutputsPaginated } from "@/lib/actions/get-user-outputs";
 import { RENDER_MODES } from "@/lib/constants/render-modes";
+import { AutoplayVideo } from "@/components/ui/autoplay-video";
 import Image from "next/image";
 
 const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
@@ -365,12 +366,9 @@ export function VideoCanvas({
     return (
       <Card className="flex-1 min-h-0 rounded-xl border-2 bg-neutral-900/30 overflow-hidden relative">
         <div className="w-full h-full rounded-lg border border-neutral-700 bg-neutral-900/50 flex flex-col items-center justify-center overflow-hidden p-4">
-          <video
+          <AutoplayVideo
             src={videoUrl}
             controls
-            autoPlay
-            loop
-            playsInline
             className="max-w-full max-h-full rounded-lg shadow-2xl"
           />
         </div>

@@ -34,7 +34,7 @@ function CostCard({ item }: { item: (typeof COST_COMPARISON)[number] }) {
   return (
     <div
       className={cn(
-        "relative rounded-2xl border p-5 sm:p-6",
+        "relative rounded-2xl border p-5 transition-transform sm:p-6",
         item.highlight
           ? "z-10 border-white/15 bg-zinc-900 shadow-[0_24px_70px_rgba(0,0,0,0.55)] ring-1 ring-white/10 lg:scale-[1.04]"
           : "border-white/5 bg-zinc-950/40 opacity-80 grayscale lg:scale-[0.96]",

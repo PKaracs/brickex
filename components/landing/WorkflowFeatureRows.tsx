@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { StaticReveal as BlurFade } from "@/components/landing/StaticReveal";
 import { Button } from "@/components/ui/button";
+import { AutoplayVideo } from "@/components/ui/autoplay-video";
 import { getSignupUrl } from "@/lib/app-url";
 import { cn } from "@/lib/utils";
 
@@ -116,13 +117,10 @@ function FeatureCopy({
 function VideoPanel({ src, label }: { src: string; label: string }) {
   return (
     <div className="relative aspect-[16/10] overflow-hidden rounded-2xl border border-white/10 bg-black shadow-[0_18px_70px_rgba(0,0,0,0.42)]">
-      <video
+      <AutoplayVideo
         src={src}
         aria-label={label}
         controls
-        muted
-        playsInline
-        preload="none"
         className="absolute inset-0 h-full w-full object-cover"
       />
       <div className="pointer-events-none absolute inset-0 ring-1 ring-inset ring-white/[0.06]" />

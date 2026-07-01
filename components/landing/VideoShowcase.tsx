@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/utils";
 import { StaticReveal as BlurFade } from "@/components/landing/StaticReveal";
+import { AutoplayVideo } from "@/components/ui/autoplay-video";
 import { Building2, Sunrise, Plane, Snowflake } from "lucide-react";
 
 interface VideoPreset {
@@ -87,20 +89,37 @@ export default function VideoShowcase() {
                 <div className="absolute top-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent z-10" />
 
                 <div className="relative aspect-[16/9] w-full">
-                  <video
-                    key={preset.key}
-                    src={preset.video}
-                    controls
-                    muted
-                    playsInline
-                    preload="none"
-                    className="absolute inset-0 w-full h-full object-cover"
-                  />
+                  <AnimatePresence mode="wait" initial={false}>
+                    <motion.div
+                      key={preset.key}
+                      initial={{ opacity: 0, scale: 1.02 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.6 }}
+                      className="absolute inset-0"
+                    >
+                      <AutoplayVideo
+                        src={preset.video}
+                        controls
+                        className="absolute inset-0 w-full h-full object-cover"
+                      />
+                    </motion.div>
+                  </AnimatePresence>
 
                   {/* Bottom info */}
                   <div className="absolute bottom-0 left-0 right-0 p-5 sm:p-6 z-[2] bg-gradient-to-t from-black/60 to-transparent pointer-events-none">
-                    <p className="text-xs text-white/50 uppercase tracking-widest mb-1">{preset.tagline}</p>
-                    <h3 className="text-lg sm:text-xl font-semibold text-white">{preset.label}</h3>
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={preset.key}
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <p className="text-xs text-white/50 uppercase tracking-widest mb-1">{preset.tagline}</p>
+                        <h3 className="text-lg sm:text-xl font-semibold text-white">{preset.label}</h3>
+                      </motion.div>
+                    </AnimatePresence>
                   </div>
                 </div>
               </div>
@@ -116,7 +135,7 @@ export default function VideoShowcase() {
                     key={p.key}
                     onClick={() => selectPreset(i)}
                     className={cn(
-                      "relative flex-shrink-0 lg:flex-shrink text-left p-4 sm:p-5 rounded-xl border w-52 lg:w-full",
+                      "relative flex-shrink-0 lg:flex-shrink text-left p-4 sm:p-5 rounded-xl border transition-all duration-300 w-52 lg:w-full",
                       isActive
                         ? "bg-zinc-800/60 border-white/20 shadow-lg"
                         : "bg-zinc-900/40 border-white/5 hover:border-white/15 hover:bg-zinc-800/30"
@@ -124,7 +143,7 @@ export default function VideoShowcase() {
                   >
                     <div className="flex items-start gap-3">
                       <div className={cn(
-                        "flex h-9 w-9 items-center justify-center rounded-lg shrink-0",
+                        "flex h-9 w-9 items-center justify-center rounded-lg shrink-0 transition-colors",
                         isActive ? "bg-white/10" : "bg-white/5"
                       )}>
                         <Icon className={cn("h-4 w-4", isActive ? "text-white" : "text-zinc-500")} />

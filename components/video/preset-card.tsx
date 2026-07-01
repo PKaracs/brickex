@@ -1,6 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
+import { AutoplayVideo } from "@/components/ui/autoplay-video";
 import type { VideoPreset } from "@/lib/constants/video-presets";
 
 interface PresetCardProps {
@@ -29,12 +30,8 @@ export function PresetCard({ preset, isSelected, onSelect }: PresetCardProps) {
         )}
       >
         {preset.previewUrl ? (
-          <video
+          <AutoplayVideo
             src={preset.previewUrl}
-            muted
-            loop
-            playsInline
-            autoPlay
             className="absolute inset-0 w-full h-full object-cover"
           />
         ) : (

@@ -109,18 +109,29 @@ const GROUP_DEFINITIONS: Array<
   },
 ];
 
-function findImage(gallery: IdeaGalleryImage[], imageKey: string) {
-  return gallery.find((image) => image.id.endsWith(`:${imageKey}`));
+function findImage(
+  gallery: IdeaGalleryImage[],
+  imageKey: string,
+  fallbackIndex: number,
+) {
+  return (
+    gallery.find(
+      (image) =>
+        image.id === imageKey ||
+        image.id.endsWith(`:${imageKey}`) ||
+        image.id.includes(imageKey),
+    ) ?? gallery[fallbackIndex % gallery.length]
+  );
 }
 
 function buildGroups(): BrickexExampleGroup[] {
   return GROUP_DEFINITIONS.map(({ picks, ...group }) => ({
     ...group,
-    items: picks.flatMap((pick) => {
+    items: picks.flatMap((pick, index) => {
       const page = allIdeaPages.find((ideaPage) => ideaPage.slug === pick.slug);
       if (!page) return [];
 
-      const image = findImage(page.gallery, pick.imageKey);
+      const image = findImage(page.gallery, pick.imageKey, index);
       if (!image) return [];
 
       return [

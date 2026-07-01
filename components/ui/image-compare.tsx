@@ -128,7 +128,7 @@ export function ImageCompare({
 
         {/* Handle Circle - subtle, desaturated */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-black/60 backdrop-blur-sm hover:border-white/60">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-black/60 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60">
             <svg
               width="14"
               height="14"

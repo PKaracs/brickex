@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
@@ -11,6 +11,8 @@ interface CompareProps {
   firstImageClassName?: string;
   secondImageClassname?: string;
   slideMode?: "hover" | "drag";
+  autoplay?: boolean;
+  autoplayDuration?: number;
   initialSliderPercentage?: number;
 }
 
@@ -21,11 +23,15 @@ export function Compare({
   firstImageClassName,
   secondImageClassname,
   slideMode = "hover",
+  autoplay = false,
+  autoplayDuration = 5000,
   initialSliderPercentage = 50,
 }: CompareProps) {
   const [sliderXPercent, setSliderXPercent] = useState(initialSliderPercentage);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const animationRef = useRef<number | null>(null);
+  const startTimeRef = useRef<number | null>(null);
 
   const getPercent = useCallback((clientX: number) => {
     const el = containerRef.current;
@@ -33,6 +39,44 @@ export function Compare({
     const rect = el.getBoundingClientRect();
     return Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
   }, []);
+
+  const stopAutoplay = useCallback(() => {
+    if (animationRef.current) {
+      cancelAnimationFrame(animationRef.current);
+      animationRef.current = null;
+    }
+  }, []);
+
+  const startAutoplay = useCallback(() => {
+    if (!autoplay) return;
+    stopAutoplay();
+    startTimeRef.current = null;
+
+    const animate = (ts: number) => {
+      if (!startTimeRef.current) startTimeRef.current = ts;
+      const elapsed = ts - startTimeRef.current;
+      const progress = elapsed / autoplayDuration;
+
+      const min = 10;
+      const max = 90;
+      const range = max - min;
+      const pingpong = Math.abs(((progress % 2) - 1) * range - range / 2 + range / 2);
+      const next = min + pingpong;
+
+      setSliderXPercent(next);
+
+      if (progress < 100) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
+    };
+
+    animationRef.current = requestAnimationFrame(animate);
+  }, [autoplay, autoplayDuration, stopAutoplay]);
+
+  useEffect(() => {
+    if (autoplay) startAutoplay();
+    return stopAutoplay;
+  }, [autoplay, startAutoplay, stopAutoplay]);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
@@ -47,8 +91,13 @@ export function Compare({
 
   const handleMouseLeave = useCallback(() => {
     if (slideMode === "drag") setIsDragging(false);
-    setSliderXPercent(initialSliderPercentage);
-  }, [slideMode, initialSliderPercentage]);
+    if (autoplay) startAutoplay();
+    else setSliderXPercent(initialSliderPercentage);
+  }, [slideMode, autoplay, startAutoplay, initialSliderPercentage]);
+
+  const handleMouseEnter = useCallback(() => {
+    if (autoplay) stopAutoplay();
+  }, [autoplay, stopAutoplay]);
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
@@ -64,6 +113,7 @@ export function Compare({
       className={cn("relative overflow-hidden select-none", className)}
       style={{ cursor: slideMode === "drag" ? (isDragging ? "grabbing" : "grab") : "ew-resize" }}
       onMouseMove={handleMouseMove}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseDown={() => slideMode === "drag" && setIsDragging(true)}
       onMouseUp={() => slideMode === "drag" && setIsDragging(false)}
@@ -75,9 +125,8 @@ export function Compare({
         alt="Despues"
         fill
         sizes="(max-width: 768px) 100vw, 960px"
-        quality={64}
+        quality={70}
         loading="lazy"
-        decoding="async"
         className={cn("object-cover", secondImageClassname)}
         draggable={false}
       />
@@ -92,9 +141,8 @@ export function Compare({
           alt="Antes"
           fill
           sizes="(max-width: 768px) 100vw, 960px"
-          quality={58}
+          quality={65}
           loading="lazy"
-          decoding="async"
           className={cn("object-cover", firstImageClassName)}
           draggable={false}
         />
