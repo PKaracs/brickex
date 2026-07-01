@@ -1,4 +1,3 @@
-import Image from "next/image";
 import {
   ArrowRight,
   BoxSelect,
@@ -16,21 +15,35 @@ import { getSignupUrl } from "@/lib/app-url";
 import { cn } from "@/lib/utils";
 
 const STYLE_OPTIONS = [
-  { label: "Moderno", image: "/architecture-styles/modern.jpg", active: true },
-  { label: "Mediterraneo", image: "/architecture-styles/mediterranean.jpg" },
-  { label: "Brutalista", image: "/architecture-styles/brutalist.jpg" },
-  { label: "Japones", image: "/architecture-styles/japanese.jpg" },
-  { label: "Lujo", image: "/architecture-styles/luxury.jpg" },
-  { label: "Industrial", image: "/architecture-styles/industrial.jpg" },
+  {
+    label: "Moderno",
+    image: "/architecture-styles/thumbs/modern.webp",
+    active: true,
+  },
+  {
+    label: "Mediterraneo",
+    image: "/architecture-styles/thumbs/mediterranean.webp",
+  },
+  {
+    label: "Brutalista",
+    image: "/architecture-styles/thumbs/brutalist.webp",
+  },
+  { label: "Japones", image: "/architecture-styles/thumbs/japanese.webp" },
+  { label: "Lujo", image: "/architecture-styles/thumbs/luxury.webp" },
+  { label: "Industrial", image: "/architecture-styles/thumbs/industrial.webp" },
 ];
 
 const MATERIAL_OPTIONS = [
-  { label: "Marmol", image: "/textures/marble.png", active: true },
-  { label: "Madera de roble", image: "/textures/oakwood.png", active: true },
-  { label: "Hormigon", image: "/textures/concrete-polished.png" },
-  { label: "Ladrillo", image: "/textures/brick.png" },
-  { label: "Terracotta", image: "/textures/terracotta.png" },
-  { label: "Metal", image: "/textures/polished-metal.png" },
+  { label: "Marmol", image: "/textures/thumbs/marble.webp", active: true },
+  {
+    label: "Madera de roble",
+    image: "/textures/thumbs/oakwood.webp",
+    active: true,
+  },
+  { label: "Hormigon", image: "/textures/thumbs/concrete-polished.webp" },
+  { label: "Ladrillo", image: "/textures/thumbs/brick.webp" },
+  { label: "Terracotta", image: "/textures/thumbs/terracotta.webp" },
+  { label: "Metal", image: "/textures/thumbs/polished-metal.webp" },
 ];
 
 const FEATURE_ROWS = [
@@ -141,14 +154,13 @@ function StyleDropdownPreview() {
 
       <div className="flex items-center gap-3 rounded-xl border border-neutral-700/50 bg-neutral-800/60 p-2">
         <div className="relative h-10 w-10 overflow-hidden rounded-lg bg-neutral-700">
-          <Image
-            src="/architecture-styles/modern.jpg"
+          <img
+            src="/architecture-styles/thumbs/modern.webp"
             alt=""
-            fill
-            sizes="40px"
-            quality={50}
-            loading="lazy"
-            className="object-cover"
+            aria-hidden="true"
+            loading="eager"
+            decoding="async"
+            className="h-full w-full object-cover"
           />
         </div>
         <div className="min-w-0 flex-1">
@@ -168,14 +180,13 @@ function StyleDropdownPreview() {
             )}
           >
             <div className="relative aspect-square overflow-hidden rounded-md bg-neutral-800">
-              <Image
+              <img
                 src={option.image}
                 alt=""
-                fill
-                sizes="90px"
-                quality={50}
-                loading="lazy"
-                className="object-cover"
+                aria-hidden="true"
+                loading="eager"
+                decoding="async"
+                className="h-full w-full object-cover"
               />
             </div>
             <p className="mt-1 truncate text-center text-[10px] font-medium text-neutral-300">
@@ -211,14 +222,13 @@ function MaterialDropdownPreview() {
                 key={option.label}
                 className="relative h-5 w-5 overflow-hidden rounded-full ring-1 ring-neutral-900"
               >
-                <Image
+                <img
                   src={option.image}
                   alt=""
-                  fill
-                  sizes="20px"
-                  quality={45}
-                  loading="lazy"
-                  className="object-cover"
+                  aria-hidden="true"
+                  loading="eager"
+                  decoding="async"
+                  className="h-full w-full object-cover"
                 />
               </span>
             ))}
@@ -245,14 +255,13 @@ function MaterialDropdownPreview() {
             )}
           >
             <div className="relative h-12 w-12 overflow-hidden rounded-full bg-neutral-800">
-              <Image
+              <img
                 src={option.image}
                 alt=""
-                fill
-                sizes="48px"
-                quality={45}
-                loading="lazy"
-                className="object-cover"
+                aria-hidden="true"
+                loading="eager"
+                decoding="async"
+                className="h-full w-full object-cover"
               />
               <span className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_28%_22%,rgba(255,255,255,0.34),transparent_35%),radial-gradient(circle_at_72%_82%,rgba(0,0,0,0.45),transparent_42%)]" />
             </div>
