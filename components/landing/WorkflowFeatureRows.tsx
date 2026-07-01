@@ -17,33 +17,46 @@ import { cn } from "@/lib/utils";
 const STYLE_OPTIONS = [
   {
     label: "Moderno",
-    image: "/architecture-styles/thumbs/modern.webp",
+    image: "/landing-control-thumbs/styles/modern.webp",
     active: true,
   },
   {
     label: "Mediterraneo",
-    image: "/architecture-styles/thumbs/mediterranean.webp",
+    image: "/landing-control-thumbs/styles/mediterranean.webp",
   },
   {
     label: "Brutalista",
-    image: "/architecture-styles/thumbs/brutalist.webp",
+    image: "/landing-control-thumbs/styles/brutalist.webp",
   },
-  { label: "Japones", image: "/architecture-styles/thumbs/japanese.webp" },
-  { label: "Lujo", image: "/architecture-styles/thumbs/luxury.webp" },
-  { label: "Industrial", image: "/architecture-styles/thumbs/industrial.webp" },
+  { label: "Japones", image: "/landing-control-thumbs/styles/japanese.webp" },
+  { label: "Lujo", image: "/landing-control-thumbs/styles/luxury.webp" },
+  { label: "Industrial", image: "/landing-control-thumbs/styles/industrial.webp" },
 ];
 
 const MATERIAL_OPTIONS = [
-  { label: "Marmol", image: "/textures/thumbs/marble.webp", active: true },
   {
-    label: "Madera de roble",
-    image: "/textures/thumbs/oakwood.webp",
+    label: "Marmol",
+    image: "/landing-control-thumbs/textures/marble.webp",
     active: true,
   },
-  { label: "Hormigon", image: "/textures/thumbs/concrete-polished.webp" },
-  { label: "Ladrillo", image: "/textures/thumbs/brick.webp" },
-  { label: "Terracotta", image: "/textures/thumbs/terracotta.webp" },
-  { label: "Metal", image: "/textures/thumbs/polished-metal.webp" },
+  {
+    label: "Madera de roble",
+    image: "/landing-control-thumbs/textures/oakwood.webp",
+    active: true,
+  },
+  {
+    label: "Hormigon",
+    image: "/landing-control-thumbs/textures/concrete-polished.webp",
+  },
+  { label: "Ladrillo", image: "/landing-control-thumbs/textures/brick.webp" },
+  {
+    label: "Terracotta",
+    image: "/landing-control-thumbs/textures/terracotta.webp",
+  },
+  {
+    label: "Metal",
+    image: "/landing-control-thumbs/textures/polished-metal.webp",
+  },
 ];
 
 const FEATURE_ROWS = [
@@ -155,7 +168,7 @@ function StyleDropdownPreview() {
       <div className="flex items-center gap-3 rounded-xl border border-neutral-700/50 bg-neutral-800/60 p-2">
         <div className="relative h-10 w-10 overflow-hidden rounded-lg bg-neutral-700">
           <img
-            src="/architecture-styles/thumbs/modern.webp"
+            src="/landing-control-thumbs/styles/modern.webp"
             alt=""
             aria-hidden="true"
             loading="eager"

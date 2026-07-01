@@ -16,7 +16,7 @@ export const config = {
      * 4. landing media folders inside /public
      * 5. all root files inside /public (e.g. /favicon.ico)
      */
-    "/((?!api/|ingest(?:/|$)|_next/|_static/|_vercel|videos/|architecture-styles/|textures/|[\\w-]+\\.\\w+).*)",
+    "/((?!api/|ingest(?:/|$)|_next/|_static/|_vercel|videos/|architecture-styles/|textures/|landing-control-thumbs/|[\\w-]+\\.\\w+).*)",
   ],
 };
 
