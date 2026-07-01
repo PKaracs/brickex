@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface CompareProps {
@@ -10,8 +11,6 @@ interface CompareProps {
   firstImageClassName?: string;
   secondImageClassname?: string;
   slideMode?: "hover" | "drag";
-  autoplay?: boolean;
-  autoplayDuration?: number;
   initialSliderPercentage?: number;
 }
 
@@ -22,17 +21,11 @@ export function Compare({
   firstImageClassName,
   secondImageClassname,
   slideMode = "hover",
-  autoplay = false,
-  autoplayDuration = 5000,
   initialSliderPercentage = 50,
 }: CompareProps) {
   const [sliderXPercent, setSliderXPercent] = useState(initialSliderPercentage);
   const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const animationRef = useRef<number | null>(null);
-  const directionRef = useRef<1 | -1>(1);
-  const startTimeRef = useRef<number | null>(null);
-  const startPercentRef = useRef(initialSliderPercentage);
 
   const getPercent = useCallback((clientX: number) => {
     const el = containerRef.current;
@@ -40,44 +33,6 @@ export function Compare({
     const rect = el.getBoundingClientRect();
     return Math.max(0, Math.min(100, ((clientX - rect.left) / rect.width) * 100));
   }, []);
-
-  const stopAutoplay = useCallback(() => {
-    if (animationRef.current) {
-      cancelAnimationFrame(animationRef.current);
-      animationRef.current = null;
-    }
-  }, []);
-
-  const startAutoplay = useCallback(() => {
-    if (!autoplay) return;
-    stopAutoplay();
-    startTimeRef.current = null;
-
-    const animate = (ts: number) => {
-      if (!startTimeRef.current) startTimeRef.current = ts;
-      const elapsed = ts - startTimeRef.current;
-      const progress = elapsed / autoplayDuration;
-
-      const min = 10;
-      const max = 90;
-      const range = max - min;
-      const pingpong = Math.abs(((progress % 2) - 1) * range - range / 2 + range / 2);
-      const next = min + pingpong;
-
-      setSliderXPercent(next);
-
-      if (progress < 100) {
-        animationRef.current = requestAnimationFrame(animate);
-      }
-    };
-
-    animationRef.current = requestAnimationFrame(animate);
-  }, [autoplay, autoplayDuration, stopAutoplay]);
-
-  useEffect(() => {
-    if (autoplay) startAutoplay();
-    return stopAutoplay;
-  }, [autoplay, startAutoplay, stopAutoplay]);
 
   const handleMouseMove = useCallback(
     (e: React.MouseEvent) => {
@@ -90,15 +45,10 @@ export function Compare({
     [slideMode, isDragging, getPercent]
   );
 
-  const handleMouseEnter = useCallback(() => {
-    if (autoplay) stopAutoplay();
-  }, [autoplay, stopAutoplay]);
-
   const handleMouseLeave = useCallback(() => {
     if (slideMode === "drag") setIsDragging(false);
-    if (autoplay) startAutoplay();
-    else setSliderXPercent(initialSliderPercentage);
-  }, [slideMode, autoplay, startAutoplay, initialSliderPercentage]);
+    setSliderXPercent(initialSliderPercentage);
+  }, [slideMode, initialSliderPercentage]);
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent) => {
@@ -114,33 +64,38 @@ export function Compare({
       className={cn("relative overflow-hidden select-none", className)}
       style={{ cursor: slideMode === "drag" ? (isDragging ? "grabbing" : "grab") : "ew-resize" }}
       onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onMouseDown={() => slideMode === "drag" && setIsDragging(true)}
       onMouseUp={() => slideMode === "drag" && setIsDragging(false)}
       onTouchMove={handleTouchMove}
     >
       {/* Second image (right / "after") — full width base */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img
+      <Image
         src={secondImage}
-        alt="after"
-        className={cn("absolute inset-0 w-full h-full", secondImageClassname)}
-        style={{ objectFit: "cover" }}
+        alt="Despues"
+        fill
+        sizes="(max-width: 768px) 100vw, 960px"
+        quality={64}
+        loading="lazy"
+        decoding="async"
+        className={cn("object-cover", secondImageClassname)}
         draggable={false}
       />
 
       {/* First image (left / "before") — clipped */}
       <div
         className="absolute inset-0 overflow-hidden"
-        style={{ width: `${sliderXPercent}%` }}
+        style={{ clipPath: `inset(0 ${100 - sliderXPercent}% 0 0)` }}
       >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
+        <Image
           src={firstImage}
-          alt="before"
-          className={cn("absolute inset-0 w-full h-full", firstImageClassName)}
-          style={{ objectFit: "cover", width: containerRef.current?.offsetWidth ?? "100%" }}
+          alt="Antes"
+          fill
+          sizes="(max-width: 768px) 100vw, 960px"
+          quality={58}
+          loading="lazy"
+          decoding="async"
+          className={cn("object-cover", firstImageClassName)}
           draggable={false}
         />
       </div>

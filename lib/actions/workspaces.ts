@@ -35,7 +35,7 @@ export async function ensurePlaygroundAndListWorkspaces(): Promise<
     });
 
     if (memberships.length === 0) {
-      return { error: "No workspaces found" };
+      return { error: "No se encontraron workspaces" };
     }
 
     const orgs = memberships.map((m) => m.organization);
@@ -74,7 +74,7 @@ export async function ensurePlaygroundAndListWorkspaces(): Promise<
     return { workspaces, playgroundId: playgroundOrg.id };
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to load workspaces";
+      error instanceof Error ? error.message : "No se pudieron cargar los workspaces";
     return { error: message };
   }
 }
@@ -124,7 +124,7 @@ export async function createWorkspace(
     return { workspaceId: workspace.id };
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to create workspace";
+      error instanceof Error ? error.message : "No se pudo crear el workspace";
     return { error: message };
   }
 }

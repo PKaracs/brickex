@@ -5,10 +5,10 @@ export type IdeaCategory =
   | "regional-styles";
 
 export const IDEA_CATEGORY_LABELS: Record<IdeaCategory, string> = {
-  "luxury-residential": "Luxury Residential",
-  "towers-penthouses": "Towers & Penthouses",
-  "coastal-retreats": "Coastal & Hospitality",
-  "regional-styles": "Regional & Style Studies",
+  "luxury-residential": "Residencial de lujo",
+  "towers-penthouses": "Torres y penthouses",
+  "coastal-retreats": "Costa y hospitalidad",
+  "regional-styles": "Estudios regionales y de estilo",
 };
 
 export const IDEA_CATEGORY_ORDER: IdeaCategory[] = [
@@ -65,20 +65,20 @@ export const ideaTopicSeeds: IdeaTopicSeed[] = [
   {
     slug: "luxury-penthouse-render-ideas",
     category: "towers-penthouses",
-    titleSeed: "Luxury Penthouse Render Ideas",
-    primaryKeyword: "luxury penthouse render ideas",
+    titleSeed: "Ideas de render para penthouse de lujo",
+    primaryKeyword: "ideas de render para penthouse de lujo",
     supportingKeywords: [
-      "penthouse exterior render",
-      "rooftop terrace render ideas",
-      "real estate penthouse visualization",
-      "architectural penthouse inspiration",
+      "render exterior de penthouse",
+      "ideas de render para terraza rooftop",
+      "visualizacion inmobiliaria de penthouse",
+      "inspiracion arquitectonica para penthouse",
     ],
     searchAudience: [
-      "architecture students building presentation boards",
-      "real estate marketers planning listing visuals",
+      "estudiantes de arquitectura creando boards de presentacion",
+      "marketers inmobiliarios planificando visuales de listings",
     ],
     angle:
-      "Focus on skyline-facing terraces, glass towers, rooftop pools, and luxury interior moments like living rooms, sculptural decor, stone tables, rugs, art walls, and styled amenity spaces.",
+      "Enfoca la pagina en terrazas al skyline, torres de vidrio, piscinas rooftop e interiores de lujo como salones, decoracion escultorica, mesas de piedra, alfombras, muros de arte y amenities estilizadas.",
     gallery: [
       preset("miami-penthouse"),
       presetVariation("miami-penthouse", "morning"),
@@ -98,20 +98,20 @@ export const ideaTopicSeeds: IdeaTopicSeed[] = [
   {
     slug: "modern-villa-render-ideas",
     category: "luxury-residential",
-    titleSeed: "Modern Villa Render Ideas",
-    primaryKeyword: "modern villa render ideas",
+    titleSeed: "Ideas de render para villa moderna",
+    primaryKeyword: "ideas de render para villa moderna",
     supportingKeywords: [
-      "villa exterior rendering ideas",
-      "luxury villa visualization",
-      "modern house render inspiration",
-      "real estate villa marketing renders",
+      "ideas de render exterior de villa",
+      "visualizacion de villa de lujo",
+      "inspiracion de render para casa moderna",
+      "renders de villa para marketing inmobiliario",
     ],
     searchAudience: [
-      "architecture students studying modern residential composition",
-      "developers marketing villa projects",
+      "estudiantes de arquitectura estudiando composicion residencial moderna",
+      "promotoras comercializando proyectos de villas",
     ],
     angle:
-      "Center the page on clean facades, reflective pools, Mediterranean lighting, and high-end interior styling moments like living rooms, fireplaces, dining areas, rugs, vases, paintings, and lounge compositions.",
+      "Centra la pagina en fachadas limpias, piscinas reflectantes, luz mediterranea y momentos interiores de alto nivel como salones, chimeneas, comedores, alfombras, jarrones, cuadros y composiciones lounge.",
     gallery: [
       full("modern-glass-villa"),
       fullVariation("modern-glass-villa", "morning"),
@@ -131,20 +131,20 @@ export const ideaTopicSeeds: IdeaTopicSeed[] = [
   {
     slug: "luxury-condo-tower-render-ideas",
     category: "towers-penthouses",
-    titleSeed: "Luxury Condo Tower Render Ideas",
-    primaryKeyword: "luxury condo tower render ideas",
+    titleSeed: "Ideas de render para torre residencial de lujo",
+    primaryKeyword: "ideas de render para torre residencial de lujo",
     supportingKeywords: [
-      "high rise exterior render",
-      "condo tower visualization",
-      "apartment tower marketing render",
-      "residential skyscraper inspiration",
+      "render exterior de high-rise",
+      "visualizacion de torre residencial",
+      "render de marketing para torre de apartamentos",
+      "inspiracion para rascacielos residencial",
     ],
     searchAudience: [
-      "architecture students presenting urban towers",
-      "real estate teams launching condo developments",
+      "estudiantes de arquitectura presentando torres urbanas",
+      "equipos inmobiliarios lanzando desarrollos residenciales",
     ],
     angle:
-      "Keep the page focused on high-rise facades, podium arrival shots, skyline context, and luxury resident spaces like marble lobbies, art-lined lounges, furnished terraces, wellness amenities, and hotel-style common areas.",
+      "Mantiene el foco en fachadas high-rise, llegadas de podium, contexto skyline y espacios de lujo para residentes como lobbies de marmol, lounges con arte, terrazas amuebladas, wellness amenities y zonas comunes tipo hotel.",
     gallery: [
       full("miami-condo-tower"),
       fullVariation("miami-condo-tower", "morning"),
@@ -164,20 +164,20 @@ export const ideaTopicSeeds: IdeaTopicSeed[] = [
   {
     slug: "beach-house-render-ideas",
     category: "coastal-retreats",
-    titleSeed: "Beach House Render Ideas",
-    primaryKeyword: "beach house render ideas",
+    titleSeed: "Ideas de render para casa de playa",
+    primaryKeyword: "ideas de render para casa de playa",
     supportingKeywords: [
-      "coastal home rendering inspiration",
-      "beachfront villa visualization",
-      "modern beach house exterior render",
-      "real estate coastal marketing images",
+      "inspiracion de render para casa costera",
+      "visualizacion de villa frente al mar",
+      "render exterior de casa de playa moderna",
+      "imagenes de marketing inmobiliario costero",
     ],
     searchAudience: [
-      "architecture students designing coastal houses",
-      "marketers selling beachfront homes and resorts",
+      "estudiantes de arquitectura disenando casas costeras",
+      "marketers vendiendo viviendas y resorts frente al mar",
     ],
     angle:
-      "Prioritize timber facades, ocean backdrops, breezy indoor-outdoor living rooms, layered coastal textiles, sculptural decor, deck lounges, and sales-oriented beachfront visuals with strong atmosphere.",
+      "Prioriza fachadas de madera, fondos oceanicos, salones indoor-outdoor aireados, textiles costeros por capas, decoracion escultorica, lounges en deck y visuales beachfront orientados a venta.",
     gallery: [
       full("malibu-beach-mansion"),
       fullVariation("malibu-beach-mansion", "morning"),
@@ -197,20 +197,20 @@ export const ideaTopicSeeds: IdeaTopicSeed[] = [
   {
     slug: "desert-modern-house-render-ideas",
     category: "luxury-residential",
-    titleSeed: "Desert Modern House Render Ideas",
-    primaryKeyword: "desert modern house render ideas",
+    titleSeed: "Ideas de render para casa desert modern",
+    primaryKeyword: "ideas de render para casa desert modern",
     supportingKeywords: [
-      "desert house visualization",
-      "joshua tree architectural render",
-      "scottsdale house exterior render",
-      "modern desert real estate marketing",
+      "visualizacion de casa en el desierto",
+      "render arquitectonico estilo Joshua Tree",
+      "render exterior de casa en Scottsdale",
+      "marketing inmobiliario de arquitectura desert modern",
     ],
     searchAudience: [
-      "architecture students researching climate-driven form",
-      "brokers and developers marketing desert homes",
+      "estudiantes de arquitectura investigando forma climatica",
+      "brokers y promotoras comercializando casas en el desierto",
     ],
     angle:
-      "Lean into rammed earth, corten steel, sparse landscaping, serene luxury interiors with plaster walls and low lounge seating, and dramatic light shifts that work for both studio critiques and marketing decks.",
+      "Trabaja tierra apisonada, acero corten, paisajismo escaso, interiores de lujo serenos con muros de yeso y lounge bajo, y cambios de luz dramaticos utiles para critica de estudio y decks comerciales.",
     gallery: [
       full("desert-modern-house"),
       fullVariation("desert-modern-house", "morning"),
@@ -230,20 +230,20 @@ export const ideaTopicSeeds: IdeaTopicSeed[] = [
   {
     slug: "luxury-mansion-render-ideas",
     category: "luxury-residential",
-    titleSeed: "Luxury Mansion Render Ideas",
-    primaryKeyword: "luxury mansion render ideas",
+    titleSeed: "Ideas de render para mansion de lujo",
+    primaryKeyword: "ideas de render para mansion de lujo",
     supportingKeywords: [
-      "mansion exterior visualization",
-      "estate rendering inspiration",
-      "luxury real estate marketing render",
-      "residential architectural visualization ideas",
+      "visualizacion exterior de mansion",
+      "inspiracion de render para estate",
+      "render de marketing inmobiliario de lujo",
+      "ideas de visualizacion arquitectonica residencial",
     ],
     searchAudience: [
-      "architecture students presenting estate concepts",
-      "real estate marketers creating premium listing visuals",
+      "estudiantes de arquitectura presentando conceptos de estate",
+      "marketers inmobiliarios creando visuales premium para listings",
     ],
     angle:
-      "Keep the page centered on formal arrival shots, symmetry, grand facades, and upscale interior moments like salons, chandeliers, piano rooms, formal dining tables, art walls, and styled libraries that sell prestige.",
+      "Centra la pagina en llegadas formales, simetria, grandes fachadas e interiores upscale como salones, chandeliers, salas de piano, comedores formales, muros de arte y bibliotecas estilizadas que comunican prestigio.",
     gallery: [
       full("classic-white-mansion"),
       fullVariation("classic-white-mansion", "morning"),
@@ -263,20 +263,20 @@ export const ideaTopicSeeds: IdeaTopicSeed[] = [
   {
     slug: "swiss-chalet-render-ideas",
     category: "regional-styles",
-    titleSeed: "Swiss Chalet Render Ideas",
-    primaryKeyword: "swiss chalet render ideas",
+    titleSeed: "Ideas de render para chalet suizo",
+    primaryKeyword: "ideas de render para chalet suizo",
     supportingKeywords: [
-      "alpine chalet visualization",
-      "mountain house render inspiration",
-      "ski chalet exterior render",
-      "hospitality chalet marketing visuals",
+      "visualizacion de chalet alpino",
+      "inspiracion de render para casa de montana",
+      "render exterior de chalet de ski",
+      "visuales de marketing para chalet hospitality",
     ],
     searchAudience: [
-      "architecture students studying alpine typologies",
-      "resort marketers promoting mountain properties",
+      "estudiantes de arquitectura estudiando tipologias alpinas",
+      "marketers de resorts promocionando propiedades de montana",
     ],
     angle:
-      "Focus on timber warmth, mountain framing, fireplace lounges, layered wool textiles, chalet dining tables, spa corners, and hospitality mood that feels practical for both studio work and listings.",
+      "Enfoca la pagina en calidez de madera, encuadre de montana, lounges con chimenea, textiles de lana por capas, mesas de comedor de chalet, rincones spa y mood hospitality util para estudio y listings.",
     gallery: [
       full("swiss-mountain-chalet"),
       fullVariation("swiss-mountain-chalet", "morning"),
@@ -296,20 +296,20 @@ export const ideaTopicSeeds: IdeaTopicSeed[] = [
   {
     slug: "tuscan-villa-render-ideas",
     category: "regional-styles",
-    titleSeed: "Tuscan Villa Render Ideas",
-    primaryKeyword: "tuscan villa render ideas",
+    titleSeed: "Ideas de render para villa toscana",
+    primaryKeyword: "ideas de render para villa toscana",
     supportingKeywords: [
-      "mediterranean villa visualization",
-      "italian villa exterior render",
-      "stone farmhouse render inspiration",
-      "luxury countryside real estate visuals",
+      "visualizacion de villa mediterranea",
+      "render exterior de villa italiana",
+      "inspiracion de render para casa de piedra",
+      "visuales inmobiliarios de lujo en campo",
     ],
     searchAudience: [
-      "architecture students researching regional residential language",
-      "marketers selling vineyard estates and countryside villas",
+      "estudiantes de arquitectura investigando lenguaje residencial regional",
+      "marketers vendiendo estates de vinedo y villas rurales",
     ],
     angle:
-      "Highlight stone textures, cypress approaches, vineyard context, rustic-luxury living rooms, terracotta floors, arched kitchens, linen dining setups, and timeless presentation references that convert well in real estate decks.",
+      "Destaca texturas de piedra, aproximaciones con cipreses, contexto de vinedo, salones rustico-lujo, suelos de terracota, cocinas arqueadas, mesas con lino y referencias atemporales que convierten bien en decks inmobiliarios.",
     gallery: [
       full("tuscan-villa-estate"),
       fullVariation("tuscan-villa-estate", "morning"),
@@ -329,20 +329,20 @@ export const ideaTopicSeeds: IdeaTopicSeed[] = [
   {
     slug: "japanese-house-render-ideas",
     category: "regional-styles",
-    titleSeed: "Japanese House Render Ideas",
-    primaryKeyword: "japanese house render ideas",
+    titleSeed: "Ideas de render para casa japonesa",
+    primaryKeyword: "ideas de render para casa japonesa",
     supportingKeywords: [
-      "japanese minimalist house render",
-      "zen house visualization",
-      "architectural render inspiration japan",
-      "minimal residential presentation ideas",
+      "render de casa japonesa minimalista",
+      "visualizacion de casa zen",
+      "inspiracion de render arquitectonico japones",
+      "ideas de presentacion residencial minimal",
     ],
     searchAudience: [
-      "architecture students studying minimalist housing",
-      "design marketers showcasing calm residential concepts",
+      "estudiantes de arquitectura estudiando vivienda minimalista",
+      "marketers de diseno mostrando conceptos residenciales calmados",
     ],
     angle:
-      "Keep the references disciplined around calm geometry, zen landscaping, clean material palettes, serene timber living rooms, ceramics, paper lantern glow, tatami-inspired styling, and composition choices students and marketers both reuse.",
+      "Mantiene referencias disciplinadas alrededor de geometria calmada, paisajismo zen, paletas materiales limpias, salones serenos de madera, ceramica, luz de faroles de papel, styling inspirado en tatami y decisiones compositivas reutilizables.",
     gallery: [
       full("japanese-minimalist-home"),
       fullVariation("japanese-minimalist-home", "morning"),
@@ -362,20 +362,20 @@ export const ideaTopicSeeds: IdeaTopicSeed[] = [
   {
     slug: "overwater-villa-render-ideas",
     category: "coastal-retreats",
-    titleSeed: "Overwater Villa Render Ideas",
-    primaryKeyword: "overwater villa render ideas",
+    titleSeed: "Ideas de render para villa sobre el agua",
+    primaryKeyword: "ideas de render para villa sobre el agua",
     supportingKeywords: [
-      "resort villa visualization",
-      "maldives villa render",
-      "tropical hospitality rendering",
-      "luxury resort marketing visuals",
+      "visualizacion de villa de resort",
+      "render de villa en Maldivas",
+      "render hospitality tropical",
+      "visuales de marketing para resort de lujo",
     ],
     searchAudience: [
-      "architecture students exploring hospitality concepts",
-      "real estate and resort marketers building campaign imagery",
+      "estudiantes de arquitectura explorando conceptos hospitality",
+      "marketers inmobiliarios y de resort creando imagenes de campana",
     ],
     angle:
-      "Stay consistent around tropical hospitality, deck composition, water reflections, indoor-outdoor bedroom suites, spa bathrooms, woven decor, breakfast trays, and resort-grade imagery that works for moodboards and launch pages.",
+      "Mantiene coherencia en hospitality tropical, composicion de deck, reflejos de agua, suites dormitorio indoor-outdoor, banos spa, decoracion tejida, trays de desayuno e imagenes resort-grade para moodboards y paginas de lanzamiento.",
     gallery: [
       full("tropical-overwater-villa"),
       fullVariation("tropical-overwater-villa", "morning"),

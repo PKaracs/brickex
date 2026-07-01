@@ -283,7 +283,7 @@ export async function getUserProjectStacksPaginated(
       const storageKey = toStorageKey(row.bucket, row.path);
       const signedUrl = signedUrlMap.get(storageKey);
       if (!signedUrl) {
-        throw new Error(`Missing signed URL for ${storageKey}`);
+        throw new Error(`Falta la URL firmada para ${storageKey}`);
       }
 
       return {
@@ -306,7 +306,7 @@ export async function getUserProjectStacksPaginated(
       const storageKey = toStorageKey(row.bucket, row.path);
       const signedUrl = signedUrlMap.get(storageKey);
       if (!signedUrl) {
-        throw new Error(`Missing signed URL for ${storageKey}`);
+        throw new Error(`Falta la URL firmada para ${storageKey}`);
       }
 
       return {
@@ -364,7 +364,7 @@ export async function getUserProjectStacksPaginated(
     };
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to load project stacks";
+      error instanceof Error ? error.message : "No se pudieron cargar los stacks de proyecto";
     return { error: message };
   }
 }
@@ -383,7 +383,8 @@ export async function getUserLatestOutput(): Promise<
 
     return { url: latest.url };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load latest output";
+    const message =
+      error instanceof Error ? error.message : "No se pudo cargar la ultima salida";
     return { error: message };
   }
 }
@@ -399,7 +400,8 @@ export async function getUserOutputs(): Promise<
 
     return { images: result.images };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load outputs";
+    const message =
+      error instanceof Error ? error.message : "No se pudieron cargar las salidas";
     return { error: message };
   }
 }
@@ -421,7 +423,7 @@ export async function getUserOutputsPaginated(
       const storageKey = toStorageKey(row.bucket, row.path);
       const signedUrl = signedUrlMap.get(storageKey);
       if (!signedUrl) {
-        throw new Error(`Missing signed URL for ${storageKey}`);
+        throw new Error(`Falta la URL firmada para ${storageKey}`);
       }
 
       return {
@@ -442,7 +444,8 @@ export async function getUserOutputsPaginated(
       nextOffset: safeOffset + images.length,
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load outputs";
+    const message =
+      error instanceof Error ? error.message : "No se pudieron cargar las salidas";
     return { error: message };
   }
 }
@@ -466,7 +469,7 @@ export async function deleteUserOutput(
     });
 
     if (!asset) {
-      return { error: "Output not found" };
+      return { error: "Salida no encontrada" };
     }
 
     await db
@@ -518,7 +521,8 @@ export async function deleteUserOutput(
 
     return { success: true };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to delete output";
+    const message =
+      error instanceof Error ? error.message : "No se pudo eliminar la salida";
     return { error: message };
   }
 }

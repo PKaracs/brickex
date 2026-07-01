@@ -24,12 +24,12 @@ const ACCEPTED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp"];
 const ACCEPTED_EXTENSIONS = ".jpg,.jpeg,.png,.webp";
 
 const VIDEO_TIPS = [
-  "Submitting your request...",
-  "Analyzing the input image...",
-  "Generating motion paths...",
-  "Rendering frames...",
-  "Compositing final video...",
-  "Almost there...",
+  "Enviando tu solicitud...",
+  "Analizando la imagen de entrada...",
+  "Generando rutas de movimiento...",
+  "Renderizando fotogramas...",
+  "Componiendo el video final...",
+  "Ya casi esta...",
 ];
 
 function GeneratingState() {
@@ -49,11 +49,11 @@ function GeneratingState() {
         <div className="absolute inset-0 w-16 h-16 rounded-full border-2 border-transparent border-t-white/60 animate-spin" />
       </div>
       <div className="text-center space-y-2">
-        <p className="text-white font-medium">Generating your video</p>
+        <p className="text-white font-medium">Generando tu video</p>
         <p className="text-sm text-neutral-500">{VIDEO_TIPS[tipIndex]}</p>
       </div>
       <p className="text-xs text-neutral-600">
-        This usually takes 1–3 minutes
+        Normalmente tarda entre 1 y 3 minutos
       </p>
     </div>
   );
@@ -117,7 +117,7 @@ function PickFromGalleryModal({
   };
 
   const formatDate = (date: Date) =>
-    date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    date.toLocaleDateString("es-ES", { month: "short", day: "numeric" });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -128,11 +128,11 @@ function PickFromGalleryModal({
         <div className="flex-shrink-0 px-5 pt-5 pb-0 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-white">Your Gallery</h2>
+              <h2 className="text-lg font-semibold text-white">Tu galeria</h2>
               <p className="text-sm text-neutral-500 mt-0.5">
                 {isLoading
-                  ? "Loading your images..."
-                  : `${images.length} image${images.length !== 1 ? "s" : ""} available`}
+                  ? "Cargando tus imagenes..."
+                  : `${images.length} imagen${images.length !== 1 ? "es" : ""} disponible${images.length !== 1 ? "s" : ""}`}
               </p>
             </div>
             <button
@@ -150,7 +150,7 @@ function PickFromGalleryModal({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by prompt or mode..."
+                placeholder="Buscar por prompt o modo..."
                 className="w-full bg-neutral-900/80 border border-neutral-800 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-neutral-600 transition-colors"
               />
             </div>
@@ -175,16 +175,16 @@ function PickFromGalleryModal({
               <div className="w-16 h-16 rounded-2xl bg-neutral-800/50 border border-neutral-700/50 flex items-center justify-center mx-auto mb-4">
                 <ImageIcon className="w-7 h-7 text-neutral-600" />
               </div>
-              <p className="text-sm font-medium text-neutral-400">No images yet</p>
+              <p className="text-sm font-medium text-neutral-400">Aun no hay imagenes</p>
               <p className="text-xs text-neutral-600 mt-1">
-                Generate some images first, then pick them here to animate
+                Genera algunas imagenes primero y luego elige una aqui para animarla
               </p>
             </div>
           ) : filteredImages.length === 0 ? (
             <div className="py-16 text-center">
               <Search className="w-8 h-8 text-neutral-700 mx-auto mb-3" />
               <p className="text-sm text-neutral-500">
-                No results for &ldquo;{searchQuery}&rdquo;
+                No hay resultados para &ldquo;{searchQuery}&rdquo;
               </p>
             </div>
           ) : (
@@ -407,7 +407,7 @@ export function VideoCanvas({
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={displayUrl}
-                alt="Source image"
+                alt="Imagen de origen"
                 className="max-w-full max-h-full object-contain rounded-lg"
               />
             </div>
@@ -418,7 +418,7 @@ export function VideoCanvas({
               <div className="flex flex-col items-center gap-2">
                 <Upload className="w-8 h-8 text-white" />
                 <p className="text-sm font-medium text-white">
-                  Drop to replace
+                  Suelta para reemplazar
                 </p>
               </div>
             </div>
@@ -473,10 +473,10 @@ export function VideoCanvas({
               </div>
               <div className="space-y-1.5">
                 <h3 className="text-base md:text-lg font-medium text-white">
-                  {isDragOver ? "Drop files here" : "Upload your image"}
+                  {isDragOver ? "Suelta los archivos aqui" : "Sube tu imagen"}
                 </h3>
                 <p className="text-xs md:text-sm text-neutral-500 leading-relaxed">
-                  Drag & drop, browse files, or pick from your gallery
+                  Arrastra y suelta, busca archivos o elige desde tu galeria
                 </p>
               </div>
 
@@ -489,7 +489,7 @@ export function VideoCanvas({
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-black text-sm font-medium hover:bg-neutral-200 transition-colors"
                 >
                   <FolderOpen className="w-4 h-4" />
-                  Browse Files
+                  Buscar archivos
                 </button>
                 <button
                   onClick={(e) => {
@@ -499,7 +499,7 @@ export function VideoCanvas({
                   className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-800 text-white text-sm font-medium hover:bg-neutral-700 border border-neutral-700 transition-colors"
                 >
                   <ImageIcon className="w-4 h-4" />
-                  From Gallery
+                  Desde la galeria
                 </button>
               </div>
 

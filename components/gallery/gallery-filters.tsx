@@ -35,11 +35,11 @@ export function GalleryFilters({
     <div className="flex items-center justify-between gap-2 sm:gap-4 px-3 sm:px-6 py-3 sm:py-4 border-b border-neutral-800">
       {/* Left Side - Count */}
       <span className="text-xs sm:text-sm text-neutral-500">
-        {totalCount} {totalCount === 1 ? "project" : "projects"}
+        {totalCount} {totalCount === 1 ? "proyecto" : "proyectos"}
         {typeof totalRenderCount === "number" && (
           <span className="text-neutral-600">
             {" "}
-            · {totalRenderCount} {totalRenderCount === 1 ? "output" : "outputs"}
+            · {totalRenderCount} {totalRenderCount === 1 ? "resultado" : "resultados"}
           </span>
         )}
       </span>
@@ -60,13 +60,13 @@ export function GalleryFilters({
               value="newest"
               className="text-neutral-300 focus:text-white focus:bg-neutral-800"
             >
-              Newest
+              Mas recientes
             </SelectItem>
             <SelectItem
               value="oldest"
               className="text-neutral-300 focus:text-white focus:bg-neutral-800"
             >
-              Oldest
+              Mas antiguos
             </SelectItem>
           </SelectContent>
         </Select>

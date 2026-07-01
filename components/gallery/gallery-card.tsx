@@ -49,7 +49,7 @@ export const GalleryCard = memo(function GalleryCard({
       <div className="relative aspect-square overflow-hidden">
         <Image
           src={image.url}
-          alt="Generated image"
+          alt="Imagen generada"
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, (max-width: 1280px) 20vw, 16vw"
           loading="lazy"
@@ -85,7 +85,7 @@ export const GalleryCard = memo(function GalleryCard({
               className="text-neutral-300 focus:text-white focus:bg-neutral-800 cursor-pointer"
             >
               <Download className="h-4 w-4 mr-2" />
-              Download
+              Descargar
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={(e) => {
@@ -95,7 +95,7 @@ export const GalleryCard = memo(function GalleryCard({
               className="text-neutral-300 focus:text-white focus:bg-neutral-800 cursor-pointer"
             >
               <Share2 className="h-4 w-4 mr-2" />
-              Share
+              Compartir
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={(e) => {
@@ -105,7 +105,7 @@ export const GalleryCard = memo(function GalleryCard({
               className="text-red-400 focus:text-red-300 focus:bg-neutral-800 cursor-pointer"
             >
               <Trash2 className="h-4 w-4 mr-2" />
-              Delete
+              Eliminar
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -177,12 +177,12 @@ function formatDate(date: Date): string {
   const diffHours = Math.floor(diffMs / 3600000);
   const diffDays = Math.floor(diffMs / 86400000);
 
-  if (diffMins < 1) return "Just now";
-  if (diffMins < 60) return `${diffMins}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffMins < 1) return "Ahora mismo";
+  if (diffMins < 60) return `Hace ${diffMins} min`;
+  if (diffHours < 24) return `Hace ${diffHours} h`;
+  if (diffDays < 7) return `Hace ${diffDays} d`;
 
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString("es-ES", {
     month: "short",
     day: "numeric",
   });

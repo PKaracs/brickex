@@ -59,7 +59,7 @@ function buildToolProjectTitle(toolLabel: string, file?: File | null) {
 async function downloadFile(url: string, filename: string) {
   const response = await fetch(url);
   if (!response.ok) {
-    throw new Error("Failed to download file.");
+    throw new Error("No se pudo descargar el archivo.");
   }
 
   const blob = await response.blob();
@@ -129,10 +129,10 @@ function UploadZone({
       </div>
       <div className="text-center">
         <p className="text-xs font-semibold text-neutral-300 uppercase tracking-wider">
-          Upload image or drag & drop
+          Sube una imagen o arrastrala aqui
         </p>
         <p className="text-[11px] text-neutral-600 mt-1">
-          PNG, JPG & JPEG (Up To 30MB)
+          PNG, JPG y JPEG (hasta 30MB)
         </p>
       </div>
     </button>
@@ -203,7 +203,7 @@ function UploadedThumb({
           <Plus className="w-4 h-4 text-neutral-500" />
         </div>
         <span className="text-[10px] text-neutral-500 font-medium uppercase tracking-wider">
-          Add Image
+          Agregar imagen
         </span>
       </button>
     );
@@ -238,7 +238,7 @@ function UploadedThumb({
           {file.name}
         </p>
         <p className="text-[11px] text-neutral-500 mt-1">
-          Preview unavailable
+          Vista previa no disponible
         </p>
       </div>
     );
@@ -254,7 +254,7 @@ function UploadedThumb({
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={previewUrl}
-        alt="Uploaded"
+        alt="Subida"
         onError={() => setPreviewFailed(true)}
         className="absolute inset-0 w-full h-full object-cover"
       />
@@ -322,14 +322,14 @@ function PreviewPanel({
             href="/app/gallery"
             className="rounded-full bg-black/50 backdrop-blur-sm px-3 py-1.5 text-xs font-medium text-white hover:bg-black/70 transition-colors"
           >
-            Gallery
+            Galeria
           </Link>
         </div>
 
         {generatedAsset.mediaType === "model_3d" ? (
           <ModelViewerPreview
             src={generatedAsset.url}
-            alt="Generated 3D model"
+            alt="Modelo 3D generado"
             posterSrc={sourcePreviewUrl ?? null}
             className="h-full w-full"
           />
@@ -337,13 +337,13 @@ function PreviewPanel({
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={generatedAsset.url}
-            alt="Generated result"
+            alt="Resultado generado"
             className="w-full h-full object-cover"
           />
         )}
 
         <div className="absolute top-3 left-3 rounded-full bg-black/55 px-3 py-1 text-[11px] font-medium text-white backdrop-blur-sm">
-          Saved to gallery
+          Guardado en la galeria
         </div>
 
         {/* Input thumbnails strip */}
@@ -375,7 +375,7 @@ function PreviewPanel({
           {pendingLabel}
         </p>
         <p className="text-xs text-neutral-600 mt-1.5">
-          {isUploading ? "Uploading source image..." : "This usually takes ~30 seconds"}
+          {isUploading ? "Subiendo imagen de origen..." : "Normalmente tarda unos 30 segundos"}
         </p>
       </div>
     );
@@ -390,7 +390,7 @@ function PreviewPanel({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={sampleInput}
-              alt="Sample input"
+              alt="Entrada de muestra"
               className="w-full h-full object-cover"
             />
           ) : (
@@ -403,7 +403,7 @@ function PreviewPanel({
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={sampleOutput}
-              alt="Sample output"
+              alt="Resultado de muestra"
               className="w-full h-full object-cover"
             />
           ) : (
@@ -456,7 +456,7 @@ export function ToolDetailClient() {
       if (!selected) return;
 
       if (!isSupportedToolImageFile(selected)) {
-        toast.error("Use a JPG, PNG, or WebP image.");
+        toast.error("Usa una imagen JPG, PNG o WebP.");
         e.target.value = "";
         return;
       }
@@ -495,14 +495,14 @@ export function ToolDetailClient() {
 
     if (!isLiveTool) {
       toast.error(
-        disabledReason ?? `${tool.label} is not available in this workflow.`,
+        disabledReason ?? `${tool.label} no esta disponible en este flujo.`,
       );
       return;
     }
 
     const selectedFiles = files.filter((file): file is File => file !== null);
     if (selectedFiles.length === 0) {
-      toast.error("Upload an image first.");
+      toast.error("Sube una imagen primero.");
       return;
     }
 
@@ -534,7 +534,7 @@ export function ToolDetailClient() {
         );
 
         if (!uploadResult.success) {
-          throw new Error(uploadResult.error || "Failed to upload source image.");
+          throw new Error(uploadResult.error || "No se pudo subir la imagen de origen.");
         }
 
         setSourceUploaded(true);
@@ -545,17 +545,17 @@ export function ToolDetailClient() {
       const result = await generateToolImage(activeProjectId, toolId);
 
       if (result.error || !result.outputUrl) {
-        throw new Error(result.error || "Generation failed.");
+        throw new Error(result.error || "La generacion fallo.");
       }
 
       setGeneratedAsset({
         url: result.outputUrl,
         mediaType: result.mediaType ?? "image",
       });
-      toast.success(`${tool.label} generated and saved to gallery.`);
+      toast.success(`${tool.label} generado y guardado en la galeria.`);
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Generation failed.";
+        error instanceof Error ? error.message : "La generacion fallo.";
       toast.error(message);
     } finally {
       setIsGenerating(false);
@@ -573,7 +573,7 @@ export function ToolDetailClient() {
       );
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "Failed to download file.";
+        error instanceof Error ? error.message : "No se pudo descargar el archivo.";
       toast.error(message);
     }
   }, [generatedAsset, toolId]);
@@ -599,12 +599,12 @@ export function ToolDetailClient() {
     return (
       <div className="h-full bg-black flex items-center justify-center">
         <div className="text-center space-y-3">
-          <p className="text-lg text-neutral-400">Tool not found</p>
+          <p className="text-lg text-neutral-400">Herramienta no encontrada</p>
           <Link
             href="/app/tools"
             className="text-sm text-neutral-500 hover:text-white transition-colors underline"
           >
-            Back to Tools
+            Volver a herramientas
           </Link>
         </div>
       </div>
@@ -626,7 +626,7 @@ export function ToolDetailClient() {
           className="inline-flex items-center gap-1.5 text-sm text-neutral-500 hover:text-white transition-colors mb-5 flex-shrink-0 w-fit"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Tools</span>
+          <span>Herramientas</span>
         </Link>
 
         {/* Container card */}
@@ -667,7 +667,7 @@ export function ToolDetailClient() {
               <div className="mt-6 space-y-3 flex-shrink-0">
                 {isLiveTool ? (
                   <p className="text-xs text-neutral-500 text-center">
-                    Your request will cost{" "}
+                    Tu solicitud costara{" "}
                     <span className="text-amber-400/90 font-medium">
                       {tool.creditCost} bricks
                     </span>
@@ -692,14 +692,14 @@ export function ToolDetailClient() {
                   {isGenerating ? (
                     <span className="flex items-center justify-center gap-2">
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      {isUploadingSource ? "Uploading..." : "Generating..."}
+                      {isUploadingSource ? "Subiendo..." : "Generando..."}
                     </span>
                   ) : (
                     isLiveTool
                       ? toolId === "image-to-3d"
-                        ? "Generate 3D Model"
-                        : "Generate Image"
-                      : "Unavailable in Gemini 3.1"
+                        ? "Generar modelo 3D"
+                        : "Generar imagen"
+                      : "No disponible en Gemini 3.1"
                   )}
                 </button>
               </div>
@@ -716,10 +716,10 @@ export function ToolDetailClient() {
                 readySubtitle={isLiveTool ? tool.readySubtitle : disabledReason ?? tool.readySubtitle}
                 pendingLabel={
                   isUploadingSource
-                    ? "Uploading source..."
+                    ? "Subiendo fuente..."
                     : toolId === "image-to-3d"
-                      ? "Generating 3D model..."
-                      : `Generating ${tool.label.toLowerCase()}...`
+                      ? "Generando modelo 3D..."
+                      : `Generando ${tool.label.toLowerCase()}...`
                 }
                 icon={tool.icon}
                 sampleInput={tool.inputPreview}

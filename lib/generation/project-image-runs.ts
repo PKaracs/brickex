@@ -75,12 +75,12 @@ interface EnsureProjectSourceImageAssetInput {
 
 function parseDataUrl(dataUrl: string) {
   if (!dataUrl.startsWith("data:")) {
-    throw new Error("Invalid image payload returned by model");
+    throw new Error("El modelo devolvio una imagen no valida");
   }
 
   const separatorIndex = dataUrl.indexOf(";base64,");
   if (separatorIndex === -1) {
-    throw new Error("Invalid image payload returned by model");
+    throw new Error("El modelo devolvio una imagen no valida");
   }
 
   const contentType = dataUrl.slice(5, separatorIndex) || "image/png";
@@ -138,7 +138,7 @@ export async function ensureProjectSourceImageAsset(
   });
 
   if (!project) {
-    throw new Error("Project not found");
+    throw new Error("Proyecto no encontrado");
   }
 
   const existingSource = await db.query.assets.findFirst({
@@ -225,7 +225,7 @@ export async function startProjectImageRun(
   });
 
   if (!project) {
-    throw new Error("Project not found");
+    throw new Error("Proyecto no encontrado");
   }
 
   const brickCost = getCreditCostForToolId(input.toolId);
@@ -234,12 +234,12 @@ export async function startProjectImageRun(
     where: eq(schema.users.id, userId),
     columns: { creationsUsed: true, creationsLimit: true },
   });
-  if (!user) throw new Error("User not found");
+  if (!user) throw new Error("Usuario no encontrado");
 
   const remaining = user.creationsLimit - user.creationsUsed;
   if (remaining < brickCost) {
     throw new Error(
-      `Not enough bricks. This costs ${brickCost} bricks but you have ${remaining} remaining.`,
+      `No hay suficientes bricks. Esto cuesta ${brickCost} bricks y tienes ${remaining}.`,
     );
   }
 
@@ -355,7 +355,7 @@ export async function finishProjectImageRunSuccess(
     toolRunId: input.run.runId,
     type: input.deliverableType ?? "hero_render",
     status: "draft",
-    title: input.deliverableTitle ?? "Generated render",
+    title: input.deliverableTitle ?? "Render generado",
     metadata: input.deliverableMetadata ?? null,
   });
 
@@ -446,7 +446,7 @@ export async function finishProjectBinaryRunSuccess(
     toolRunId: input.run.runId,
     type: input.deliverableType ?? "other",
     status: "draft",
-    title: input.deliverableTitle ?? "Generated asset",
+    title: input.deliverableTitle ?? "Recurso generado",
     metadata: input.deliverableMetadata ?? null,
   });
 

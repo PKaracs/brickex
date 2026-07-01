@@ -10,21 +10,7 @@ import {
   getUserSubscription,
   type SubscriptionData,
 } from "@/lib/actions/get-user-subscription";
-
-function isAuthRoute(pathname: string | null) {
-  if (!pathname) return false;
-
-  return (
-    pathname === "/login" ||
-    pathname === "/app/login" ||
-    pathname === "/register" ||
-    pathname === "/app/register" ||
-    pathname === "/forgot-password" ||
-    pathname === "/app/forgot-password" ||
-    pathname.startsWith("/reset-password") ||
-    pathname.startsWith("/app/reset-password")
-  );
-}
+import { isAppAuthRoute } from "@/lib/app-routes";
 
 export default function AppShellClient({
   initialSubscription,
@@ -44,7 +30,7 @@ export default function AppShellClient({
   }, [initialSubscription]);
 
   useEffect(() => {
-    if (isAuthRoute(pathname)) return;
+    if (isAppAuthRoute(pathname)) return;
 
     const dismissed = localStorage.getItem("brickex:onboarded");
     if (dismissed === "true") return;
@@ -74,7 +60,7 @@ export default function AppShellClient({
   }, [pathname]);
 
   useEffect(() => {
-    if (isAuthRoute(pathname)) return;
+    if (isAppAuthRoute(pathname)) return;
 
     let cancelled = false;
 
@@ -94,7 +80,7 @@ export default function AppShellClient({
   }, [pathname]);
 
   useEffect(() => {
-    if (isAuthRoute(pathname)) return;
+    if (isAppAuthRoute(pathname)) return;
 
     const handleSubscriptionUpdated = (event: Event) => {
       const customEvent = event as CustomEvent<SubscriptionData>;
@@ -112,7 +98,7 @@ export default function AppShellClient({
     };
   }, [pathname]);
 
-  if (isAuthRoute(pathname)) {
+  if (isAppAuthRoute(pathname)) {
     return <>{children}</>;
   }
 

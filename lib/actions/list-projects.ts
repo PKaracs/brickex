@@ -13,7 +13,8 @@ export async function listCompletedProjects(): Promise<
       projects: projects.filter((project) => project.status === "complete"),
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to list projects";
+    const message =
+      error instanceof Error ? error.message : "No se pudieron listar los proyectos";
     return { error: message };
   }
 }

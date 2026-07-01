@@ -3,7 +3,7 @@ const GROK_API_BASE = "https://api.x.ai/v1";
 function getApiKey(): string {
   const key = process.env.GROK_API_KEY;
   if (!key) {
-    throw new Error("GROK_API_KEY must be set");
+    throw new Error("GROK_API_KEY debe estar configurada");
   }
   return key;
 }
@@ -37,7 +37,7 @@ export async function submitVideoGeneration(
 
   const body: Record<string, unknown> = {
     model: "grok-imagine-video",
-    prompt: params.prompt || "Animate this image with subtle cinematic motion",
+    prompt: params.prompt || "Anima esta imagen con movimiento cinematografico sutil",
   };
 
   if (params.imageUrl) {
@@ -78,7 +78,7 @@ export async function submitVideoGeneration(
       `[BrickEx:Grok] Submit failed (${response.status}):`,
       text
     );
-    throw new Error(`Video API error: ${response.status}`);
+    throw new Error(`Error de API de video: ${response.status}`);
   }
 
   const result: GrokSubmitResponse = await response.json();
@@ -107,7 +107,7 @@ export async function getVideoStatus(
       `[BrickEx:Grok] Status check failed (${response.status}):`,
       text
     );
-    throw new Error(`Video status check error: ${response.status}`);
+    throw new Error(`Error al consultar el estado del video: ${response.status}`);
   }
 
   return response.json();
@@ -124,18 +124,18 @@ export async function pollForVideoResult(requestId: string): Promise<string> {
 
     if (status.status === "done") {
       if (!status.video?.respect_moderation) {
-        throw new Error("Video was filtered by content moderation");
+        throw new Error("El video fue filtrado por moderacion de contenido");
       }
       const videoUrl = status.video?.url;
       if (!videoUrl) {
-        throw new Error("Video completed but no URL returned");
+        throw new Error("El video termino, pero no devolvio URL");
       }
       console.log(`[BrickEx:Grok] Video ready: ${videoUrl}`);
       return videoUrl;
     }
 
     if (status.status === "expired") {
-      throw new Error("Video generation request expired");
+      throw new Error("La solicitud de generacion de video expiro");
     }
 
     console.log(
@@ -146,6 +146,6 @@ export async function pollForVideoResult(requestId: string): Promise<string> {
   }
 
   throw new Error(
-    "Video generation timed out — the video may still be processing. Try again in a few minutes."
+    "La generacion de video agoto el tiempo de espera. El video podria seguir procesandose; intentalo de nuevo en unos minutos."
   );
 }

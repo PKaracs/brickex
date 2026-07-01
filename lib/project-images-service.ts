@@ -20,9 +20,9 @@ export async function uploadProjectImagesDirect(
   files: File[]
 ): Promise<UploadProjectImagesResult> {
   try {
-    if (!projectId) return { success: false, error: "Missing project ID" };
+    if (!projectId) return { success: false, error: "Falta el ID del proyecto" };
     if (!files || files.length === 0)
-      return { success: false, error: "No images provided" };
+      return { success: false, error: "No se proporcionaron imagenes" };
 
     const compressedFiles = await compressImages(files);
 
@@ -38,8 +38,8 @@ export async function uploadProjectImagesDirect(
         success: false,
         error:
           setupRes.status === 401
-            ? "Session expired. Please refresh."
-            : data.error || "Failed to start upload",
+            ? "La sesion expiro. Actualiza la pagina."
+            : data.error || "No se pudo iniciar la subida",
       };
     }
 
@@ -50,7 +50,7 @@ export async function uploadProjectImagesDirect(
       !setupData.uploadUrls ||
       setupData.uploadUrls.length !== compressedFiles.length
     ) {
-      return { success: false, error: "Upload setup failed" };
+      return { success: false, error: "No se pudo preparar la subida" };
     }
 
     type UploadOk = {
@@ -88,7 +88,7 @@ export async function uploadProjectImagesDirect(
 
     const failed = uploads.filter((u) => !u.ok);
     if (failed.length > 0) {
-      return { success: false, error: `${failed.length} upload(s) failed` };
+      return { success: false, error: `${failed.length} subida(s) fallaron` };
     }
 
     const confirmRes = await fetch("/api/projects/images/confirm", {
@@ -109,7 +109,7 @@ export async function uploadProjectImagesDirect(
 
     if (!confirmRes.ok) {
       const data = await confirmRes.json().catch(() => ({}));
-      return { success: false, error: data.error || "Confirm failed" };
+      return { success: false, error: data.error || "No se pudo confirmar la subida" };
     }
 
     const confirmData: { storageKeys?: string[] } = await confirmRes.json();
@@ -119,6 +119,6 @@ export async function uploadProjectImagesDirect(
     return { success: true, storageKeys };
   } catch (error) {
     console.error("[ProjectImagesService] Error:", error);
-    return { success: false, error: "Network error. Please try again." };
+    return { success: false, error: "Error de red. Intentalo de nuevo." };
   }
 }

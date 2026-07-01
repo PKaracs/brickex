@@ -30,7 +30,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+      return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 });
     }
 
     const confirmedKeys: string[] = [];
@@ -54,7 +54,7 @@ export async function POST(request: NextRequest) {
 
       if (!uploadSession) {
         return NextResponse.json(
-          { error: `Upload session not found for ${file.storageKey}` },
+          { error: `No se encontro la sesion de subida para ${file.storageKey}` },
           { status: 404 },
         );
       }
@@ -100,7 +100,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ storageKeys: confirmedKeys });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to confirm uploads";
+    const message =
+      error instanceof Error ? error.message : "No se pudieron confirmar las subidas";
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }

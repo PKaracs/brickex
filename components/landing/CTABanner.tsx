@@ -12,11 +12,12 @@ export default function CTABanner() {
       <div className="max-w-2xl mx-auto text-center">
         <div>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6">
-            Ready to visualize your next project?
+            Tu proximo render esta a 30 segundos
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base mb-6 sm:mb-8 max-w-md mx-auto">
-            Create an account and start generating photorealistic renders from
-            your sketches, floor plans, and 3D models.
+            Sube un boceto, plano o modelo 3D y mira como se vuelve
+            fotorrealista. Empieza gratis con 100 bricks, sin tarjeta y con
+            cancelacion cuando quieras.
           </p>
           <Button
             size="lg"
@@ -24,7 +25,7 @@ export default function CTABanner() {
             asChild
           >
             <a href={signupUrl}>
-              Start Free
+              Empieza a renderizar gratis
               <ArrowRight className="w-4 h-4" />
             </a>
           </Button>

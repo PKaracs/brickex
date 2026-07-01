@@ -72,18 +72,18 @@ function FAQItem({
 const STEPS = [
   {
     icon: ImageIcon,
-    title: "Review the space set",
-    description: "Study the eight references and pick the luxury angle you want.",
+    title: "Revisa el set de espacios",
+    description: "Estudia las ocho referencias y elige el angulo de lujo que quieres.",
   },
   {
     icon: FileText,
-    title: "Open the prompt recipe",
-    description: "Each image includes the structure behind the look, mood, and styling.",
+    title: "Abre la receta del prompt",
+    description: "Cada imagen incluye la estructura detras del look, el mood y el styling.",
   },
   {
     icon: Sparkles,
-    title: "Generate your version",
-    description: "Adapt the prompt in BrickEx for boards, listings, interior studies, or concept work.",
+    title: "Genera tu version",
+    description: "Adapta el prompt en BrickEx para boards, listings, estudios interiores o trabajo conceptual.",
   },
 ];
 
@@ -129,12 +129,12 @@ export function ScenePage({ scene }: ScenePageProps) {
           </p>
           <Button size="lg" className="gap-2 h-12 px-8 text-base font-semibold" asChild>
             <a href={signupUrl}>
-              Generate renders like this
+              Generar renders como este
               <ArrowRight className="w-4 h-4" />
             </a>
           </Button>
           <p className="text-zinc-600 text-xs mt-3">
-            Use BrickEx to turn the prompt direction into your own visual set.
+            Usa BrickEx para convertir esta direccion de prompt en tu propio set visual.
           </p>
         </div>
       </section>
@@ -149,7 +149,7 @@ export function ScenePage({ scene }: ScenePageProps) {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl sm:text-2xl font-semibold text-center mb-10 sm:mb-12">
             <span className="bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-              How it works
+              Como funciona
             </span>
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8">
@@ -159,7 +159,7 @@ export function ScenePage({ scene }: ScenePageProps) {
                   <step.icon className="w-5 h-5 text-zinc-400" />
                 </div>
                 <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-1.5">
-                  Step {i + 1}
+                  Paso {i + 1}
                 </div>
                 <h3 className="text-sm sm:text-base font-semibold text-white mb-1">
                   {step.title}
@@ -180,7 +180,7 @@ export function ScenePage({ scene }: ScenePageProps) {
             <div className="lg:col-span-3">
               <h2 className="text-xl sm:text-2xl font-semibold mb-6">
                 <span className="bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-                  About this idea pack
+                  Sobre este pack de ideas
                 </span>
               </h2>
               <div className="space-y-4">
@@ -193,7 +193,7 @@ export function ScenePage({ scene }: ScenePageProps) {
             </div>
             <div className="lg:col-span-2">
               <h3 className="text-sm font-semibold uppercase tracking-wider text-zinc-500 mb-4">
-                What to study
+                Que estudiar
               </h3>
               <ul className="space-y-2.5">
                 {scene.content.highlights.map((h, i) => (
@@ -214,7 +214,7 @@ export function ScenePage({ scene }: ScenePageProps) {
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-xl sm:text-2xl font-semibold text-center mb-8 sm:mb-10">
               <span className="bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-                You might also like
+                Tambien te puede gustar
               </span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
@@ -232,7 +232,7 @@ export function ScenePage({ scene }: ScenePageProps) {
           <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
             <h2 className="text-xl sm:text-2xl font-semibold text-center mb-8 sm:mb-10">
               <span className="bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-                Frequently asked questions
+                Preguntas frecuentes
               </span>
             </h2>
             <div className="space-y-3">
@@ -256,10 +256,11 @@ export function ScenePage({ scene }: ScenePageProps) {
       <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-zinc-800">
         <div className="max-w-2xl mx-auto text-center">
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6">
-            Want to build a set like this?
+            Quieres crear un set como este?
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base mb-6 sm:mb-8 max-w-md mx-auto">
-            Use BrickEx to iterate on composition, lighting, and material direction without rebuilding the whole visual stack from scratch.
+            Usa BrickEx para iterar composicion, iluminacion y direccion de
+            materiales sin reconstruir todo el stack visual desde cero.
           </p>
           <Button
             size="lg"
@@ -267,7 +268,7 @@ export function ScenePage({ scene }: ScenePageProps) {
             asChild
           >
             <a href={signupUrl}>
-              Open BrickEx
+              Abrir BrickEx
               <ArrowRight className="w-4 h-4" />
             </a>
           </Button>

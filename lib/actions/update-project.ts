@@ -51,12 +51,13 @@ export async function updateProject(
       .returning();
 
     if (!project) {
-      return { error: "Project not found" };
+      return { error: "Proyecto no encontrado" };
     }
 
     return { project };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to update project";
+    const message =
+      error instanceof Error ? error.message : "No se pudo actualizar el proyecto";
     return { error: message };
   }
 }

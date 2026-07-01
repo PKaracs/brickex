@@ -9,8 +9,8 @@ import { db } from "@/lib/db";
 export const runtime = "nodejs";
 
 const updateProfileSchema = z.object({
-  name: z.string().trim().min(1, "Name is required.").max(120, "Name is too long."),
-  image: z.string().url("Profile image must be a valid URL.").nullable(),
+  name: z.string().trim().min(1, "El nombre es obligatorio.").max(120, "El nombre es demasiado largo."),
+  image: z.string().url("La imagen de perfil debe ser una URL valida.").nullable(),
 });
 
 export async function PATCH(request: NextRequest) {
@@ -35,13 +35,13 @@ export async function PATCH(request: NextRequest) {
       });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found." }, { status: 404 });
+      return NextResponse.json({ error: "Usuario no encontrado." }, { status: 404 });
     }
 
     return NextResponse.json({ user });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to update profile.";
+      error instanceof Error ? error.message : "No se pudo actualizar el perfil.";
 
     return NextResponse.json({ error: message }, { status: 400 });
   }

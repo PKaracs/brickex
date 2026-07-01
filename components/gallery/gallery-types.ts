@@ -73,8 +73,8 @@ export function getGalleryProjectItems(
         variation.mediaType === "video"
           ? `Video ${index + 1}`
           : variation.mediaType === "model_3d"
-            ? `3D Model ${index + 1}`
-          : `Variation ${index + 1}`,
+            ? `Modelo 3D ${index + 1}`
+          : `Variacion ${index + 1}`,
     });
   });
 
@@ -125,11 +125,11 @@ export function getGalleryProjectCollectionLabel(
     case "video":
       return "Videos";
     case "interior":
-      return "Interior Renders";
+      return "Renders interiores";
     case "exterior":
-      return "Exterior Renders";
+      return "Renders exteriores";
     case "tool":
-      return "Tool Generations";
+      return "Generaciones de herramientas";
   }
 }
 
@@ -149,7 +149,7 @@ export function getGalleryProjectPrimaryDescriptor(project: GalleryProjectStack)
 
   const toolId = project.variations[0]?.toolId;
   if (!toolId) {
-    return "Tool";
+    return "Herramienta";
   }
 
   return getToolById(toolId)?.label ?? humanizeToken(toolId);

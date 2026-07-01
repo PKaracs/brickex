@@ -32,7 +32,7 @@ export async function editRenderRegion(
   editPrompt: string
 ): Promise<{ outputUrl?: string; error?: string }> {
   if (!annotatedImageBase64 || !editPrompt) {
-    return { error: "Missing required parameters for editing." };
+    return { error: "Faltan parametros necesarios para editar." };
   }
 
   const run = await startProjectImageRun({
@@ -51,7 +51,7 @@ export async function editRenderRegion(
   const parts: ContentPart[] = [];
 
   parts.push({
-    text: `You are an expert architectural image editor. This image has a bright green semi-transparent rectangle drawn on it, highlighting a specific region the user wants to change.`,
+    text: `Eres un editor experto de imagen arquitectonica. Esta imagen tiene un rectangulo verde semitransparente que marca la region concreta que el usuario quiere cambiar.`,
   });
 
   parts.push({
@@ -62,18 +62,18 @@ export async function editRenderRegion(
   });
 
   parts.push({
-    text: `EDIT INSTRUCTION: "${editPrompt}"
+    text: `INSTRUCCION DE EDICION: "${editPrompt}"
 
-RULES:
-1. Edit ONLY the area that was inside the green highlighted rectangle
-2. Apply the edit instruction to that specific region
-3. Keep EVERYTHING outside the green rectangle EXACTLY the same — pixel-perfect preservation
-4. Remove the green overlay in the output — the result should look clean with no green rectangle
-5. The output must be the full image (same dimensions) with only the highlighted region changed
-6. Maintain consistent lighting, perspective, and style with the rest of the image
-7. The edit should look natural and seamless
+REGLAS:
+1. Edita SOLO el area dentro del rectangulo verde resaltado
+2. Aplica la instruccion de edicion a esa region concreta
+3. Mantiene TODO fuera del rectangulo verde exactamente igual
+4. Elimina el overlay verde en la salida; el resultado debe verse limpio
+5. La salida debe ser la imagen completa con las mismas dimensiones
+6. Mantiene iluminacion, perspectiva y estilo coherentes con el resto de la imagen
+7. La edicion debe verse natural e integrada
 
-Return the edited full image.`,
+Devuelve la imagen completa editada.`,
   });
 
   const result = await callGeminiEdit(parts);
@@ -89,16 +89,16 @@ Return the edited full image.`,
   if (!result.outputUrl) {
     await finishProjectImageRunFailure({
       run,
-      errorMessage: "AI didn't return an image. Try again.",
+      errorMessage: "La IA no devolvio una imagen. Intentalo de nuevo.",
     });
-    return { error: "AI didn't return an image. Try again." };
+    return { error: "La IA no devolvio una imagen. Intentalo de nuevo." };
   }
 
   const persisted = await finishProjectImageRunSuccess({
     run,
     dataUrl: result.outputUrl,
     pathKind: "edited-renders",
-    deliverableTitle: "Edited render",
+    deliverableTitle: "Render editado",
     deliverableMetadata: {
       editType: "region",
       kind: "edit",
@@ -117,7 +117,7 @@ export async function editRenderGlobal(
   editPrompt: string
 ): Promise<{ outputUrl?: string; error?: string }> {
   if (!imageBase64 || !editPrompt) {
-    return { error: "Missing required parameters for editing." };
+    return { error: "Faltan parametros necesarios para editar." };
   }
 
   const run = await startProjectImageRun({
@@ -136,7 +136,7 @@ export async function editRenderGlobal(
   const parts: ContentPart[] = [];
 
   parts.push({
-    text: `You are an expert architectural image editor. The user wants to make a change to this rendered image.`,
+    text: `Eres un editor experto de imagen arquitectonica. El usuario quiere hacer un cambio en este render.`,
   });
 
   parts.push({
@@ -147,16 +147,16 @@ export async function editRenderGlobal(
   });
 
   parts.push({
-    text: `EDIT INSTRUCTION: "${editPrompt}"
+    text: `INSTRUCCION DE EDICION: "${editPrompt}"
 
-RULES:
-1. Apply the edit instruction to the image
-2. Preserve the overall composition, perspective, and quality
-3. The output must be the same dimensions as the input
-4. Make the edit look natural and seamless
-5. Only change what the instruction asks for — keep everything else the same
+REGLAS:
+1. Aplica la instruccion de edicion a la imagen
+2. Preserva composicion, perspectiva y calidad general
+3. La salida debe tener las mismas dimensiones que la entrada
+4. Haz que la edicion se vea natural e integrada
+5. Cambia solo lo que pide la instruccion; mantiene todo lo demas igual
 
-Return the edited full image.`,
+Devuelve la imagen completa editada.`,
   });
 
   const result = await callGeminiEdit(parts);
@@ -172,16 +172,16 @@ Return the edited full image.`,
   if (!result.outputUrl) {
     await finishProjectImageRunFailure({
       run,
-      errorMessage: "AI didn't return an image. Try again.",
+      errorMessage: "La IA no devolvio una imagen. Intentalo de nuevo.",
     });
-    return { error: "AI didn't return an image. Try again." };
+    return { error: "La IA no devolvio una imagen. Intentalo de nuevo." };
   }
 
   const persisted = await finishProjectImageRunSuccess({
     run,
     dataUrl: result.outputUrl,
     pathKind: "edited-renders",
-    deliverableTitle: "Edited render",
+    deliverableTitle: "Render editado",
     deliverableMetadata: {
       editType: "global",
       kind: "edit",
@@ -219,19 +219,19 @@ async function callGeminiEdit(
         if (response.promptFeedback) {
           const blockReason = (response.promptFeedback as any).blockReason;
           if (blockReason) {
-            return { error: "Edit blocked by content safety filters." };
+            return { error: "La edicion fue bloqueada por filtros de seguridad." };
           }
         }
 
         if (!response.candidates || response.candidates.length === 0) {
           if (attempt < MAX_RETRIES) continue;
-          return { error: "No result from AI model. Try a different edit." };
+          return { error: "El modelo no devolvio resultado. Prueba otra edicion." };
         }
 
         const candidate = response.candidates[0];
 
         if (candidate.finishReason === "SAFETY") {
-          return { error: "Edit blocked by safety filters. Try rephrasing." };
+          return { error: "Edicion bloqueada por filtros de seguridad. Reformula el prompt." };
         }
 
         if (candidate.content?.parts) {
@@ -245,7 +245,7 @@ async function callGeminiEdit(
         }
 
         if (attempt < MAX_RETRIES) continue;
-        return { error: "AI didn't return an image. Try again." };
+        return { error: "La IA no devolvio una imagen. Intentalo de nuevo." };
       } catch (error: any) {
         console.error(
           `[EditRender] Error on ${model} (attempt ${attempt + 1}):`,
@@ -253,7 +253,7 @@ async function callGeminiEdit(
         );
 
         if (error?.status === 401 || error?.status === 400) {
-          return { error: "API authentication error." };
+          return { error: "Error de autenticacion de la API." };
         }
 
         if (error?.status === 429) {
@@ -262,10 +262,10 @@ async function callGeminiEdit(
         }
 
         if (attempt < MAX_RETRIES) continue;
-        return { error: error?.message || "Edit failed. Please try again." };
+        return { error: error?.message || "La edicion fallo. Intentalo de nuevo." };
       }
     }
   }
 
-  return { error: "All AI models are busy. Please try again in a moment." };
+  return { error: "Todos los modelos de IA estan ocupados. Intentalo de nuevo en un momento." };
 }

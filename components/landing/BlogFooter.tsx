@@ -9,7 +9,7 @@ export default function BlogFooter() {
           <div className="flex items-center gap-2.5">
             <Image
               src="/inverted-logo.png"
-              alt="BrickEx Logo"
+              alt="Logo de BrickEx"
               width={44}
               height={36}
               className="w-10 h-auto"
@@ -27,19 +27,19 @@ export default function BlogFooter() {
               href="/legal/privacy"
               className="min-h-[44px] flex items-center hover:text-gray-900 transition-colors active:text-gray-700"
             >
-              Privacy Policy
+              Politica de privacidad
             </Link>
             <Link
               href="/legal/terms"
               className="min-h-[44px] flex items-center hover:text-gray-900 transition-colors active:text-gray-700"
             >
-              Terms of Service
+              Terminos del servicio
             </Link>
             <a
               href="mailto:hello@brickex.co"
               className="min-h-[44px] flex items-center hover:text-gray-900 transition-colors active:text-gray-700"
             >
-              Contact
+              Contacto
             </a>
           </nav>
         </div>

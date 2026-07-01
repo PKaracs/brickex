@@ -13,7 +13,7 @@ export const MAX_AVATAR_IMAGES = 3;
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return new Promise((resolve, reject) => {
     const timer = setTimeout(() => {
-      reject(new Error("Operation timed out"));
+      reject(new Error("La operacion agoto el tiempo de espera"));
     }, ms);
 
     promise
@@ -266,7 +266,7 @@ export function useAvatarUpload({
       // Frontend check: prevent deleting the last existing image
       if (existingImages.length <= 1 && newFiles.length === 0) {
         setError(
-          "Cannot delete the last avatar image. You must keep at least one image."
+          "No puedes eliminar la ultima imagen de avatar. Debes conservar al menos una imagen."
         );
         return;
       }
@@ -291,7 +291,7 @@ export function useAvatarUpload({
           return updated;
         });
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to delete image");
+        setError(err instanceof Error ? err.message : "No se pudo eliminar la imagen");
       } finally {
         setDeletingImageId(null);
       }
@@ -305,7 +305,7 @@ export function useAvatarUpload({
     // Check if deletion is allowed
     if (!canDeleteCurrentImage) {
       setError(
-        "Cannot delete the last avatar image. Add a new image first or keep at least one."
+        "No puedes eliminar la ultima imagen de avatar. Anade otra imagen primero o conserva al menos una."
       );
       return;
     }
@@ -344,7 +344,7 @@ export function useAvatarUpload({
       if (!avatarId) {
         const result = await createAvatar();
         if ("error" in result || !result.avatarId) {
-          throw new Error(("error" in result ? (result as any).error : null) || "Failed to create avatar");
+          throw new Error(("error" in result ? (result as any).error : null) || "No se pudo crear el avatar");
         }
         avatarId = result.avatarId;
       }
@@ -368,14 +368,14 @@ export function useAvatarUpload({
       } catch (err) {
         clearTimeout(timeoutId);
         if (err instanceof Error && err.name === "AbortError") {
-          throw new Error("Upload timeout - please try again");
+          throw new Error("La subida agoto el tiempo de espera. Intentalo de nuevo");
         }
         throw err;
       }
 
       if (!response.ok) {
         const data = await response.json();
-        throw new Error(data.error || "Failed to upload images");
+        throw new Error(data.error || "No se pudieron subir las imagenes");
       }
 
       onClose();
@@ -383,7 +383,7 @@ export function useAvatarUpload({
       router.push("/app/dashboard/new");
       router.refresh();
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Algo salio mal");
     } finally {
       setIsUploading(false);
     }

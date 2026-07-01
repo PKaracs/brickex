@@ -166,7 +166,7 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
       >
         <div className="px-3 pt-3 pb-1.5">
           <p className="text-[10px] font-semibold text-neutral-500 uppercase tracking-widest">
-            Projects
+            Proyectos
           </p>
         </div>
 
@@ -243,7 +243,7 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
                     setNewName("");
                   }
                 }}
-                placeholder="e.g. Sunset Villas"
+                placeholder="ej. Sunset Villas"
                 className="w-full bg-neutral-800 border border-neutral-700/60 rounded-md px-2.5 py-1.5 text-[13px] text-white placeholder:text-neutral-600 outline-none focus:border-neutral-600 transition-colors"
               />
               <div className="flex gap-1.5">
@@ -254,7 +254,7 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
                   }}
                   className="flex-1 text-[11px] text-neutral-500 hover:text-neutral-300 py-0.5 transition-colors"
                 >
-                  Cancel
+                  Cancelar
                 </button>
                 <button
                   onClick={handleCreate}
@@ -264,7 +264,7 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
                   {creating ? (
                     <Loader2 className="w-3 h-3 animate-spin mx-auto" />
                   ) : (
-                    "Create"
+                    "Crear"
                   )}
                 </button>
               </div>
@@ -277,7 +277,7 @@ export function OrgSwitcher({ isOpen }: OrgSwitcherProps) {
               <div className="w-6 h-6 rounded-md flex items-center justify-center flex-shrink-0 border border-dashed border-neutral-700">
                 <Plus className="w-3 h-3" />
               </div>
-              <span className="text-[13px] font-medium">New Project</span>
+              <span className="text-[13px] font-medium">Nuevo proyecto</span>
             </button>
           )}
         </div>

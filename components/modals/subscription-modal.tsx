@@ -51,11 +51,11 @@ const PLAN_TIERS: {
     featured: false,
     buttonVariant: "default",
     benefits: [
-      `${SUBSCRIPTION_PLANS.STARTER.bricks.toLocaleString()} bricks per month`,
-      "Exterior + Interior modes",
-      "All architecture styles",
-      "4K exports, no watermarks",
-      "Cancel anytime",
+      `${SUBSCRIPTION_PLANS.STARTER.bricks.toLocaleString()} bricks al mes`,
+      "Modos exterior e interior",
+      "Todos los estilos arquitectonicos",
+      "Exportaciones 4K, sin marcas de agua",
+      "Cancela cuando quieras",
     ],
   },
   {
@@ -66,28 +66,28 @@ const PLAN_TIERS: {
     featured: true,
     buttonVariant: "white",
     benefits: [
-      `${SUBSCRIPTION_PLANS.PRO.bricks.toLocaleString()} bricks per month`,
-      "Everything in Starter",
-      "Video generation",
-      "Region editing & refinement",
-      "Priority processing",
-      "Cancel anytime",
+      `${SUBSCRIPTION_PLANS.PRO.bricks.toLocaleString()} bricks al mes`,
+      "Todo lo de Starter",
+      "Generacion de video",
+      "Edicion por region y refinado",
+      "Procesamiento prioritario",
+      "Cancela cuando quieras",
     ],
   },
   {
     key: "studio",
     config: SUBSCRIPTION_PLANS.STUDIO,
     icon: <Building2 className="w-4 h-4" />,
-    badge: "Teams",
+    badge: "Equipos",
     featured: false,
     buttonVariant: "default",
     benefits: [
-      `${SUBSCRIPTION_PLANS.STUDIO.bricks.toLocaleString()} bricks per month`,
-      "Everything in Pro",
-      "Batch rendering",
-      "API access",
-      "Dedicated account manager",
-      "Cancel anytime",
+      `${SUBSCRIPTION_PLANS.STUDIO.bricks.toLocaleString()} bricks al mes`,
+      "Todo lo de Pro",
+      "Renderizado por lotes",
+      "Acceso a la API",
+      "Gestor de cuenta dedicado",
+      "Cancela cuando quieras",
     ],
   },
 ];
@@ -211,13 +211,13 @@ export function SubscriptionModal({
         window.location.href = result.data.url;
       } else if (result?.error) {
         console.error("Checkout returned error:", result.error);
-        toast.error("Unable to start checkout. Please try again.");
+        toast.error("No se pudo iniciar el pago. Intentalo de nuevo.");
         setIsLoading(false);
         setLoadingPlan(null);
       }
     } catch (err) {
       console.error("Checkout error:", err);
-      toast.error("Something went wrong. Please try again.");
+      toast.error("Algo salio mal. Intentalo de nuevo.");
       setIsLoading(false);
       setLoadingPlan(null);
     }
@@ -231,19 +231,19 @@ export function SubscriptionModal({
       if (result?.data?.url) {
         window.location.href = result.data.url;
       } else {
-        setError("Could not get portal URL. Please try again.");
+        setError("No se pudo abrir el portal. Intentalo de nuevo.");
       }
     } catch (err) {
       console.error("Portal error:", err);
-      setError("Failed to open subscription portal. Please try again.");
+      setError("No se pudo abrir el portal de suscripcion. Intentalo de nuevo.");
     } finally {
       setIsLoading(false);
     }
   };
 
   const formatDate = (date: Date | null) => {
-    if (!date) return "N/A";
-    return new Date(date).toLocaleDateString("en-US", {
+    if (!date) return "No disponible";
+    return new Date(date).toLocaleDateString("es-ES", {
       month: "long",
       day: "numeric",
       year: "numeric",
@@ -260,10 +260,10 @@ export function SubscriptionModal({
       <Dialog open={open} onOpenChange={(isOpen) => !isOpen && handleClose()}>
         <DialogContent className="max-w-md w-full md:w-[90vw] bg-neutral-950 border-neutral-800/60 flex flex-col p-5 md:p-6 overflow-hidden rounded-2xl">
           <DialogTitle className="text-lg text-white flex items-center justify-between pr-10 md:pr-0">
-            <span className="font-semibold tracking-tight">Your Plan</span>
+            <span className="font-semibold tracking-tight">Tu plan</span>
             <span className="text-[11px] font-normal text-neutral-500 tracking-wide">
               {subscription?.creationsUsed ?? 0} /{" "}
-              {subscription?.creationsLimit ?? 4000} bricks used
+              {subscription?.creationsLimit ?? 4000} bricks usados
             </span>
           </DialogTitle>
 
@@ -277,8 +277,8 @@ export function SubscriptionModal({
               </div>
               <p className="text-[13px] text-neutral-500">
                 {subscription?.creationsRemaining === 0
-                  ? "No bricks remaining this period"
-                  : `${subscription?.creationsRemaining} brick${subscription?.creationsRemaining !== 1 ? "s" : ""} remaining`}
+                  ? "No quedan bricks en este periodo"
+                  : `${subscription?.creationsRemaining} brick${subscription?.creationsRemaining !== 1 ? "s" : ""} disponibles`}
               </p>
             </div>
 
@@ -287,10 +287,10 @@ export function SubscriptionModal({
                 <Calendar className="w-3.5 h-3.5 text-neutral-600" />
                 <span>
                   {subscription.subscriptionStatus === "canceled"
-                    ? "Access until"
+                    ? "Acceso hasta"
                     : subscription.creationsRemaining === 0
-                      ? "Limit resets"
-                      : "Renews"}{" "}
+                      ? "El limite se reinicia"
+                      : "Se renueva"}{" "}
                   {subscription.resetDateMessage ||
                     formatDate(subscription.currentPeriodEnd)}
                 </span>
@@ -315,14 +315,14 @@ export function SubscriptionModal({
               className="w-full"
             >
               {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-              Manage Subscription
+              Gestionar suscripcion
             </Button>
             <Button
               variant="ghost"
               onClick={handleClose}
               className="w-full text-neutral-500 hover:text-neutral-300"
             >
-              Close
+              Cerrar
             </Button>
           </div>
         </DialogContent>
@@ -336,7 +336,7 @@ export function SubscriptionModal({
         className="w-full max-w-[880px] bg-neutral-950 border-neutral-800/60 p-0 max-h-[92vh] flex flex-col overflow-hidden rounded-2xl"
         showXIcon={false}
       >
-        <DialogTitle className="sr-only">Choose Your Plan</DialogTitle>
+        <DialogTitle className="sr-only">Elige tu plan</DialogTitle>
 
         {/* Header */}
         <div className="flex-shrink-0 px-8 pt-8 pb-6">
@@ -344,11 +344,11 @@ export function SubscriptionModal({
             <div>
               <div className="flex items-center gap-2.5 mb-2">
                 <h2 className="text-lg font-semibold text-white tracking-tight">
-                  Upgrade your plan
+                  Mejora tu plan
                 </h2>
               </div>
               <p className="text-sm text-neutral-500">
-                Unlock more bricks and premium features.
+                Desbloquea mas bricks y funciones premium.
               </p>
             </div>
             <button
@@ -401,10 +401,10 @@ export function SubscriptionModal({
                     <span className="text-[28px] font-bold text-white tracking-tight">
                       ${tier.config.price}
                     </span>
-                    <span className="text-xs text-neutral-500 ml-1">/mo</span>
+                    <span className="text-xs text-neutral-500 ml-1">/mes</span>
                   </div>
                   <p className="text-[11px] text-neutral-500 mt-1.5 tracking-wide">
-                    {tier.config.bricks.toLocaleString()} bricks included
+                    {tier.config.bricks.toLocaleString()} bricks incluidos
                   </p>
                 </div>
 
@@ -418,7 +418,7 @@ export function SubscriptionModal({
                   {isLoading && loadingPlan === tier.key ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    `Get ${tier.config.name}`
+                    `Obtener ${tier.config.name}`
                   )}
                 </Button>
 
@@ -452,13 +452,13 @@ export function SubscriptionModal({
         {/* Footer */}
         <div className="flex-shrink-0 px-8 py-4 border-t border-neutral-800/40 flex items-center justify-between">
           <p className="text-[11px] text-neutral-600 tracking-wide">
-            Secure payment &middot; Cancel anytime
+            Pago seguro &middot; Cancela cuando quieras
           </p>
           <button
             onClick={handleClose}
             className="text-[11px] text-neutral-600 hover:text-neutral-400 transition-colors py-1.5 px-3 rounded-lg hover:bg-neutral-800/50"
           >
-            Maybe later
+            Quiza despues
           </button>
         </div>
       </DialogContent>

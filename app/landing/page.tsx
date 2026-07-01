@@ -4,6 +4,10 @@ import Footer from "@/components/landing/Footer";
 import Hero from "@/components/landing/Hero";
 import PropertyShowcase from "@/components/landing/PropertyShowcase";
 import CompatibilityMarquee from "@/components/landing/CompatibilityMarquee";
+import ProblemSection from "@/components/landing/ProblemSection";
+import ToolTransformations from "@/components/landing/ToolTransformations";
+import ExamplesFromBrickex from "@/components/landing/ExamplesFromBrickex";
+import WorkflowFeatureRows from "@/components/landing/WorkflowFeatureRows";
 import SketchToRender from "@/components/landing/SketchToRender";
 import VideoShowcase from "@/components/landing/VideoShowcase";
 import InteriorShowcase from "@/components/landing/InteriorShowcase";
@@ -14,9 +18,9 @@ import { FAQ_DATA } from "@/components/landing/faq-data";
 import { JsonLd } from "@/components/seo/json-ld";
 
 export const metadata: Metadata = {
-  title: "BrickEx — AI Visualization for Real Estate Projects",
+  title: "BrickEx — Convierte bocetos en renders fotorrealistas en segundos",
   description:
-    "Transform architectural plans, sketches, and 3D models into photorealistic renders with AI. Create marketing-ready visualizations in minutes, not weeks.",
+    "Sube un boceto, modelo de SketchUp o plano y consigue renders arquitectonicos de calidad editorial en segundos. Creado para arquitectos, promotores y equipos de marketing inmobiliario. Empieza gratis, sin tarjeta.",
 };
 
 export default function LandingPage() {
@@ -41,6 +45,14 @@ export default function LandingPage() {
       <Hero />
 
       <CompatibilityMarquee />
+
+      <ProblemSection />
+
+      <WorkflowFeatureRows />
+
+      <ToolTransformations />
+
+      <ExamplesFromBrickex />
 
       <PropertyShowcase />
 

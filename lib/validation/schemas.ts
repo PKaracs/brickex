@@ -10,31 +10,31 @@ import { z } from "zod";
  */
 export const cuidSchema = z
   .string()
-  .min(20, "Invalid ID format")
-  .max(32, "Invalid ID format")
-  .regex(/^[a-z0-9]+$/, "Invalid ID format");
+  .min(20, "Formato de ID no valido")
+  .max(32, "Formato de ID no valido")
+  .regex(/^[a-z0-9]+$/, "Formato de ID no valido");
 
 /**
  * Short text fields (names, titles, etc.)
  */
 export const shortTextSchema = z
   .string()
-  .max(100, "Text too long (max 100 characters)");
+  .max(100, "Texto demasiado largo (maximo 100 caracteres)");
 
 /**
  * Long text fields (descriptions, prompts, etc.)
  */
 export const longTextSchema = z
   .string()
-  .max(2000, "Text too long (max 2000 characters)");
+  .max(2000, "Texto demasiado largo (maximo 2000 caracteres)");
 
 /**
  * Email validation
  */
 export const emailSchema = z
   .string()
-  .email("Invalid email")
-  .max(254, "Email too long");
+  .email("Correo no valido")
+  .max(254, "Correo demasiado largo");
 
 // ============================================================================
 // Project Schemas
@@ -108,9 +108,9 @@ export const avatarSetupSchema = z
   .object({
     fileCount: z
       .number()
-      .int("File count must be an integer")
-      .min(1, "At least 1 file required")
-      .max(5, "Maximum 5 files allowed"),
+      .int("La cantidad de archivos debe ser un numero entero")
+      .min(1, "Se requiere al menos 1 archivo")
+      .max(5, "Maximo 5 archivos permitidos"),
   })
   .strict();
 
@@ -132,8 +132,8 @@ export const avatarConfirmSchema = z
     avatarId: cuidSchema,
     files: z
       .array(avatarConfirmFileSchema)
-      .min(1, "At least 1 file required")
-      .max(5, "Maximum 5 files allowed"),
+      .min(1, "Se requiere al menos 1 archivo")
+      .max(5, "Maximo 5 archivos permitidos"),
   })
   .strict();
 
@@ -146,9 +146,9 @@ export const projectImagesSetupSchema = z
     projectId: cuidSchema,
     fileCount: z
       .number()
-      .int("File count must be an integer")
-      .min(1, "At least 1 file required")
-      .max(5, "Maximum 5 files allowed"),
+      .int("La cantidad de archivos debe ser un numero entero")
+      .min(1, "Se requiere al menos 1 archivo")
+      .max(5, "Maximo 5 archivos permitidos"),
   })
   .strict();
 
@@ -168,8 +168,8 @@ export const projectImagesConfirmSchema = z
     projectId: cuidSchema,
     files: z
       .array(projectImagesConfirmFileSchema)
-      .min(1, "At least 1 file required")
-      .max(5, "Maximum 5 files allowed"),
+      .min(1, "Se requiere al menos 1 archivo")
+      .max(5, "Maximo 5 archivos permitidos"),
   })
   .strict();
 

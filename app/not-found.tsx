@@ -14,18 +14,19 @@ export default function NotFound() {
         <div className="relative">
           {/* Headline */}
           <h1 className="text-balance text-3xl sm:text-4xl lg:text-5xl font-semibold leading-[1.1] tracking-tight mb-4">
-            <span className="text-neutral-300">This page doesn't exist.</span>
+            <span className="text-neutral-300">Esta pagina no existe.</span>
             <br />
             <span className="text-neutral-400">
-              That render never made it to the board.
+              Ese render nunca llego al tablero.
             </span>
           </h1>
 
           {/* Subheadline */}
           <p className="mt-6 max-w-lg mx-auto text-base sm:text-lg leading-relaxed text-neutral-500">
-            The scene you asked for isn&apos;t in this project.
+            La escena que pediste no esta en este proyecto.
             <br />
-            Head back to BrickEx and keep building renders, diagrams, and decks.
+            Vuelve a BrickEx y sigue creando renders, diagramas y
+            presentaciones.
           </p>
 
           {/* CTA Button */}
@@ -38,14 +39,14 @@ export default function NotFound() {
             >
               <Link href="/">
                 <Home className="h-4 w-4" />
-                Back to BrickEx
+                Volver a BrickEx
               </Link>
             </Button>
           </div>
 
           {/* Micro-copy */}
           <p className="mt-12 text-xs text-neutral-600">
-            No elevations were lost in the making of this 404.
+            Ninguna elevacion se perdio durante la creacion de este 404.
           </p>
         </div>
       </div>

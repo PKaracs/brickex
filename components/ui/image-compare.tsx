@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useCallback } from "react";
+import Image from "next/image";
 import { cn } from "@/lib/utils";
 
 interface ImageCompareProps {
@@ -15,8 +16,8 @@ interface ImageCompareProps {
 export function ImageCompare({
   beforeImage,
   afterImage,
-  beforeLabel = "Before",
-  afterLabel = "After",
+  beforeLabel = "Antes",
+  afterLabel = "Despues",
   className,
   initialPosition = 50,
 }: ImageCompareProps) {
@@ -78,10 +79,15 @@ export function ImageCompare({
     >
       {/* After Image (Bottom Layer) */}
       <div className="absolute inset-0">
-        <img
+        <Image
           src={afterImage}
           alt={afterLabel}
-          className="h-full w-full object-cover"
+          fill
+          sizes="(max-width: 768px) 100vw, 960px"
+          quality={64}
+          loading="lazy"
+          decoding="async"
+          className="object-cover"
           draggable={false}
         />
         {/* After Label - minimal luxury style */}
@@ -95,10 +101,15 @@ export function ImageCompare({
         className="absolute inset-0 overflow-hidden"
         style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }}
       >
-        <img
+        <Image
           src={beforeImage}
           alt={beforeLabel}
-          className="h-full w-full object-cover"
+          fill
+          sizes="(max-width: 768px) 100vw, 960px"
+          quality={58}
+          loading="lazy"
+          decoding="async"
+          className="object-cover"
           draggable={false}
         />
         {/* Before Label - minimal luxury style */}
@@ -117,7 +128,7 @@ export function ImageCompare({
 
         {/* Handle Circle - subtle, desaturated */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-black/60 backdrop-blur-sm transition-all hover:scale-105 hover:border-white/60">
+          <div className="flex h-8 w-8 items-center justify-center rounded-full border border-white/40 bg-black/60 backdrop-blur-sm hover:border-white/60">
             <svg
               width="14"
               height="14"

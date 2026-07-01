@@ -3,5 +3,5 @@
 export async function generateImage(
   projectId: string
 ): Promise<any> {
-  return { error: "Generation not available in development mode" };
+  return { error: "La generacion no esta disponible en modo desarrollo" };
 }

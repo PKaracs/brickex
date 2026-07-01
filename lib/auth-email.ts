@@ -17,7 +17,7 @@ function emailLayout(title: string, intro: string, ctaLabel: string, ctaUrl: str
         <div style="padding:32px;">
           <p style="margin:0 0 24px 0;font-size:16px;line-height:1.6;color:#3f3020;">${intro}</p>
           <a href="${ctaUrl}" style="display:inline-block;background:#a46b2a;color:#fff;text-decoration:none;padding:14px 22px;border-radius:999px;font-weight:600;">${ctaLabel}</a>
-          <p style="margin:24px 0 0 0;font-size:13px;line-height:1.6;color:#7f6d58;">If the button doesn&apos;t work, open this URL:<br /><a href="${ctaUrl}" style="color:#8f6b3d;word-break:break-all;">${ctaUrl}</a></p>
+          <p style="margin:24px 0 0 0;font-size:13px;line-height:1.6;color:#7f6d58;">Si el boton no funciona, abre esta URL:<br /><a href="${ctaUrl}" style="color:#8f6b3d;word-break:break-all;">${ctaUrl}</a></p>
         </div>
       </div>
     </div>
@@ -26,7 +26,7 @@ function emailLayout(title: string, intro: string, ctaLabel: string, ctaUrl: str
 
 async function sendEmail(to: string, subject: string, html: string) {
   if (!resend) {
-    throw new Error("Resend is not configured");
+    throw new Error("Resend no esta configurado");
   }
 
   await resend.emails.send({
@@ -40,11 +40,11 @@ async function sendEmail(to: string, subject: string, html: string) {
 export async function sendVerificationEmail(to: string, url: string) {
   await sendEmail(
     to,
-    "Verify your Brickex account",
+    "Verifica tu cuenta de Brickex",
     emailLayout(
-      "Verify your email",
-      "Confirm your email address to secure your Brickex account and unlock shared workspace access.",
-      "Verify email",
+      "Verifica tu correo",
+      "Confirma tu direccion de correo para proteger tu cuenta de Brickex y activar el acceso al workspace compartido.",
+      "Verificar correo",
       url,
     ),
   );
@@ -53,11 +53,11 @@ export async function sendVerificationEmail(to: string, url: string) {
 export async function sendMagicLinkEmail(to: string, url: string) {
   await sendEmail(
     to,
-    "Your Brickex sign-in link",
+    "Tu enlace de acceso a Brickex",
     emailLayout(
-      "Sign in to Brickex",
-      "Use this secure magic link to open your Brickex workspace without entering a password.",
-      "Open Brickex",
+      "Accede a Brickex",
+      "Usa este enlace seguro para abrir Brickex o terminar de crear tu cuenta sin introducir una contrasena.",
+      "Abrir Brickex",
       url,
     ),
   );
@@ -66,11 +66,11 @@ export async function sendMagicLinkEmail(to: string, url: string) {
 export async function sendResetPasswordEmail(to: string, url: string) {
   await sendEmail(
     to,
-    "Reset your Brickex password",
+    "Restablece tu contrasena de Brickex",
     emailLayout(
-      "Reset your password",
-      "A password reset was requested for your Brickex account. If that was you, continue with the secure reset link below.",
-      "Reset password",
+      "Restablece tu contrasena",
+      "Se solicito restablecer la contrasena de tu cuenta de Brickex. Si fuiste tu, continua con el enlace seguro de abajo.",
+      "Restablecer contrasena",
       url,
     ),
   );

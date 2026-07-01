@@ -16,34 +16,34 @@ import {
 const SITE_URL = "https://www.brickex.co";
 
 export const metadata: Metadata = {
-  title: "AI Real Estate Render Ideas | BrickEx",
+  title: "Ideas de renders inmobiliarios con IA | BrickEx",
   description:
-    "Browse 10 BrickEx render idea packs built for architecture students and real estate marketers. Explore prompts, luxury interiors, styled spaces, and high-intent property visualization references.",
+    "Explora 10 packs de ideas de render BrickEx para estudiantes de arquitectura y marketers inmobiliarios. Revisa prompts, interiores de lujo, espacios estilizados y referencias de visualizacion de alta intencion.",
   keywords: [
-    "real estate render ideas",
-    "architectural render inspiration",
-    "exterior visualization ideas",
-    "property rendering references",
-    "real estate marketing renders",
-    "AI architecture prompts",
+    "ideas de renders inmobiliarios",
+    "inspiracion de render arquitectonico",
+    "ideas de visualizacion exterior",
+    "referencias de render de propiedades",
+    "renders para marketing inmobiliario",
+    "prompts de arquitectura con IA",
   ],
   alternates: {
     canonical: `${SITE_URL}/ideas`,
   },
   openGraph: {
-    title: "AI Real Estate Render Ideas | BrickEx",
+    title: "Ideas de renders inmobiliarios con IA | BrickEx",
     description:
-      "A coherent library of luxury render references, prompts, interiors, and concept packs for architecture students and real estate marketers.",
+      "Una biblioteca coherente de referencias de render de lujo, prompts, interiores y packs conceptuales para estudiantes de arquitectura y marketers inmobiliarios.",
     type: "website",
     url: `${SITE_URL}/ideas`,
     siteName: "BrickEx",
-    locale: "en_US",
+    locale: "es_ES",
   },
   twitter: {
     card: "summary_large_image",
-    title: "AI Real Estate Render Ideas | BrickEx",
+    title: "Ideas de renders inmobiliarios con IA | BrickEx",
     description:
-      "Luxury render ideas, prompt packs, interiors, and marketing-ready references for architecture and real estate teams.",
+      "Ideas de render de lujo, packs de prompts, interiores y referencias listas para marketing para equipos de arquitectura e inmobiliaria.",
   },
   robots: {
     index: true,
@@ -64,9 +64,9 @@ export default function IdeasHubPage() {
   const collectionJsonLd = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "BrickEx Render Ideas",
+    name: "Ideas de render BrickEx",
     description:
-      "Curated AI render idea packs with prompts for architecture students and real estate marketers.",
+      "Packs curados de ideas de render con IA y prompts para estudiantes de arquitectura y marketers inmobiliarios.",
     url: `${SITE_URL}/ideas`,
     numberOfItems: allIdeaPages.length,
     hasPart: allIdeaPages.map((page) => ({
@@ -83,7 +83,7 @@ export default function IdeasHubPage() {
       {
         "@type": "ListItem",
         position: 1,
-        name: "Home",
+        name: "Inicio",
         item: SITE_URL,
       },
       {
@@ -105,19 +105,19 @@ export default function IdeasHubPage() {
         <section className="pt-20 sm:pt-28 pb-12 sm:pb-16 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center">
             <p className="text-xs sm:text-sm font-medium text-zinc-500 uppercase tracking-wider mb-3">
-              BrickEx Ideas
+              Ideas BrickEx
             </p>
             <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-4 sm:mb-5">
               <span className="bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-                Real estate render ideas with prompts
+                Ideas de renders inmobiliarios con prompts
               </span>
             </h1>
             <p className="text-base sm:text-lg text-zinc-400 max-w-2xl mx-auto mb-8 leading-relaxed">
-              Browse {allIdeaPages.length} coherent idea packs built around
-              actual search intent: penthouses, villa renders, condo towers,
-              beach houses, and more. Every topic includes eight images across
-              exteriors, interiors, and styled luxury moments plus the prompts
-              behind them.
+              Explora {allIdeaPages.length} packs de ideas coherentes creados
+              alrededor de intencion de busqueda real: penthouses, renders de
+              villas, torres residenciales, casas de playa y mas. Cada tema
+              incluye ocho imagenes entre exteriores, interiores y momentos de
+              lujo estilizados, junto con los prompts detras de ellas.
             </p>
             <Button
               size="lg"
@@ -125,7 +125,7 @@ export default function IdeasHubPage() {
               asChild
             >
               <a href={signupUrl}>
-                Open BrickEx
+                Abrir BrickEx
                 <ArrowRight className="w-4 h-4" />
               </a>
             </Button>
@@ -148,7 +148,7 @@ export default function IdeasHubPage() {
                   </span>
                 </h2>
                 <p className="text-sm text-zinc-500 mb-8">
-                  {pages.length} focused search-intent pages
+                  {pages.length} paginas enfocadas en intencion de busqueda
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
                   {pages.map((page, i) => (
@@ -167,12 +167,12 @@ export default function IdeasHubPage() {
         <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 border-t border-zinc-800">
           <div className="max-w-2xl mx-auto text-center">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-4 sm:mb-6">
-              Need visuals like these?
+              Necesitas visuales como estos?
             </h2>
             <p className="text-zinc-400 text-sm sm:text-base mb-6 sm:mb-8 max-w-md mx-auto">
-              Use BrickEx to turn sketches, plans, and references into
-              marketing-ready renders with faster iteration on lighting,
-              composition, and style direction.
+              Usa BrickEx para convertir bocetos, planos y referencias en
+              renders listos para marketing, con iteracion mas rapida en luz,
+              composicion y direccion de estilo.
             </p>
             <Button
               size="lg"
@@ -180,7 +180,7 @@ export default function IdeasHubPage() {
               asChild
             >
               <a href={signupUrl}>
-                Start in BrickEx
+                Empezar en BrickEx
                 <ArrowRight className="w-4 h-4" />
               </a>
             </Button>

@@ -5,11 +5,11 @@ type Guideline = {
 };
 
 const GUIDELINES: Guideline[] = [
-  { title: "Full body", subtitle: "Head to toe" },
-  { title: "Multiple angles", subtitle: "Front & side" },
-  { title: "Varied outfits", subtitle: "Different clothes" },
-  { title: "Clear selfies", subtitle: "Good lighting" },
-  { title: "No hats", subtitle: "Face visible", highlight: true },
+  { title: "Cuerpo entero", subtitle: "De cabeza a pies" },
+  { title: "Varios angulos", subtitle: "Frente y lado" },
+  { title: "Ropa variada", subtitle: "Prendas distintas" },
+  { title: "Selfies claras", subtitle: "Buena luz" },
+  { title: "Sin gorras", subtitle: "Rostro visible", highlight: true },
 ];
 
 export function PhotoGuidelines() {

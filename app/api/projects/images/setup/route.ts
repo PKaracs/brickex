@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     });
 
     if (!project) {
-      return NextResponse.json({ error: "Project not found" }, { status: 404 });
+      return NextResponse.json({ error: "Proyecto no encontrado" }, { status: 404 });
     }
 
     const uploadUrls = [] as { url: string; storageKey: string }[];
@@ -78,7 +78,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ uploadUrls });
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to prepare uploads";
+    const message =
+      error instanceof Error ? error.message : "No se pudieron preparar las subidas";
     return NextResponse.json({ error: message }, { status: 400 });
   }
 }

@@ -36,7 +36,7 @@ async function compressImageToPayload(
       canvas.width = w;
       canvas.height = h;
       const ctx = canvas.getContext("2d");
-      if (!ctx) return reject(new Error("Canvas unavailable"));
+      if (!ctx) return reject(new Error("Lienzo no disponible"));
       ctx.drawImage(img, 0, 0, w, h);
       const mimeType = normalizeImageMimeType(file.type);
       const quality =
@@ -47,7 +47,7 @@ async function compressImageToPayload(
     };
     img.onerror = () => {
       URL.revokeObjectURL(url);
-      reject(new Error("Failed to load image"));
+      reject(new Error("No se pudo cargar la imagen"));
     };
     img.src = url;
   });
@@ -58,7 +58,7 @@ async function urlToPayload(
   maxDim = 1280,
 ): Promise<{ base64: string; mimeType: string }> {
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Failed to fetch gallery image");
+  if (!res.ok) throw new Error("No se pudo obtener la imagen de la galeria");
   const blob = await res.blob();
   const file = new File([blob], "gallery-image", {
     type: normalizeImageMimeType(blob.type),
@@ -108,8 +108,8 @@ export function VideoClient() {
 
   const handleGenerate = useCallback(async () => {
     if (!hasSource) {
-      toast("Upload an image first", {
-        description: "Drag & drop, browse files, or pick from your gallery.",
+      toast("Sube una imagen primero", {
+        description: "Arrastra y suelta, busca archivos o elige desde tu galeria.",
         duration: 4000,
       });
       return;
@@ -151,20 +151,20 @@ export function VideoClient() {
       const result = await response.json();
 
       if (!response.ok || result.error) {
-        toast.error(result.error || "Video generation failed");
+        toast.error(result.error || "La generacion de video fallo");
         return;
       }
 
       if (result.videoUrl) {
         setVideoUrl(result.videoUrl);
-        toast.success("Video generated successfully!");
+        toast.success("Video generado correctamente.");
       }
     } catch (error: unknown) {
       const message =
-        error instanceof Error ? error.message : "Something went wrong";
+        error instanceof Error ? error.message : "Algo salio mal";
       console.error("Video generation failed:", error);
       if (!navigator.onLine) {
-        toast.error("No internet connection. Please check and try again.");
+        toast.error("Sin conexion a internet. Revisala e intentalo de nuevo.");
       } else {
         toast.error(message);
       }
@@ -188,7 +188,7 @@ export function VideoClient() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Download failed:", error);
-      toast.error("Failed to download video");
+      toast.error("No se pudo descargar el video");
     }
   }, [videoUrl]);
 

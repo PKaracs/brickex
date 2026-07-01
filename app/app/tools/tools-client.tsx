@@ -9,14 +9,15 @@ import Image from "next/image";
 import { motion } from "motion/react";
 
 const TAG_FILTERS = [
-  "All",
+  "Todo",
   "Interior",
-  "Architecture",
+  "Arquitectura",
   "3D",
-  "Technical",
-  "Landscape",
+  "Tecnico",
+  "Paisajismo",
   "Material",
-  "Floorplan",
+  "Plano",
+  "Modelado",
 ] as const;
 
 function ToolCard({ tool, index }: { tool: Tool; index: number }) {
@@ -126,7 +127,7 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
 
           {!isAvailable ? (
             <div className="absolute top-3.5 left-3.5 z-10 rounded-full bg-black/60 px-2.5 py-1 text-[10px] font-medium uppercase tracking-wide text-neutral-200 backdrop-blur-sm">
-              Requires 3D model
+              Requiere modelo 3D
             </div>
           ) : null}
         </div>
@@ -166,10 +167,10 @@ function ToolCard({ tool, index }: { tool: Tool; index: number }) {
 }
 
 export function ToolsClient() {
-  const [activeFilter, setActiveFilter] = useState<string>("All");
+  const [activeFilter, setActiveFilter] = useState<(typeof TAG_FILTERS)[number]>("Todo");
 
   const filteredTools =
-    activeFilter === "All"
+    activeFilter === "Todo"
       ? TOOLS
       : TOOLS.filter((t) => t.tags.includes(activeFilter));
 
@@ -179,11 +180,11 @@ export function ToolsClient() {
         {/* Header */}
         <div className="space-y-1.5">
           <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            Tools
+            Herramientas
           </h1>
           <p className="text-sm text-neutral-500">
-            AI-powered tools for architecture, interior design, and 3D
-            visualization
+            Herramientas con IA para arquitectura, interiorismo y
+            visualizacion 3D
           </p>
         </div>
 
@@ -211,8 +212,8 @@ export function ToolsClient() {
         {/* Count */}
         <div className="mt-4 mb-4">
           <p className="text-xs text-neutral-600">
-            {filteredTools.length} tool{filteredTools.length !== 1 ? "s" : ""}{" "}
-            shown
+            {filteredTools.length} herramienta{filteredTools.length !== 1 ? "s" : ""}{" "}
+            visible{filteredTools.length !== 1 ? "s" : ""}
           </p>
         </div>
 

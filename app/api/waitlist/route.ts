@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
 
     if (!email || typeof email !== "string" || !email.includes("@")) {
       return NextResponse.json(
-        { error: "Please enter a valid email address" },
+        { error: "Introduce un correo valido" },
         { status: 400 }
       );
     }
@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     if (error) {
       console.error("Waitlist insert error:", error);
       return NextResponse.json(
-        { error: "Failed to join waitlist. Please try again." },
+        { error: "No se pudo unir a la lista de espera. Intentalo de nuevo." },
         { status: 500 }
       );
     }
@@ -33,7 +33,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("Waitlist API error:", err);
     return NextResponse.json(
-      { error: "Something went wrong" },
+      { error: "Algo salio mal" },
       { status: 500 }
     );
   }

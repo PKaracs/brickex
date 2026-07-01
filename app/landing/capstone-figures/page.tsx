@@ -6,12 +6,12 @@ export default function CapstoneFiguresPage() {
         <p className="text-xs text-zinc-500 mb-4 font-mono">FIGURE 2</p>
         <GarrettFivePlanes />
         <p className="text-xs text-zinc-500 mt-4 text-center italic max-w-2xl mx-auto">
-          Garrett&apos;s five-plane model applied to BrickEx. Each plane
-          constrains the one above it: strategic decisions about target users
-          and business model determine which features are included (scope),
-          which in turn determine how the workflow is organized (structure), how
-          the interface is laid out (skeleton), and how it looks and feels
-          (surface).
+          Modelo de cinco planos de Garrett aplicado a BrickEx. Cada plano
+          condiciona al superior: las decisiones estrategicas sobre usuarios
+          objetivo y modelo de negocio determinan que funciones se incluyen
+          (alcance), lo que define como se organiza el flujo (estructura), como
+          se dispone la interfaz (esqueleto) y como se ve y se siente
+          (superficie).
         </p>
       </section>
 
@@ -20,10 +20,10 @@ export default function CapstoneFiguresPage() {
         <p className="text-xs text-zinc-500 mb-4 font-mono">FIGURE 3</p>
         <SystemArchitecture />
         <p className="text-xs text-zinc-500 mt-4 text-center italic max-w-2xl mx-auto">
-          BrickEx system architecture. The frontend communicates with server
-          actions that orchestrate AI providers, manage storage, and emit
-          analytics events. Every layer is instrumented for behavioral
-          measurement.
+          Arquitectura de sistema de BrickEx. El frontend se comunica con
+          server actions que orquestan proveedores de IA, gestionan storage y
+          emiten eventos de analitica. Cada capa esta instrumentada para medir
+          comportamiento.
         </p>
       </section>
 
@@ -32,10 +32,10 @@ export default function CapstoneFiguresPage() {
         <p className="text-xs text-zinc-500 mb-4 font-mono">FIGURE 13</p>
         <GenerationPipeline />
         <p className="text-xs text-zinc-500 mt-4 text-center italic max-w-2xl mx-auto">
-          BrickEx&apos;s two-stage generation pipeline. GPT-5-mini analyzes the
-          source image and compiles a detailed architectural prompt from
-          structured settings. The enhanced prompt and reference image are sent
-          to Gemini for generation, with automatic retry and model fallback.
+          Pipeline de generacion en dos etapas de BrickEx. GPT-5-mini analiza
+          la imagen fuente y compila un prompt arquitectonico detallado desde
+          ajustes estructurados. El prompt mejorado y la imagen de referencia se
+          envian a Gemini con reintento automatico y fallback de modelo.
         </p>
       </section>
 
@@ -44,9 +44,9 @@ export default function CapstoneFiguresPage() {
         <p className="text-xs text-zinc-500 mb-4 font-mono">FIGURE 14</p>
         <PostHogEventMap />
         <p className="text-xs text-zinc-500 mt-4 text-center italic max-w-2xl mx-auto">
-          PostHog event instrumentation across the user lifecycle. Over sixty
-          events provide granular behavioral telemetry for funnel analysis,
-          drop-off diagnostics, and future A/B testing.
+          Instrumentacion de eventos PostHog a lo largo del ciclo de vida del
+          usuario. Mas de sesenta eventos ofrecen telemetria granular para
+          analisis de funnel, diagnostico de abandono y futuros tests A/B.
         </p>
       </section>
 
@@ -55,24 +55,24 @@ export default function CapstoneFiguresPage() {
         <p className="text-xs text-zinc-500 mb-4 font-mono">FIGURE 18</p>
         <UserJourney />
         <p className="text-xs text-zinc-500 mt-4 text-center italic max-w-2xl mx-auto">
-          User journey from acquisition to value realization. Each stage
-          includes feedback mechanisms, reversibility, and measurable completion
-          signals.
+          Recorrido de usuario desde adquisicion hasta realizacion de valor.
+          Cada etapa incluye mecanismos de feedback, reversibilidad y senales
+          medibles de finalizacion.
         </p>
       </section>
 
       {/* FIGURE: Information Architecture / Site Map */}
       <section className="max-w-6xl mx-auto">
         <p className="text-xs text-zinc-500 mb-4 font-mono">
-          INFORMATION ARCHITECTURE
+          ARQUITECTURA DE INFORMACION
         </p>
         <InformationArchitecture />
         <p className="text-xs text-zinc-500 mt-4 text-center italic max-w-2xl mx-auto">
-          BrickEx information architecture and page hierarchy. Color coding
-          indicates page purpose: blue for acquisition, purple for
-          authentication, green for onboarding, neutral for core workflow, amber
-          for monetization, and red for legal. Arrows show primary navigation
-          flows and cross-links between sections.
+          Arquitectura de informacion y jerarquia de paginas de BrickEx. El
+          color indica el proposito de la pagina: azul para adquisicion, purpura
+          para autenticacion, verde para onboarding, neutro para flujo principal
+          y ambar para monetizacion. Las flechas muestran flujos de navegacion
+          principales y enlaces cruzados entre secciones.
         </p>
       </section>
     </div>
@@ -83,82 +83,82 @@ export default function CapstoneFiguresPage() {
 function GarrettFivePlanes() {
   const planes = [
     {
-      name: "Surface",
-      subtitle: "Sensory Design",
+      name: "Superficie",
+      subtitle: "Diseno sensorial",
       color: "from-white/20 to-white/5",
       border: "border-white/30",
       items: [
-        "Pure black theme (0 0% 0%)",
-        "DM Sans — 10 weights",
-        "Neutral monochromatic palette",
-        "Shimmer / pulse-ring / confetti animations",
-        "Geometric SaaS logo",
-        "Texture swatch photography",
-        "Video preset .mp4 previews",
+        "Tema negro puro (0 0% 0%)",
+        "DM Sans - 10 pesos",
+        "Paleta monocromatica neutral",
+        "Animaciones shimmer, pulse-ring y confetti",
+        "Logo SaaS geometrico",
+        "Fotografia de swatches de textura",
+        "Previews .mp4 de presets de video",
       ],
     },
     {
-      name: "Skeleton",
-      subtitle: "Interface & Navigation Design",
+      name: "Esqueleto",
+      subtitle: "Diseno de interfaz y navegacion",
       color: "from-zinc-400/20 to-zinc-400/5",
       border: "border-zinc-400/30",
       items: [
-        "Canvas + sidebar dashboard layout",
-        "MobileBottomBar for touch devices",
-        "Angle slot accordion (5 slots)",
-        "3-column texture picker popover",
-        "Video PresetSlotMachine",
-        "Gallery grid with type filter tabs",
-        "Pricing comparison cards",
+        "Layout de lienzo + sidebar de dashboard",
+        "MobileBottomBar para dispositivos tactiles",
+        "Acordeon de angulos (5 slots)",
+        "Popover de texturas en 3 columnas",
+        "Slot machine de presets de video",
+        "Grid de galeria con tabs de filtro",
+        "Cards comparativas de precios",
       ],
     },
     {
-      name: "Structure",
-      subtitle: "Interaction Design & Information Architecture",
+      name: "Estructura",
+      subtitle: "Diseno de interaccion y arquitectura de informacion",
       color: "from-zinc-500/20 to-zinc-500/5",
       border: "border-zinc-500/30",
       items: [
-        "4-stage workflow: Upload → Configure → Generate → Export",
-        "5-section navigation: Create | Video | Tools | Explore | Gallery",
-        "Project → Workspace hierarchy",
-        "Toast notifications + disabled states",
-        "Region/global edit with undo/redo",
-        "Two-phase upload (setup → confirm)",
+        "Flujo en 4 etapas: subir -> configurar -> generar -> exportar",
+        "Navegacion de 5 secciones: Crear | Video | Herramientas | Explorar | Galeria",
+        "Jerarquia proyecto -> workspace",
+        "Toasts + estados deshabilitados",
+        "Edicion regional/global con deshacer/rehacer",
+        "Subida en dos fases (setup -> confirmar)",
       ],
     },
     {
-      name: "Scope",
-      subtitle: "Functional Specifications & Content",
+      name: "Alcance",
+      subtitle: "Especificaciones funcionales y contenido",
       color: "from-zinc-600/20 to-zinc-600/5",
       border: "border-zinc-600/30",
       items: [
-        "Exterior + interior rendering",
-        "Multi-angle generation (up to 5)",
-        "Video generation with motion/scene presets",
-        "8 specialized tools (separate catalog)",
-        "Visual texture picker (12 materials)",
-        "Region edit + global edit (20 bricks)",
-        "Explore gallery + Ideas SEO pages + Blog",
+        "Render exterior + interior",
+        "Generacion multiangulo (hasta 5)",
+        "Generacion de video con presets de movimiento/escena",
+        "8 herramientas especializadas (catalogo separado)",
+        "Selector visual de texturas (12 materiales)",
+        "Edicion regional + global (20 bricks)",
+        "Galeria Explore + paginas SEO de ideas + blog",
       ],
       excluded: [
-        "CAD/BIM integration",
-        "Parametric controls",
-        "Raw prompt as primary input",
+        "Integracion CAD/BIM",
+        "Controles parametricos",
+        "Prompt crudo como entrada principal",
       ],
     },
     {
-      name: "Strategy",
-      subtitle: "Product Objectives & User Needs",
+      name: "Estrategia",
+      subtitle: "Objetivos de producto y necesidades de usuario",
       color: "from-zinc-700/20 to-zinc-700/5",
       border: "border-zinc-700/30",
       items: [
-        "ICP 1: Real estate agents & developers",
-        "ICP 2: Architecture students",
-        "ICP 3: Architecture professionals",
-        "Freemium model — 100 free bricks (wow moment first)",
-        'Brand: "BrickEx" — see your project before it\'s built',
-        "Acquisition: Programmatic SEO + Meta static ads",
-        "North star: Revenue per Visitor (RPV)",
+        "ICP 1: agentes y promotoras inmobiliarias",
+        "ICP 2: estudiantes de arquitectura",
+        "ICP 3: profesionales de arquitectura",
+        "Modelo freemium - 100 bricks gratis (wow moment primero)",
+        'Marca: "BrickEx" - ve tu proyecto antes de construirlo',
+        "Adquisicion: SEO programatico + anuncios estaticos Meta",
+        "North star: ingresos por visitante (RPV)",
       ],
     },
   ];
@@ -168,14 +168,14 @@ function GarrettFivePlanes() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h2 className="text-2xl font-bold tracking-tight">
-            Garrett&apos;s Five-Plane Model
+            Modelo de cinco planos de Garrett
           </h2>
-          <p className="text-sm text-zinc-400">Applied to BrickEx</p>
+          <p className="text-sm text-zinc-400">Aplicado a BrickEx</p>
         </div>
         <div className="flex flex-col items-end text-xs text-zinc-500">
-          <span>← Most Concrete</span>
+          <span>Mas concreto</span>
           <span className="mt-1">↓</span>
-          <span>Most Abstract →</span>
+          <span>Mas abstracto</span>
         </div>
       </div>
 
@@ -221,61 +221,61 @@ function GarrettFivePlanes() {
 function SystemArchitecture() {
   const layers = [
     {
-      label: "Client Application",
+      label: "Aplicacion cliente",
       tech: "Next.js 15 · App Router · Tailwind · shadcn/ui · Radix · Framer Motion",
       items: [
-        "Project Dashboard",
-        "Video Generator",
-        "Tools Catalog",
-        "Explore",
-        "Gallery",
-        "Pricing",
-        "Landing + Ideas + Blog",
+        "Dashboard de proyecto",
+        "Generador de video",
+        "Catalogo de herramientas",
+        "Explorar",
+        "Galeria",
+        "Precios",
+        "Landing + ideas + blog",
       ],
     },
     {
-      label: "Application Backend",
+      label: "Backend de aplicacion",
       tech: "Next.js Server Actions · API Routes · Better Auth · Polar",
       items: [
-        "Generation Orchestration",
-        "Upload Handler",
-        "Prompt Compilation (GPT → Gemini)",
-        "Credit System",
-        "Auth + Sessions",
-        "Webhook Handlers",
+        "Orquestacion de generacion",
+        "Handler de subida",
+        "Compilacion de prompt (GPT -> Gemini)",
+        "Sistema de creditos",
+        "Auth + sesiones",
+        "Handlers de webhooks",
       ],
     },
     {
-      label: "Persistence Layer",
+      label: "Capa de persistencia",
       tech: "Supabase · PostgreSQL · Drizzle ORM · Row-Level Security",
       items: [
-        "22 Tables · 20 Enums",
-        "4 Storage Buckets",
-        "Signed URL Access",
-        "Asset Lineage Tracking",
-        "Upload Sessions",
-        "Multi-Tenant Isolation",
+        "22 tablas · 20 enums",
+        "4 buckets de storage",
+        "Acceso por URL firmada",
+        "Trazabilidad de assets",
+        "Sesiones de subida",
+        "Aislamiento multi-tenant",
       ],
     },
   ];
 
   const external = [
     {
-      label: "AI Providers",
+      label: "Proveedores de IA",
       items: [
-        "Gemini 3.1 Flash (image)",
+        "Gemini 3.1 Flash (imagen)",
         "GPT-5-mini (vision + prompts)",
         "Grok Video (xAI)",
         "fal.ai Trellis-2 (3D)",
       ],
     },
     {
-      label: "Analytics & Attribution",
+      label: "Analitica y atribucion",
       items: [
-        "PostHog (60+ events)",
-        "Seline (UTM attribution)",
+        "PostHog (60+ eventos)",
+        "Seline (atribucion UTM)",
         "Meta Pixel + CAPI",
-        "Resend (email sequences)",
+        "Resend (secuencias de correo)",
       ],
     },
   ];
@@ -283,9 +283,9 @@ function SystemArchitecture() {
   return (
     <div>
       <h2 className="text-2xl font-bold tracking-tight mb-1">
-        System Architecture
+        Arquitectura del sistema
       </h2>
-      <p className="text-sm text-zinc-400 mb-6">BrickEx Technical Stack</p>
+      <p className="text-sm text-zinc-400 mb-6">Stack tecnico de BrickEx</p>
 
       <div className="space-y-3">
         {layers.map((layer, i) => (
@@ -351,48 +351,48 @@ function GenerationPipeline() {
   const steps = [
     {
       stage: "1",
-      label: "Source Upload",
-      detail: "Blueprint, sketch, photo, or text",
-      tech: "Supabase Storage · Two-phase upload",
+      label: "Subida de fuente",
+      detail: "Plano, boceto, foto o texto",
+      tech: "Supabase Storage · Subida en dos fases",
     },
     {
       stage: "2",
-      label: "GPT Vision Analysis",
-      detail: "Analyzes image → structured architectural description",
-      tech: "GPT-5-mini · System prompt: arch. consultant",
+      label: "Analisis visual GPT",
+      detail: "Analiza imagen -> descripcion arquitectonica estructurada",
+      tech: "GPT-5-mini · System prompt: consultor arquitectonico",
     },
     {
       stage: "3",
-      label: "Per-Slot Prompt Enhancement",
-      detail: "Settings + analysis → ~500-word optimized prompt per angle",
-      tech: "GPT-5-mini · Shot type, lighting, materials, environment",
+      label: "Mejora de prompt por slot",
+      detail: "Ajustes + analisis -> prompt optimizado de ~500 palabras por angulo",
+      tech: "GPT-5-mini · Toma, luz, materiales, entorno",
     },
     {
       stage: "4",
-      label: "Image Generation",
-      detail: "Enhanced prompt + reference image → photorealistic render",
-      tech: "Gemini 3.1 Flash · Fallback: Gemini 3 Pro · Retry + backoff",
+      label: "Generacion de imagen",
+      detail: "Prompt mejorado + imagen de referencia -> render fotorrealista",
+      tech: "Gemini 3.1 Flash · Fallback: Gemini 3 Pro · Reintento + backoff",
     },
     {
       stage: "5",
-      label: "Quality Check & Storage",
-      detail: "Validate output → upload to bucket → create asset record",
-      tech: "Supabase Storage · Asset lineage · Deliverable record",
+      label: "Control de calidad y storage",
+      detail: "Validar salida -> subir a bucket -> crear registro de asset",
+      tech: "Supabase Storage · Linaje de asset · Registro de entregable",
     },
     {
       stage: "6",
-      label: "Gallery & Export",
-      detail: "Preview → download (watermark if free) → share",
-      tech: "Canvas watermark · Signed URL · PostHog events",
+      label: "Galeria y exportacion",
+      detail: "Preview -> descargar (marca de agua si es gratis) -> compartir",
+      tech: "Marca de agua en canvas · URL firmada · Eventos PostHog",
     },
   ];
 
   return (
     <div>
       <h2 className="text-2xl font-bold tracking-tight mb-1">
-        AI Generation Pipeline
+        Pipeline de generacion con IA
       </h2>
-      <p className="text-sm text-zinc-400 mb-6">Two-Stage Prompt Compilation</p>
+      <p className="text-sm text-zinc-400 mb-6">Compilacion de prompt en dos etapas</p>
 
       <div className="space-y-1">
         {steps.map((step, i) => (
@@ -422,8 +422,8 @@ function GenerationPipeline() {
 
       <div className="mt-4 border border-dashed border-zinc-700 rounded-xl p-4 bg-zinc-950/50">
         <div className="text-xs text-zinc-500 font-mono">
-          Parallel execution: GPT analysis runs once → all 5 angle slots
-          generate simultaneously via generateExteriorBatch /
+          Ejecucion paralela: el analisis GPT corre una vez y despues los 5 slots de
+          angulo generan simultaneamente via generateExteriorBatch /
           generateInteriorBatch
         </div>
       </div>
@@ -435,7 +435,7 @@ function GenerationPipeline() {
 function PostHogEventMap() {
   const groups = [
     {
-      name: "Auth",
+      name: "Autenticacion",
       count: 8,
       events: [
         "login_started",
@@ -473,7 +473,7 @@ function PostHogEventMap() {
       ],
     },
     {
-      name: "Generation",
+      name: "Generacion",
       count: 5,
       events: [
         "generation_started",
@@ -484,12 +484,12 @@ function PostHogEventMap() {
       ],
     },
     {
-      name: "Output",
+      name: "Salida",
       count: 3,
       events: ["image_downloaded", "image_shared", "new_project_created"],
     },
     {
-      name: "Gallery",
+      name: "Galeria",
       count: 7,
       events: [
         "gallery_viewed",
@@ -502,7 +502,7 @@ function PostHogEventMap() {
       ],
     },
     {
-      name: "Subscription",
+      name: "Suscripcion",
       count: 5,
       events: [
         "upgrade_modal_opened",
@@ -513,7 +513,7 @@ function PostHogEventMap() {
       ],
     },
     {
-      name: "A/B & Pricing",
+      name: "A/B y precios",
       count: 3,
       events: [
         "ab_variant_assigned",
@@ -531,12 +531,12 @@ function PostHogEventMap() {
       ],
     },
     {
-      name: "Explore",
+      name: "Explorar",
       count: 2,
       events: ["explore_category_changed", "explore_image_clicked"],
     },
     {
-      name: "Errors & Upload",
+      name: "Errores y subida",
       count: 3,
       events: ["error_occurred", "upload_failed", "images_uploaded"],
     },
@@ -552,9 +552,9 @@ function PostHogEventMap() {
   return (
     <div>
       <div className="flex items-baseline gap-3 mb-6">
-        <h2 className="text-2xl font-bold tracking-tight">PostHog Event Map</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Mapa de eventos PostHog</h2>
         <span className="text-sm text-zinc-400">
-          {total} events across {groups.length} lifecycle stages
+          {total} eventos en {groups.length} etapas del ciclo de vida
         </span>
       </div>
 
@@ -591,58 +591,58 @@ function PostHogEventMap() {
 function UserJourney() {
   const stages = [
     {
-      phase: "Acquisition",
+      phase: "Adquisicion",
       steps: [
-        { label: "Google Search / Meta Ad / Direct", type: "entry" as const },
-        { label: "Landing Page / Ideas Page / Blog", type: "page" as const },
+        { label: "Busqueda Google / anuncio Meta / directo", type: "entry" as const },
+        { label: "Landing / pagina de ideas / blog", type: "page" as const },
       ],
     },
     {
-      phase: "Activation",
+      phase: "Activacion",
       steps: [
         {
-          label: "Sign Up (Google / Magic Link / Email)",
+          label: "Registro (Google / magic link / correo)",
           type: "action" as const,
         },
-        { label: "Welcome Onboarding", type: "page" as const },
-        { label: "Create Project + Upload Source", type: "action" as const },
+        { label: "Onboarding de bienvenida", type: "page" as const },
+        { label: "Crear proyecto + subir fuente", type: "action" as const },
         {
-          label: "Configure Settings (style, lighting, materials)",
+          label: "Configurar ajustes (estilo, luz, materiales)",
           type: "action" as const,
         },
         {
-          label: "Generate → First Render (wow moment)",
+          label: "Generar -> primer render (wow moment)",
           type: "milestone" as const,
         },
       ],
     },
     {
-      phase: "Engagement",
+      phase: "Uso recurrente",
       steps: [
-        { label: "Review Variants → Select Best", type: "action" as const },
-        { label: "Region / Global Edit (refine)", type: "action" as const },
-        { label: "Add Angle Slots (multi-angle set)", type: "action" as const },
+        { label: "Revisar variantes -> elegir la mejor", type: "action" as const },
+        { label: "Edicion regional / global (refinar)", type: "action" as const },
+        { label: "Anadir slots de angulo (set multiangulo)", type: "action" as const },
         {
-          label: "Video Generation (motion + scene presets)",
+          label: "Generacion de video (presets de movimiento + escena)",
           type: "action" as const,
         },
         {
-          label: "Tools (exploded diagram, floorplan, 3D...)",
+          label: "Herramientas (diagrama explotado, plano, 3D...)",
           type: "action" as const,
         },
         {
-          label: "Gallery: Download / Share / Manage",
+          label: "Galeria: descargar / compartir / gestionar",
           type: "action" as const,
         },
       ],
     },
     {
-      phase: "Monetization",
+      phase: "Monetizacion",
       steps: [
-        { label: "Credits Exhausted → Pricing Page", type: "page" as const },
-        { label: "Select Plan → Checkout (Polar)", type: "action" as const },
+        { label: "Creditos agotados -> pagina de precios", type: "page" as const },
+        { label: "Elegir plan -> checkout (Polar)", type: "action" as const },
         {
-          label: "Purchase Confirmed → Meta CAPI event",
+          label: "Compra confirmada -> evento Meta CAPI",
           type: "milestone" as const,
         },
       ],
@@ -659,9 +659,9 @@ function UserJourney() {
 
   return (
     <div>
-      <h2 className="text-2xl font-bold tracking-tight mb-1">User Journey</h2>
+      <h2 className="text-2xl font-bold tracking-tight mb-1">Recorrido de usuario</h2>
       <p className="text-sm text-zinc-400 mb-6">
-        From Acquisition to Value Realization
+        De adquisicion a realizacion de valor
       </p>
 
       <div className="space-y-4">
@@ -699,19 +699,19 @@ function UserJourney() {
       <div className="mt-4 flex gap-4 text-xs text-zinc-500">
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border bg-blue-500/10 border-blue-500/20" />
-          Entry Point
+          Punto de entrada
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border bg-purple-500/10 border-purple-500/20" />
-          Page View
+          Vista de pagina
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border bg-white/5 border-white/10" />
-          User Action
+          Accion de usuario
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border bg-emerald-500/10 border-emerald-500/20" />
-          Milestone
+          Hito
         </span>
       </div>
     </div>
@@ -722,26 +722,26 @@ function UserJourney() {
 function InformationArchitecture() {
   const branches = [
     {
-      label: "Public",
+      label: "Publico",
       color: "border-blue-400 bg-blue-500/20 text-blue-200",
       children: [
-        "Landing Page",
-        "Ideas (×40 SEO)",
-        "AI Photos",
+        "Landing",
+        "Ideas (x40 SEO)",
+        "Fotos IA",
         "Blog",
-        "Terms",
-        "Privacy",
+        "Terminos",
+        "Privacidad",
       ],
       childColor: "border-blue-500/30 bg-blue-500/10 text-blue-300",
     },
     {
-      label: "Auth",
+      label: "Autenticacion",
       color: "border-purple-400 bg-purple-500/20 text-purple-200",
       children: [
-        "Login / Signup",
+        "Login / registro",
         "Google OAuth",
         "Magic Link",
-        "Email + Password",
+        "Correo + contrasena",
       ],
       childColor: "border-purple-500/30 bg-purple-500/10 text-purple-300",
     },
@@ -749,22 +749,22 @@ function InformationArchitecture() {
       label: "Onboarding",
       color: "border-green-400 bg-green-500/20 text-green-200",
       children: [
-        "Welcome Flow",
-        "Playground Assigned",
-        "100 Free Bricks",
+        "Flujo de bienvenida",
+        "Playground asignado",
+        "100 bricks gratis",
       ],
       childColor: "border-green-500/30 bg-green-500/10 text-green-300",
     },
     {
-      label: "Create",
+      label: "Crear",
       color: "border-white/60 bg-white/10 text-white",
       children: [
-        "New Project",
-        "Project Dashboard",
-        "Mode (Ext / Int)",
-        "Angle Slots (×5)",
-        "Settings Sidebar",
-        "Region / Global Edit",
+        "Nuevo proyecto",
+        "Dashboard de proyecto",
+        "Modo (ext / int)",
+        "Slots de angulo (x5)",
+        "Sidebar de ajustes",
+        "Edicion regional / global",
       ],
       childColor: "border-white/20 bg-white/5 text-zinc-300",
     },
@@ -772,57 +772,57 @@ function InformationArchitecture() {
       label: "Video",
       color: "border-white/60 bg-white/10 text-white",
       children: [
-        "Video Generator",
-        "Motion Presets (11)",
-        "Scene Presets (6)",
-        "Duration / Ratio",
+        "Generador de video",
+        "Presets de movimiento (11)",
+        "Presets de escena (6)",
+        "Duracion / ratio",
       ],
       childColor: "border-white/20 bg-white/5 text-zinc-300",
     },
     {
-      label: "Tools",
+      label: "Herramientas",
       color: "border-white/60 bg-white/10 text-white",
       children: [
-        "Tools Catalog (8)",
-        "Tool Page",
-        "Exploded Diagram",
-        "Floorplan → Interior",
-        "Image → 3D",
-        "Moodboard → Render",
-        "Isometric View",
-        "Landscape Gen",
+        "Catalogo de herramientas (8)",
+        "Pagina de herramienta",
+        "Diagrama explotado",
+        "Plano -> interior",
+        "Imagen -> 3D",
+        "Moodboard -> render",
+        "Vista isometrica",
+        "Paisajismo",
       ],
       childColor: "border-white/20 bg-white/5 text-zinc-300",
     },
     {
-      label: "Explore",
+      label: "Explorar",
       color: "border-white/60 bg-white/10 text-white",
       children: [
-        "Masonry Grid",
-        "Category Cards",
-        '"Generate Yours"',
+        "Grid masonry",
+        "Cards de categoria",
+        '"Genera el tuyo"',
       ],
       childColor: "border-white/20 bg-white/5 text-zinc-300",
     },
     {
-      label: "Gallery",
+      label: "Galeria",
       color: "border-white/60 bg-white/10 text-white",
       children: [
-        "Ext / Int / Video / Tool",
-        "Sort & Filter",
-        "Download / Share",
-        "Preview Modal",
+        "Ext / int / video / herramienta",
+        "Ordenar y filtrar",
+        "Descargar / compartir",
+        "Modal de preview",
       ],
       childColor: "border-white/20 bg-white/5 text-zinc-300",
     },
     {
-      label: "Pricing",
+      label: "Precios",
       color: "border-amber-400 bg-amber-500/20 text-amber-200",
       children: [
         "Starter ($29)",
         "Pro ($49)",
         "Studio ($99)",
-        "Polar Checkout",
+        "Checkout Polar",
       ],
       childColor: "border-amber-500/30 bg-amber-500/10 text-amber-300",
     },
@@ -831,10 +831,10 @@ function InformationArchitecture() {
   return (
     <div>
       <h2 className="text-2xl font-bold tracking-tight mb-1">
-        Information Architecture
+        Arquitectura de informacion
       </h2>
       <p className="text-sm text-zinc-400 mb-8">
-        BrickEx Page Hierarchy &amp; Navigation Flows
+        Jerarquia de paginas y flujos de navegacion de BrickEx
       </p>
 
       <div className="flex flex-col items-center">
@@ -891,11 +891,11 @@ function InformationArchitecture() {
       <div className="flex flex-wrap justify-center gap-5 text-xs text-zinc-500 mt-10 pt-4 border-t border-zinc-800">
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border-2 border-blue-400 bg-blue-500/20" />
-          Acquisition
+          Adquisicion
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border-2 border-purple-400 bg-purple-500/20" />
-          Authentication
+          Autenticacion
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border-2 border-green-400 bg-green-500/20" />
@@ -903,11 +903,11 @@ function InformationArchitecture() {
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border-2 border-white/60 bg-white/10" />
-          Core Workflow
+          Flujo principal
         </span>
         <span className="flex items-center gap-1.5">
           <span className="w-3 h-3 rounded border-2 border-amber-400 bg-amber-500/20" />
-          Monetization
+          Monetizacion
         </span>
       </div>
     </div>

@@ -8,7 +8,7 @@
 export const SUBSCRIPTION_PLANS = {
   FREE: {
     slug: "free",
-    name: "Free",
+    name: "Gratis",
     creationLimit: 100,
     bricks: 100,
     price: 0,
@@ -35,10 +35,10 @@ export const SUBSCRIPTION_PLANS = {
     productId: "d085f940-134d-4871-9321-4da9de1e5cd0",
     resetPeriod: "monthly" as const,
     perks: [
-      "12,000 bricks per month",
-      "All render modes & styles",
-      "Video generation",
-      "Priority processing",
+      "12,000 bricks al mes",
+      "Todos los modos y estilos de render",
+      "Generacion de video",
+      "Procesamiento prioritario",
     ],
   },
   STUDIO: {
@@ -51,11 +51,11 @@ export const SUBSCRIPTION_PLANS = {
     productId: "29aa4751-1992-4e53-92d3-8f4c513936e7",
     resetPeriod: "monthly" as const,
     perks: [
-      "30,000 bricks per month",
-      "Everything in Pro",
-      "Batch rendering",
-      "API access",
-      "Dedicated account manager",
+      "30,000 bricks al mes",
+      "Todo lo de Pro",
+      "Renderizado por lotes",
+      "Acceso API",
+      "Account manager dedicado",
     ],
   },
 } as const;
@@ -107,22 +107,21 @@ export function getResetDateMessage(
   currentPeriodEnd: Date | null,
   resetPeriod: "weekly" | "monthly"
 ): string {
-  if (!currentPeriodEnd) return "Unknown";
+  if (!currentPeriodEnd) return "Desconocido";
 
   const resetDate = new Date(currentPeriodEnd);
   const now = new Date();
   const diffMs = resetDate.getTime() - now.getTime();
   const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffDays < 0) return "Soon (waiting for sync)";
-  if (diffDays === 0) return "Today";
-  if (diffDays === 1) return "Tomorrow";
-  if (diffDays <= 7) return `In ${diffDays} days`;
+  if (diffDays < 0) return "Pronto (esperando sincronizacion)";
+  if (diffDays === 0) return "Hoy";
+  if (diffDays === 1) return "Manana";
+  if (diffDays <= 7) return `En ${diffDays} dias`;
 
-  return resetDate.toLocaleDateString("en-US", {
+  return resetDate.toLocaleDateString("es-ES", {
     month: "short",
     day: "numeric",
     year: resetDate.getFullYear() !== now.getFullYear() ? "numeric" : undefined,
   });
 }
-

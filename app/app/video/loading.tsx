@@ -6,7 +6,7 @@ export default function VideoLoading() {
           <div className="w-12 h-12 rounded-full border-2 border-neutral-800" />
           <div className="absolute inset-0 w-12 h-12 rounded-full border-2 border-transparent border-t-white/40 animate-spin" />
         </div>
-        <p className="text-sm text-neutral-500">Loading video studio...</p>
+        <p className="text-sm text-neutral-500">Cargando estudio de video...</p>
       </div>
     </div>
   );

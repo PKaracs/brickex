@@ -84,10 +84,10 @@ export function ImageDropzone({
       </div>
       <div className="text-center">
         <p className="text-sm text-white">
-          {isDragging ? "Drop images here" : "Click or drag images"}
+          {isDragging ? "Suelta las imagenes aqui" : "Haz clic o arrastra imagenes"}
         </p>
         <p className="text-xs text-neutral-500 mt-1">
-          JPG, PNG up to 10MB each
+          JPG, PNG hasta 10MB cada una
         </p>
       </div>
     </div>

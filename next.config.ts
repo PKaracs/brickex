@@ -9,8 +9,9 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 31536000,
-    deviceSizes: [640, 750, 1080, 1920],
+    deviceSizes: [320, 384, 480, 640, 750, 828, 1080, 1200, 1920],
     imageSizes: [16, 32, 64, 128, 256],
+    qualities: [45, 50, 60, 65, 70, 75, 85],
     remotePatterns: [
       ...(supabaseHost
         ? [

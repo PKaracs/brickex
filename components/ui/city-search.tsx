@@ -134,7 +134,7 @@ export function CitySearch({ onSelect, initialValue = "" }: CitySearchProps) {
       <div className="relative">
         <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-neutral-500" />
         <Input
-          placeholder="Search for a city..."
+          placeholder="Buscar una ciudad..."
           value={query}
           onChange={(e) => handleSearch(e.target.value)}
           onKeyDown={handleKeyDown}
@@ -151,7 +151,7 @@ export function CitySearch({ onSelect, initialValue = "" }: CitySearchProps) {
         <div className="absolute z-50 w-full mt-1 bg-neutral-900 border border-neutral-700 rounded-lg shadow-lg overflow-hidden">
           {results.length === 0 ? (
             <div className="py-4 text-center text-sm text-neutral-500">
-              {isLoading ? "Searching..." : "No cities found"}
+              {isLoading ? "Buscando..." : "No se encontraron ciudades"}
             </div>
           ) : (
             <ul className="py-1 max-h-60 overflow-auto">

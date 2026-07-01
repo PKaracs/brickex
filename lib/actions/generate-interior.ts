@@ -25,23 +25,23 @@ function getOpenAI(): OpenAI | null {
 // Step 1 — Room Analysis (GPT-5-mini vision)
 // ---------------------------------------------------------------------------
 
-const ROOM_ANALYSIS_SYSTEM = `You are an expert interior designer and spatial analyst for BrickEx.
+const ROOM_ANALYSIS_SYSTEM = `Eres un experto en interiorismo y analisis espacial para BrickEx.
 
-You will receive a photograph or render of a room. Analyze it with surgical precision:
+Recibiras una fotografia o render de una estancia. Analizala con maxima precision:
 
-OUTPUT (structured, concise):
-1. ROOM TYPE: (living room / kitchen / bedroom / bathroom / dining / office / other)
-2. DIMENSIONS: approximate width × depth × ceiling height based on visual cues
-3. EXISTING FURNITURE: list every piece of furniture visible, with location (e.g. "grey fabric sofa against left wall")
-4. EMPTY AREAS: list zones with no furniture (e.g. "large open area center-right, corner by window is empty")
-5. WALLS: color, material, any wall features (wainscoting, exposed brick, accent wall)
-6. FLOOR: material and color (hardwood oak, white marble, concrete, etc.)
-7. WINDOWS/DOORS: count, positions, sizes, natural light direction
-8. ARCHITECTURAL FEATURES: columns, alcoves, built-ins, ceiling type (flat, vaulted, beamed)
-9. CURRENT STYLE: the existing aesthetic (if any)
-10. LIGHTING CONDITIONS: natural light quality, visible light fixtures
+SALIDA (estructurada y concisa):
+1. TIPO DE ESTANCIA: (salon / cocina / dormitorio / bano / comedor / oficina / otro)
+2. DIMENSIONES: anchura x profundidad x altura aproximada del techo segun pistas visuales
+3. MOBILIARIO EXISTENTE: enumera cada pieza visible, con ubicacion (por ejemplo, "sofa de tela gris contra la pared izquierda")
+4. ZONAS VACIAS: enumera zonas sin muebles (por ejemplo, "gran area abierta centro-derecha, esquina junto a la ventana vacia")
+5. PAREDES: color, material y rasgos (molduras, ladrillo visto, pared de acento)
+6. SUELO: material y color (roble, marmol blanco, hormigon, etc.)
+7. VENTANAS/PUERTAS: cantidad, posiciones, tamanos y direccion de la luz natural
+8. RASGOS ARQUITECTONICOS: columnas, nichos, muebles empotrados, tipo de techo (plano, abovedado, con vigas)
+9. ESTILO ACTUAL: estetica existente, si la hay
+10. ILUMINACION: calidad de la luz natural y luminarias visibles
 
-Be factual and precise. No opinions. Under 300 words.`;
+Se factual y preciso. Sin opiniones. Maximo 300 palabras.`;
 
 async function analyzeRoom(
   openai: OpenAI,
@@ -65,7 +65,7 @@ async function analyzeRoom(
               detail: "high",
             },
           },
-          { type: "text", text: "Analyze this room." },
+          { type: "text", text: "Analiza esta estancia." },
         ],
       },
     ],
@@ -82,26 +82,26 @@ async function analyzeRoom(
 // Step 2 — Object Placement Plan (GPT-5-mini text)
 // ---------------------------------------------------------------------------
 
-const PLACEMENT_SYSTEM = `You are a senior interior designer planning furniture placement for a room.
+const PLACEMENT_SYSTEM = `Eres un interiorista senior que planifica la colocacion de mobiliario en una estancia.
 
-You will receive:
-- A room analysis (dimensions, existing furniture, empty areas, architectural features)
-- A list of objects the client wants placed
-- Descriptions of any custom objects the client uploaded photos of
-- The desired interior style and furniture density
+Recibiras:
+- Un analisis de la estancia (dimensiones, muebles existentes, zonas vacias y rasgos arquitectonicos)
+- Una lista de objetos que el cliente quiere colocar
+- Descripciones de objetos personalizados subidos por el cliente
+- El estilo interior deseado y la densidad de mobiliario
 
-Your job: create a SPECIFIC placement plan.
+Tu tarea: crear un plan de colocacion ESPECIFICO.
 
-RULES:
-- If the room already has furniture in a spot, decide whether to REPLACE it (if the user selected a similar item) or KEEP it (if it doesn't conflict)
-- Place objects where they make spatial and functional sense
-- Respect traffic flow — don't block doors or create tight squeezes
-- Group objects logically (coffee table near sofa, bedside table near bed, etc.)
-- Match the density preference: "minimal" = only essentials, "balanced" = comfortable not cluttered, "full" = richly furnished
-- For each object, specify: WHAT it is, WHERE it goes (specific wall/corner/center), and HOW it relates to other pieces
-- If user uploaded custom object photos, incorporate those exact items by their description
+REGLAS:
+- Si ya hay un mueble en un punto, decide si se debe SUSTITUIR (si el usuario eligio un elemento similar) o MANTENER (si no entra en conflicto)
+- Coloca los objetos donde tengan sentido espacial y funcional
+- Respeta la circulacion: no bloquees puertas ni crees pasos demasiado estrechos
+- Agrupa objetos de forma logica (mesa de centro cerca del sofa, mesilla junto a la cama, etc.)
+- Ajustate a la densidad: "minimal" = solo esenciales, "balanced" = comodo sin saturar, "full" = ricamente amueblado
+- Para cada objeto, especifica QUE es, DONDE va (pared/esquina/centro concreto) y COMO se relaciona con otras piezas
+- Si el usuario subio fotos de objetos personalizados, incorpora esos elementos exactos segun su descripcion
 
-OUTPUT a numbered placement list. Be specific about positions. Under 250 words.`;
+Devuelve una lista numerada de colocacion. Se especifico con las posiciones. Maximo 250 palabras.`;
 
 async function planObjectPlacement(
   openai: OpenAI,
@@ -125,7 +125,7 @@ async function planObjectPlacement(
       { role: "system", content: PLACEMENT_SYSTEM },
       {
         role: "user",
-        content: `ROOM ANALYSIS:\n${roomAnalysis}\n\nOBJECTS TO PLACE:\n${objectList.map((o, i) => `${i + 1}. ${o}`).join("\n")}\n\nSTYLE: ${style || "auto (choose what fits best)"}\nDENSITY: ${density || "balanced"}`,
+        content: `ANALISIS DE LA ESTANCIA:\n${roomAnalysis}\n\nOBJETOS A COLOCAR:\n${objectList.map((o, i) => `${i + 1}. ${o}`).join("\n")}\n\nESTILO: ${style || "auto (elige lo que encaje mejor)"}\nDENSIDAD: ${density || "balanced"}`,
       },
     ],
     temperature: 1,
@@ -154,7 +154,7 @@ async function describeCustomObject(
         {
           role: "system",
           content:
-            "Describe this furniture/decor item in one detailed sentence: material, color, style, approximate size. Output ONLY the description.",
+            "Describe este mueble u objeto decorativo en una sola frase detallada: material, color, estilo y tamano aproximado. Devuelve SOLO la descripcion.",
         },
         {
           role: "user",
@@ -168,7 +168,7 @@ async function describeCustomObject(
             },
             {
               type: "text",
-              text: `Describe this item (uploaded as "${objectName}").`,
+              text: `Describe este elemento (subido como "${objectName}").`,
             },
           ],
         },
@@ -186,30 +186,30 @@ async function describeCustomObject(
 // Step 3 — Final Prompt Construction (GPT-5-mini text)
 // ---------------------------------------------------------------------------
 
-const FINAL_PROMPT_SYSTEM = `You are a world-class interior visualization artist (V-Ray / Lumion / Enscape quality). Write the definitive image generation prompt.
+const FINAL_PROMPT_SYSTEM = `Eres un artista de visualizacion interior de primer nivel mundial (calidad V-Ray / Lumion / Enscape). Escribe el prompt definitivo para generar la imagen.
 
-You will receive:
-- Room analysis
-- Object placement plan
-- User settings (style, lighting, room type, custom instructions)
+Recibiras:
+- Analisis de la estancia
+- Plan de colocacion de objetos
+- Ajustes del usuario (estilo, iluminacion, tipo de estancia, instrucciones personalizadas)
 
-Write a SINGLE prompt that will generate a PHOTOREALISTIC interior render. This must look like a photograph from Architectural Digest, not a CGI render.
+Escribe UN SOLO prompt que genere un render interior FOTOREALISTA. Debe parecer una fotografia de Architectural Digest, no un render CGI.
 
-INCLUDE:
-- Exact description of every wall, floor, ceiling as it appears in the original room
-- Every piece of furniture with its exact position from the placement plan
-- Specific materials for each item (e.g. "bouclé ivory sofa" not just "sofa", "brushed brass pendant" not just "light")
-- Styled to the requested interior style with specific design references
-- Camera: interior photography lens (14-24mm wide angle or 35mm for detail), eye-level or slightly elevated
-- Lighting: match the requested time of day with physically accurate light
-- Atmosphere: warmth, mood, air quality
-- Styling details: throw pillows, books on coffee table, fresh flowers — the finishing touches that make it feel LIVED IN
+INCLUYE:
+- Descripcion exacta de cada pared, suelo y techo tal como aparece en la estancia original
+- Cada mueble con su posicion exacta desde el plan de colocacion
+- Materiales especificos para cada elemento (por ejemplo, "sofa de bouclé marfil", no solo "sofa"; "lampara colgante de laton cepillado", no solo "lampara")
+- Estilo segun el interior solicitado, con referencias de diseno especificas
+- Camara: lente de fotografia interior (gran angular 14-24 mm o 35 mm para detalle), a nivel de ojos o ligeramente elevada
+- Iluminacion: ajustada al momento del dia solicitado con luz fisicamente precisa
+- Atmosfera: calidez, estado de animo y calidad del aire
+- Detalles de estilismo: cojines, libros sobre la mesa de centro, flores frescas; remates que hagan que se sienta HABITADO
 
-RULES:
-1. The room structure (walls, windows, doors, floor) MUST match the original room exactly
-2. Output ONLY the prompt text
-3. Under 500 words
-4. The result must be INDISTINGUISHABLE from a real interior photograph`;
+REGLAS:
+1. La estructura de la estancia (paredes, ventanas, puertas, suelo) DEBE coincidir exactamente con la original
+2. Devuelve SOLO el texto del prompt
+3. Maximo 500 palabras
+4. El resultado debe ser INDISTINGUIBLE de una fotografia interior real`;
 
 async function buildFinalPrompt(
   openai: OpenAI,
@@ -222,20 +222,20 @@ async function buildFinalPrompt(
 
   const settingsParts: string[] = [];
   if (settings.interiorStyle && settings.interiorStyle !== "auto")
-    settingsParts.push(`Interior Style: ${settings.interiorStyle.replace(/-/g, " ")}`);
+    settingsParts.push(`Estilo interior: ${settings.interiorStyle.replace(/-/g, " ")}`);
   if (settings.roomType && settings.roomType !== "auto")
-    settingsParts.push(`Room Type: ${settings.roomType.replace(/-/g, " ")}`);
+    settingsParts.push(`Tipo de estancia: ${settings.roomType.replace(/-/g, " ")}`);
   if (settings.lighting && settings.lighting !== "auto")
-    settingsParts.push(`Lighting: ${settings.lighting}`);
+    settingsParts.push(`Iluminacion: ${settings.lighting}`);
   if (settings.furnitureDensity && settings.furnitureDensity !== "auto")
-    settingsParts.push(`Furniture Density: ${settings.furnitureDensity}`);
+    settingsParts.push(`Densidad de mobiliario: ${settings.furnitureDensity}`);
   if (settings.textures) {
     const textureList = settings.textures.split(",").filter(Boolean).map((t) => t.replace(/-/g, " "));
     if (textureList.length > 0)
-      settingsParts.push(`Material / Texture preferences: ${textureList.join(", ")}. Use these specific materials and finishes prominently throughout the room — on floors, walls, countertops, and/or furniture surfaces as appropriate.`);
+      settingsParts.push(`Preferencias de materiales/texturas: ${textureList.join(", ")}. Usa estos materiales y acabados de forma visible en la estancia, en suelos, paredes, encimeras y/o superficies de muebles segun corresponda.`);
   }
   if (settings.customPrompt)
-    settingsParts.push(`User instructions: ${settings.customPrompt}`);
+    settingsParts.push(`Instrucciones del usuario: ${settings.customPrompt}`);
 
   const response = await openai.chat.completions.create({
     model: "gpt-5-mini",
@@ -243,7 +243,7 @@ async function buildFinalPrompt(
       { role: "system", content: FINAL_PROMPT_SYSTEM },
       {
         role: "user",
-        content: `ROOM ANALYSIS:\n${roomAnalysis}\n\nPLACEMENT PLAN:\n${placementPlan}\n\nSETTINGS:\n${settingsParts.join("\n") || "Auto — choose what looks best"}`,
+        content: `ANALISIS DE LA ESTANCIA:\n${roomAnalysis}\n\nPLAN DE COLOCACION:\n${placementPlan}\n\nAJUSTES:\n${settingsParts.join("\n") || "Auto: elige lo que mejor se vea"}`,
       },
     ],
     temperature: 1,
@@ -279,18 +279,18 @@ async function generateWithGemini(
   const parts: ContentPart[] = [];
 
   parts.push({
-    text: `ROOM REFERENCE IMAGE — THIS IS THE #1 PRIORITY:
+    text: `IMAGEN DE REFERENCIA DE LA ESTANCIA - ESTA ES LA PRIORIDAD NUMERO 1:
 
-You MUST preserve the room's structure EXACTLY:
-• Wall positions, angles, and materials must be identical
-• Window and door positions and sizes must be identical
-• Floor material and layout must be identical
-• Ceiling height and type must match
-• The room's overall shape and proportions are SACRED — do not change them
+DEBES conservar EXACTAMENTE la estructura de la estancia:
+• Las posiciones, angulos y materiales de las paredes deben ser identicos
+• Las posiciones y tamanos de ventanas y puertas deben ser identicos
+• El material y trazado del suelo deben ser identicos
+• La altura y tipo de techo deben coincidir
+• La forma y proporciones generales de la estancia son sagradas: no las cambies
 
-WHAT CHANGES: the furniture, objects, and styling inside the room. The room is the canvas — you are filling it with beautiful, photorealistic interior design.
+LO QUE CAMBIA: los muebles, objetos y estilismo dentro de la estancia. La estancia es el lienzo; rellenala con un diseno interior bello y fotorealista.
 
-The output must look like a REAL PHOTOGRAPH taken by an Architectural Digest photographer — not a render, not CGI. Real materials, real light, real atmosphere.`,
+El resultado debe parecer una FOTOGRAFIA REAL tomada por un fotografo de Architectural Digest; no un render, no CGI. Materiales reales, luz real, atmosfera real.`,
   });
 
   parts.push({
@@ -302,12 +302,12 @@ The output must look like a REAL PHOTOGRAPH taken by an Architectural Digest pho
 
   if (objectImages.length > 0) {
     parts.push({
-      text: `OBJECT REFERENCE IMAGES — Place these specific items in the room. Match their appearance, material, color, and style EXACTLY as shown:`,
+      text: `IMAGENES DE REFERENCIA DE OBJETOS - Coloca estos elementos concretos en la estancia. Igualalos EXACTAMENTE en apariencia, material, color y estilo:`,
     });
 
     for (const obj of objectImages.slice(0, 8)) {
       parts.push({
-        text: `Object: ${obj.label}`,
+        text: `Objeto: ${obj.label}`,
       });
       parts.push({
         inlineData: {
@@ -319,7 +319,7 @@ The output must look like a REAL PHOTOGRAPH taken by an Architectural Digest pho
   }
 
   parts.push({
-    text: `Now generate the photorealistic interior render:\n\n${finalPrompt}`,
+    text: `Ahora genera el render interior fotorealista:\n\n${finalPrompt}`,
   });
 
   const modelsToTry = [GEMINI_IMAGE_MODEL, GEMINI_IMAGE_MODEL_FALLBACK];
@@ -394,7 +394,7 @@ The output must look like a REAL PHOTOGRAPH taken by an Architectural Digest pho
 // ---------------------------------------------------------------------------
 
 function buildFallbackPrompt(settings: Record<string, string>): string {
-  const parts = ["Photorealistic interior design render."];
+  const parts = ["Render de interiorismo fotorealista."];
   const style = settings.interiorStyle?.replace(/-/g, " ");
   const room = settings.roomType?.replace(/-/g, " ");
   const objects = settings.objects
@@ -402,22 +402,22 @@ function buildFallbackPrompt(settings: Record<string, string>): string {
     .filter(Boolean)
     .map((o) => o.replace(/-/g, " "));
 
-  if (room && room !== "auto") parts.push(`Room type: ${room}.`);
-  if (style && style !== "auto") parts.push(`Style: ${style}.`);
-  if (objects && objects.length > 0) parts.push(`Include: ${objects.join(", ")}.`);
+  if (room && room !== "auto") parts.push(`Tipo de estancia: ${room}.`);
+  if (style && style !== "auto") parts.push(`Estilo: ${style}.`);
+  if (objects && objects.length > 0) parts.push(`Incluye: ${objects.join(", ")}.`);
   if (settings.lighting && settings.lighting !== "auto")
-    parts.push(`Lighting: ${settings.lighting}.`);
+    parts.push(`Iluminacion: ${settings.lighting}.`);
   if (settings.furnitureDensity && settings.furnitureDensity !== "auto")
-    parts.push(`Furniture density: ${settings.furnitureDensity}.`);
+    parts.push(`Densidad de mobiliario: ${settings.furnitureDensity}.`);
   if (settings.textures) {
     const textureList = settings.textures.split(",").filter(Boolean).map((t) => t.replace(/-/g, " "));
     if (textureList.length > 0)
-      parts.push(`Use these materials/textures prominently: ${textureList.join(", ")}.`);
+      parts.push(`Usa estos materiales/texturas de forma visible: ${textureList.join(", ")}.`);
   }
   if (settings.customPrompt) parts.push(settings.customPrompt);
 
   parts.push(
-    "Preserve the room's exact structure. Ultra-detailed, 8K, Architectural Digest quality, professional interior photography with wide-angle lens."
+    "Conserva la estructura exacta de la estancia. Ultra detallado, 8K, calidad Architectural Digest, fotografia interior profesional con lente gran angular."
   );
 
   return parts.join(" ");
@@ -521,7 +521,7 @@ export async function generateInteriorBatch(
       model: GEMINI_IMAGE_MODEL,
       settings: {
         mode: "interior-render",
-        modeLabel: "Interior Render",
+        modeLabel: "Render interior",
         ...slot.settings,
         customObjectCount: objectFileData.length,
       },
@@ -554,8 +554,8 @@ export async function generateInteriorBatch(
       );
 
       if (!outputUrl) {
-        await finishProjectImageRunFailure({ run, errorMessage: "Interior generation failed." });
-        return { slotId: slot.slotId, error: "Interior generation failed. Please try again." };
+        await finishProjectImageRunFailure({ run, errorMessage: "La generacion interior fallo." });
+        return { slotId: slot.slotId, error: "La generacion interior fallo. Intentalo de nuevo." };
       }
 
       const persisted = await finishProjectImageRunSuccess({
@@ -563,8 +563,8 @@ export async function generateInteriorBatch(
         dataUrl: outputUrl,
         sourceAssetId: sourceAsset.assetId,
         pathKind: "interior-renders",
-        deliverableTitle: "Interior render",
-        deliverableMetadata: { mode: "interior-render", modeLabel: "Interior Render", kind: "generation" },
+        deliverableTitle: "Render interior",
+        deliverableMetadata: { mode: "interior-render", modeLabel: "Render interior", kind: "generation" },
       });
 
       console.log(`[Interior] [${slot.slotId}] Render complete`);
@@ -573,9 +573,9 @@ export async function generateInteriorBatch(
       console.error(`[Interior] [${slot.slotId}] Error:`, error?.message);
       await finishProjectImageRunFailure({
         run,
-        errorMessage: error?.message || "Something went wrong.",
+        errorMessage: error?.message || "Algo salio mal.",
       });
-      return { slotId: slot.slotId, error: error?.message || "Something went wrong." };
+      return { slotId: slot.slotId, error: error?.message || "Algo salio mal." };
     }
   });
 

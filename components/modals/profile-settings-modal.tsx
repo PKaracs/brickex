@@ -92,12 +92,12 @@ export function ProfileSettingsModal({
     if (!nextFile) return;
 
     if (!ACCEPTED_IMAGE_TYPES.has(nextFile.type)) {
-      toast.error("Use a JPG, PNG, WebP, or GIF image.");
+      toast.error("Usa una imagen JPG, PNG, WebP o GIF.");
       return;
     }
 
     if (nextFile.size > MAX_FILE_SIZE_BYTES) {
-      toast.error("Profile photos must be 10MB or smaller.");
+      toast.error("La foto de perfil debe pesar 10MB o menos.");
       return;
     }
 
@@ -107,7 +107,7 @@ export function ProfileSettingsModal({
       setRemovePhoto(false);
     } catch (error) {
       console.error("[ProfileSettings] Image compression failed:", error);
-      toast.error("Could not process that image. Try another file.");
+      toast.error("No se pudo procesar esa imagen. Prueba otro archivo.");
     }
   };
 
@@ -121,12 +121,12 @@ export function ProfileSettingsModal({
     const trimmedName = name.trim();
 
     if (!trimmedName) {
-      toast.error("Name is required.");
+      toast.error("El nombre es obligatorio.");
       return;
     }
 
     if (!session?.user) {
-      toast.error("You need to sign in again.");
+      toast.error("Necesitas iniciar sesion de nuevo.");
       return;
     }
 
@@ -147,7 +147,7 @@ export function ProfileSettingsModal({
         const payload = await response.json().catch(() => ({}));
 
         if (!response.ok || !payload.imageUrl) {
-          throw new Error(payload.error || "Failed to upload profile photo.");
+          throw new Error(payload.error || "No se pudo subir la foto de perfil.");
         }
 
         image = payload.imageUrl as string;
@@ -167,7 +167,7 @@ export function ProfileSettingsModal({
       const payload = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        throw new Error(payload.error || "Failed to update profile.");
+        throw new Error(payload.error || "No se pudo actualizar el perfil.");
       }
 
       await authClient.getSession({
@@ -176,12 +176,12 @@ export function ProfileSettingsModal({
         },
       });
       router.refresh();
-      toast.success("Profile updated.");
+      toast.success("Perfil actualizado.");
       onOpenChange(false);
     } catch (error) {
       console.error("[ProfileSettings] Save failed:", error);
       toast.error(
-        error instanceof Error ? error.message : "Failed to update profile."
+        error instanceof Error ? error.message : "No se pudo actualizar el perfil."
       );
     } finally {
       setIsSaving(false);
@@ -201,7 +201,7 @@ export function ProfileSettingsModal({
       router.push("/app/login");
     } catch (error) {
       console.error("[ProfileSettings] Logout failed:", error);
-      toast.error("Failed to log out. Try again.");
+      toast.error("No se pudo cerrar sesion. Intentalo de nuevo.");
       setIsSigningOut(false);
     }
   };
@@ -217,10 +217,10 @@ export function ProfileSettingsModal({
         <div className="space-y-6 p-6">
           <DialogHeader className="space-y-2 text-left">
             <DialogTitle className="text-xl font-semibold text-white">
-              Profile settings
+              Ajustes de perfil
             </DialogTitle>
             <DialogDescription className="text-sm text-neutral-400">
-              Update your name and profile photo.
+              Actualiza tu nombre y foto de perfil.
             </DialogDescription>
           </DialogHeader>
 
@@ -236,10 +236,10 @@ export function ProfileSettingsModal({
               <div className="flex-1 space-y-3 text-center sm:text-left">
                 <div>
                   <p className="text-sm font-medium text-white">
-                    Profile photo
+                    Foto de perfil
                   </p>
                   <p className="text-xs text-neutral-400">
-                    Upload a clear image for your account avatar.
+                    Sube una imagen clara para el avatar de tu cuenta.
                   </p>
                 </div>
 
@@ -251,7 +251,7 @@ export function ProfileSettingsModal({
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <Camera className="h-4 w-4" />
-                    Change photo
+                    Cambiar foto
                   </Button>
                   {(currentImageUrl || selectedFile) && (
                     <Button
@@ -262,7 +262,7 @@ export function ProfileSettingsModal({
                       onClick={handleRemovePhoto}
                     >
                       <Trash2 className="h-4 w-4" />
-                      Remove
+                      Quitar
                     </Button>
                   )}
                 </div>
@@ -281,7 +281,7 @@ export function ProfileSettingsModal({
           <div className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="profile-name" className="text-neutral-300">
-                Name
+                Nombre
               </Label>
               <div className="relative">
                 <UserRound className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
@@ -289,7 +289,7 @@ export function ProfileSettingsModal({
                   id="profile-name"
                   value={name}
                   onChange={(event) => setName(event.target.value)}
-                  placeholder="Your name"
+                  placeholder="Tu nombre"
                   className="pl-10"
                 />
               </div>
@@ -297,7 +297,7 @@ export function ProfileSettingsModal({
 
             <div className="space-y-2">
               <Label htmlFor="profile-email" className="text-neutral-300">
-                Email
+                Correo
               </Label>
               <div className="relative">
                 <Mail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-neutral-500" />
@@ -322,7 +322,7 @@ export function ProfileSettingsModal({
               disabled={isSaving || isPending}
             >
               <LogOut className="h-4 w-4" />
-              Log out
+              Cerrar sesion
             </Button>
 
             <div className="flex flex-col-reverse gap-2 sm:flex-row">
@@ -333,7 +333,7 @@ export function ProfileSettingsModal({
                 onClick={() => onOpenChange(false)}
                 disabled={isSaving || isSigningOut}
               >
-                Cancel
+                Cancelar
               </Button>
               <Button
                 type="button"
@@ -342,7 +342,7 @@ export function ProfileSettingsModal({
                 isLoading={isSaving}
                 disabled={!hasChanges || isPending || isSigningOut}
               >
-                Save changes
+                Guardar cambios
               </Button>
             </div>
           </div>

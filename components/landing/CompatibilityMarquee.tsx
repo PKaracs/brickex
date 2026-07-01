@@ -1,7 +1,3 @@
-"use client";
-
-import { Marquee } from "@/components/ui/marquee";
-
 const SOFTWARE = [
   { name: "SketchUp", font: "font-bold tracking-tight" },
   { name: "AutoCAD", font: "font-bold tracking-widest uppercase" },
@@ -21,25 +17,26 @@ export default function CompatibilityMarquee() {
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <p className="text-sm sm:text-base text-zinc-500 font-medium">
-            Works with your tools — upload from any design software
+            No tienes que aprender un flujo nuevo: sube archivos directamente
+            desde el software que ya usas
           </p>
         </div>
 
-        <div className="relative">
-          <Marquee className="max-w-full [--duration:35s]" pauseOnHover>
+        <div className="relative overflow-hidden">
+          <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4 sm:gap-x-14">
             {SOFTWARE.map((sw, idx) => (
               <div
                 key={idx}
-                className="mx-6 sm:mx-10 flex items-center justify-center h-16 sm:h-20"
+                className="flex h-14 items-center justify-center sm:h-16"
               >
                 <span
-                  className={`text-2xl sm:text-3xl lg:text-4xl text-zinc-600 hover:text-zinc-400 transition-colors duration-300 select-none whitespace-nowrap ${sw.font}`}
+                  className={`select-none whitespace-nowrap text-2xl text-zinc-600 sm:text-3xl lg:text-4xl ${sw.font}`}
                 >
                   {sw.name}
                 </span>
               </div>
             ))}
-          </Marquee>
+          </div>
 
           <div className="pointer-events-none absolute inset-y-0 left-0 h-full w-24 sm:w-40 bg-gradient-to-r from-[#0c0c0c]" />
           <div className="pointer-events-none absolute inset-y-0 right-0 h-full w-24 sm:w-40 bg-gradient-to-l from-[#0c0c0c]" />

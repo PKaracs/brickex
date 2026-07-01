@@ -1,6 +1,3 @@
-"use client";
-
-import { useState, useEffect } from "react";
 import Image from "next/image";
 import {
   ArrowRight,
@@ -11,12 +8,8 @@ import {
   Zap,
   Upload,
 } from "lucide-react";
-import { motion, AnimatePresence, useScroll, useTransform } from "motion/react";
-import { ShimmerButton } from "@/components/ui/shimmer-button";
-import { Marquee } from "@/components/ui/marquee";
-import { BlurFade } from "@/components/ui/blur-fade";
+import { StaticReveal as BlurFade } from "@/components/landing/StaticReveal";
 import { getSignupUrl } from "@/lib/app-url";
-import { useRef } from "react";
 import { assetUrl } from "@/lib/assets";
 
 const HERO_BG = assetUrl("real-estate-presets/hollywood-hills-modern.png");
@@ -25,17 +18,17 @@ const SHOWCASE_PAIRS = [
   {
     sketch: assetUrl("real-estate-sketch/modern-white-villa-sketch.png"),
     render: assetUrl("real-estate-front/modern-white-villa.png"),
-    label: "Modern White Villa",
+    label: "Villa blanca moderna",
   },
   {
     sketch: assetUrl("real-estate-sketch/alpine-chalet-front-sketch.png"),
     render: assetUrl("real-estate-front/alpine-chalet-front.png"),
-    label: "Alpine Chalet",
+    label: "Chalet alpino",
   },
   {
     sketch: assetUrl("real-estate-sketch/tropical-villa-pool-sketch.png"),
     render: assetUrl("real-estate-front/tropical-villa-pool.png"),
-    label: "Tropical Villa",
+    label: "Villa tropical",
   },
 ];
 
@@ -46,42 +39,26 @@ const GALLERY_IMAGES = [
   },
   {
     src: assetUrl("real-estate-presets/maldives-overwater.png"),
-    label: "Maldives Villa",
+    label: "Villa en Maldivas",
   },
   {
     src: assetUrl("real-estate-presets/mediterranean-villa.png"),
-    label: "Mediterranean",
+    label: "Mediterranea",
   },
   {
     src: assetUrl("real-estate-full/classic-white-mansion.png"),
-    label: "Neoclassical",
-  },
-  {
-    src: assetUrl("real-estate-full/luxury-glass-skyscraper.png"),
-    label: "Glass Tower",
-  },
-  {
-    src: assetUrl("real-estate-full/desert-modern-house.png"),
-    label: "Desert Modern",
-  },
-  {
-    src: assetUrl("real-estate-presets/japanese-zen-house.png"),
-    label: "Zen House",
-  },
-  {
-    src: assetUrl("real-estate-full/miami-condo-tower.png"),
-    label: "Miami Tower",
+    label: "Neoclasica",
   },
 ];
 
 const MOCK_SETTINGS = [
-  { label: "Architecture Style", value: "Modern" },
-  { label: "Time of Day", value: "Golden Hour" },
-  { label: "Weather", value: "Clear Sky" },
-  { label: "Landscaping", value: "Lush Green" },
+  { label: "Estilo arquitectonico", value: "Moderno" },
+  { label: "Hora del dia", value: "Hora dorada" },
+  { label: "Clima", value: "Cielo despejado" },
+  { label: "Paisajismo", value: "Verde exuberante" },
 ];
 
-const DEFAULT_HEADLINE = "See Your Project Before It\u2019s Built";
+const DEFAULT_HEADLINE = "Convierte cualquier boceto en un render fotorrealista";
 
 interface HeroProps {
   headline?: string;
@@ -90,37 +67,7 @@ interface HeroProps {
 
 export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
   const signupUrl = getSignupUrl();
-  const [pairIndex, setPairIndex] = useState(0);
-  const [showRender, setShowRender] = useState(false);
-  const mockupRef = useRef<HTMLDivElement>(null);
-
-  const { scrollYProgress } = useScroll({
-    target: mockupRef,
-    offset: ["start end", "center center"],
-  });
-  const mockupY = useTransform(scrollYProgress, [0, 1], [60, 0]);
-  const mockupOpacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
-
-  useEffect(() => {
-    const cycle = () => {
-      setShowRender(false);
-      const showTimer = setTimeout(() => setShowRender(true), 1500);
-      const nextTimer = setTimeout(() => {
-        setPairIndex((prev) => (prev + 1) % SHOWCASE_PAIRS.length);
-      }, 5000);
-      return [showTimer, nextTimer];
-    };
-
-    const timers = cycle();
-    const interval = setInterval(() => {
-      cycle();
-    }, 5000);
-    return () => {
-      timers.forEach(clearTimeout);
-      clearInterval(interval);
-    };
-  }, []);
-
+  const pairIndex = 0;
   const pair = SHOWCASE_PAIRS[pairIndex];
 
   return (
@@ -128,11 +75,14 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
       {/* Layer 1: Full-bleed background + headline */}
       <div className="relative min-h-[100svh] flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <img
+          <Image
             src={HERO_BG}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover"
-            loading="eager"
+            fill
+            priority
+            sizes="100vw"
+            quality={70}
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/50 to-[#0c0c0c]" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent" />
@@ -149,27 +99,24 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
 
           <BlurFade inView delay={0.2}>
             <p className="mt-5 sm:mt-6 max-w-md sm:max-w-2xl text-sm sm:text-base lg:text-lg leading-relaxed text-white/60 px-2">
-              Upload floor plans, SketchUp models, or hand sketches — get
-              magazine-ready photorealistic renders in seconds. Built for
-              architects, developers, and real estate marketers.
+              Sube un plano, modelo de SketchUp o boceto a mano y consigue un
+              render listo para portada en segundos. Sin estudio 3D, sin esperas
+              de semanas y sin facturas enormes: solo los visuales que tus
+              clientes esperan.
             </p>
           </BlurFade>
 
           <BlurFade inView delay={0.3}>
             <div className="mt-7 sm:mt-8 flex flex-col items-center gap-3">
-              <a href={signupUrl}>
-                <ShimmerButton
-                  shimmerColor="#ffffff"
-                  shimmerSize="0.05em"
-                  background="rgba(255,255,255,0.1)"
-                  className="px-8 py-3.5 text-sm sm:text-base font-semibold"
-                >
-                  Start Free
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </ShimmerButton>
+              <a
+                href={signupUrl}
+                className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/20 bg-white px-8 py-3.5 text-sm font-semibold text-zinc-950 shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-colors duration-200 hover:bg-zinc-100 sm:text-base"
+              >
+                Empieza a renderizar gratis
+                <ArrowRight className="ml-2 h-4 w-4" />
               </a>
               <p className="text-xs sm:text-sm text-white/40">
-                Create an account or sign in to start rendering now.
+                Sin tarjeta · 100 bricks gratis para empezar
               </p>
             </div>
           </BlurFade>
@@ -185,9 +132,11 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                     >
                       <Image
                         src={`https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/${name}.png`}
-                        alt="User"
+                        alt="Usuario"
                         fill
                         className="object-cover"
+                        sizes="32px"
+                        quality={50}
                       />
                     </div>
                   ),
@@ -199,40 +148,42 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                 </div>
               </div>
               <p className="text-xs text-white/40">
-                Used by architects, developers & agencies
+                Usado por arquitectos, promotores y equipos inmobiliarios
               </p>
             </div>
           </BlurFade>
         </div>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 animate-bounce">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
           <ChevronDown className="h-6 w-6 text-white/30" />
         </div>
       </div>
 
       {/* Layer 2: Dashboard mockup */}
-      <motion.div
-        ref={mockupRef}
-        style={{ y: mockupY, opacity: mockupOpacity }}
-        className="relative -mt-20 sm:-mt-32 z-20 px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24"
-      >
+      <div className="relative -mt-20 sm:-mt-32 z-20 px-4 sm:px-6 lg:px-8 pb-16 sm:pb-24">
         <div className="max-w-5xl mx-auto">
           <div className="bg-zinc-900/90 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/10 shadow-[0_20px_80px_rgba(0,0,0,0.6)] overflow-hidden">
             {/* Dashboard navbar */}
             <div className="flex items-center justify-between px-4 py-2.5 border-b border-white/5 bg-black/40">
               <div className="flex items-center gap-2.5">
                 <div className="w-6 h-6 rounded-md bg-white/10 flex items-center justify-center">
-                  <img src="/brickex-logo.png" alt="" className="w-4 h-4" />
+                  <Image
+                    src="/brickex-logo.png"
+                    alt=""
+                    width={16}
+                    height={16}
+                    className="w-4 h-4"
+                  />
                 </div>
                 <span className="text-xs font-bold text-white/80 tracking-tight">
                   BrickEx
                 </span>
               </div>
               <div className="hidden sm:flex items-center gap-4">
-                {["Explore", "Create", "Gallery"].map((tab) => (
+                {["Explorar", "Crear", "Galeria"].map((tab) => (
                   <span
                     key={tab}
-                    className={`text-[10px] font-medium ${tab === "Create" ? "text-white" : "text-white/30"}`}
+                    className={`text-[10px] font-medium ${tab === "Crear" ? "text-white" : "text-white/30"}`}
                   >
                     {tab}
                   </span>
@@ -258,16 +209,19 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                   {SHOWCASE_PAIRS.map((p, i) => (
                     <div
                       key={i}
-                      className={`w-10 h-7 rounded overflow-hidden border transition-all ${
+                      className={`relative w-10 h-7 rounded overflow-hidden border transition-all ${
                         i === pairIndex
                           ? "border-white/40"
                           : "border-white/10 opacity-40"
                       }`}
                     >
-                      <img
+                      <Image
                         src={p.sketch}
                         alt=""
-                        className="w-full h-full object-cover"
+                        fill
+                        sizes="40px"
+                        quality={45}
+                        className="object-cover"
                       />
                     </div>
                   ))}
@@ -276,58 +230,38 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                   </div>
                 </div>
 
-                {/* Main canvas with transition */}
+                {/* Main canvas */}
                 <div className="flex-1 relative overflow-hidden bg-zinc-950">
-                  <AnimatePresence mode="wait">
-                    <motion.img
-                      key={`sketch-${pairIndex}`}
-                      src={pair.sketch}
-                      alt={`${pair.label} sketch`}
-                      className="absolute inset-0 w-full h-full object-cover"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
-                      transition={{ duration: 0.6 }}
-                    />
-                  </AnimatePresence>
-
-                  <motion.img
-                    key={`render-${pairIndex}-${showRender}`}
+                  <Image
                     src={pair.render}
                     alt={`${pair.label} render`}
-                    className="absolute inset-0 w-full h-full object-cover"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: showRender ? 1 : 0 }}
-                    transition={{ duration: 1.2, ease: "easeInOut" }}
+                    fill
+                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 720px"
+                    quality={62}
+                    className="object-cover"
                   />
+                  <div
+                    className="absolute inset-y-0 left-0 w-[38%] overflow-hidden border-r border-white/60"
+                    aria-hidden="true"
+                  >
+                    <Image
+                      src={pair.sketch}
+                      alt=""
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 70vw, 720px"
+                      quality={58}
+                      className="object-cover"
+                    />
+                  </div>
 
                   {/* Status pill */}
                   <div className="absolute bottom-3 left-3 z-10">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={showRender ? "render" : "sketch"}
-                        initial={{ opacity: 0, y: 4 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -4 }}
-                        className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/60 backdrop-blur-sm border border-white/10"
-                      >
-                        {showRender ? (
-                          <>
-                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                            <span className="text-[9px] font-medium text-white/80">
-                              BrickEx Render
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <div className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                            <span className="text-[9px] font-medium text-white/50">
-                              SketchUp Input
-                            </span>
-                          </>
-                        )}
-                      </motion.div>
-                    </AnimatePresence>
+                    <div className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-black/60 backdrop-blur-sm border border-white/10">
+                      <div className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span className="text-[9px] font-medium text-white/80">
+                        Entrada de SketchUp a render BrickEx
+                      </span>
+                    </div>
                   </div>
 
                   {/* Progress dots */}
@@ -344,24 +278,24 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                 {/* Bottom toolbar */}
                 <div className="flex items-center justify-center gap-0.5 px-3 py-2 border-t border-white/5">
                   {[
-                    "Select",
-                    "Comment",
-                    "Shape",
-                    "Eraser",
+                    "Seleccionar",
+                    "Comentar",
+                    "Forma",
+                    "Borrar",
                     "|",
-                    "Undo",
-                    "Redo",
+                    "Deshacer",
+                    "Rehacer",
                     "|",
-                    "Fullscreen",
-                    "Compare",
-                    "Download",
+                    "Pantalla completa",
+                    "Comparar",
+                    "Descargar",
                   ].map((tool, i) =>
                     tool === "|" ? (
                       <div key={i} className="w-px h-4 bg-white/10 mx-1" />
                     ) : (
                       <div
                         key={i}
-                        className={`w-6 h-6 rounded flex items-center justify-center ${tool === "Select" ? "bg-white/10" : ""}`}
+                    className={`w-6 h-6 rounded flex items-center justify-center ${tool === "Seleccionar" ? "bg-white/10" : ""}`}
                       >
                         <div className="w-2.5 h-2.5 rounded-sm bg-white/20" />
                       </div>
@@ -380,10 +314,10 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                     </div>
                     <div className="flex-1 min-w-0 text-left">
                       <div className="text-[10px] font-semibold text-white/80">
-                        Exterior Render
+                        Render exterior
                       </div>
                       <div className="text-[8px] text-white/30">
-                        Photorealistic exterior
+                        Exterior fotorrealista
                       </div>
                     </div>
                     <ChevronRight className="w-3 h-3 text-white/20" />
@@ -411,45 +345,45 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                   <div className="w-full h-8 rounded-lg bg-white flex items-center justify-center gap-1.5">
                     <Sparkles className="w-3 h-3 text-black" />
                     <span className="text-[10px] font-semibold text-black">
-                      Generate
+                      Generar
                     </span>
                   </div>
                   <p className="text-[7px] text-white/20 text-center mt-1.5">
-                    1 free render included
+                    1 render gratis incluido
                   </p>
                 </div>
               </div>
             </div>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Layer 3: Scrolling thumbnail gallery */}
       <div className="relative pb-8 sm:pb-16">
         <BlurFade inView delay={0.1}>
           <div className="relative">
-            <Marquee
-              className="max-w-full [--duration:45s] [--gap:0.75rem]"
-              pauseOnHover
-            >
+            <div className="flex max-w-full gap-3 overflow-x-auto px-4 pb-2 scrollbar-none sm:px-6">
               {GALLERY_IMAGES.map((img, idx) => (
                 <div
                   key={idx}
-                  className="group relative flex-shrink-0 w-64 sm:w-80 aspect-[16/10] rounded-xl overflow-hidden border border-white/10 transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:shadow-[0_8px_30px_rgba(0,0,0,0.4)]"
+                  className="relative flex-shrink-0 w-64 sm:w-80 aspect-[16/10] rounded-xl overflow-hidden border border-white/10"
                 >
-                  <img
+                  <Image
                     src={img.src}
                     alt={img.label}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    fill
+                    sizes="(max-width: 640px) 16rem, 20rem"
+                    quality={58}
                     loading="lazy"
+                    className="object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <span className="absolute bottom-3 left-3 text-xs font-medium text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-transparent to-transparent" />
+                  <span className="absolute bottom-3 left-3 text-xs font-medium text-white">
                     {img.label}
                   </span>
                 </div>
               ))}
-            </Marquee>
+            </div>
             <div className="pointer-events-none absolute inset-y-0 left-0 w-24 sm:w-40 bg-gradient-to-r from-[#0c0c0c] z-10" />
             <div className="pointer-events-none absolute inset-y-0 right-0 w-24 sm:w-40 bg-gradient-to-l from-[#0c0c0c] z-10" />
           </div>

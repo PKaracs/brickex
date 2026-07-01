@@ -39,7 +39,7 @@ export function SceneGallery({ images, sceneHeadline }: SceneGalleryProps) {
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl sm:text-2xl font-semibold text-center mb-8 sm:mb-10">
             <span className="bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-              Gallery
+              Galeria
             </span>
           </h2>
           <div className="columns-1 sm:columns-2 lg:columns-3 gap-3 sm:gap-4">
@@ -118,7 +118,7 @@ export function SceneGallery({ images, sceneHeadline }: SceneGalleryProps) {
               >
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />
                 <Sparkles className="w-4 h-4" />
-                Generate a version in BrickEx
+                Generar una version en BrickEx
                 <ArrowRight className="w-4 h-4" />
               </a>
 
@@ -138,8 +138,8 @@ export function SceneGallery({ images, sceneHeadline }: SceneGalleryProps) {
                   </pre>
                 </details>
                 <div className="text-[10px] text-zinc-600 space-y-1">
-                  <p>AI-generated concept reference for BrickEx</p>
-                  <p>Adapt the prompt inside your own workflow</p>
+                  <p>Referencia conceptual generada con IA para BrickEx</p>
+                  <p>Adapta el prompt dentro de tu propio flujo</p>
                 </div>
               </div>
             </div>

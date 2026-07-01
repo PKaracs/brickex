@@ -35,94 +35,94 @@ export interface VideoPreset {
 export const VIDEO_PRESETS: VideoPreset[] = [
   {
     id: "orbit",
-    label: "Orbit",
-    description: "Camera orbits around the subject in a smooth arc",
+    label: "Orbita",
+    description: "La camara orbita alrededor del sujeto en un arco suave",
     icon: RotateCcw,
     prompt:
-      "Smooth cinematic orbit shot rotating around the subject, revealing all angles with fluid continuous motion, professional cinematography",
+      "Toma cinematografica de orbita suave alrededor del sujeto, revelando todos los angulos con movimiento continuo y fluido, cinematografia profesional",
     gradient: "from-violet-600/30 to-indigo-900/30",
   },
   {
     id: "zoom-in",
-    label: "Zoom In",
-    description: "Dramatic push-in towards the focal point",
+    label: "Acercamiento",
+    description: "Avance dramatico hacia el punto focal",
     icon: ZoomIn,
     prompt:
-      "Slow dramatic zoom in towards the center of the frame, gradually revealing fine details and textures, cinematic focus pull",
+      "Acercamiento dramatico lento hacia el centro del encuadre, revelando detalles y texturas gradualmente, con cambio de foco cinematografico",
     gradient: "from-cyan-600/30 to-blue-900/30",
   },
   {
     id: "zoom-out",
-    label: "Zoom Out",
-    description: "Pull back to reveal the full scene",
+    label: "Alejamiento",
+    description: "Retrocede para revelar toda la escena",
     icon: ZoomOut,
     prompt:
-      "Smooth pull-back zoom out revealing the full environment and context of the scene, wide establishing shot",
+      "Alejamiento suave revelando todo el entorno y contexto de la escena, plano general amplio",
     gradient: "from-emerald-600/30 to-teal-900/30",
   },
   {
     id: "pan-left",
-    label: "Pan Left",
-    description: "Horizontal sweep from right to left",
+    label: "Paneo izquierda",
+    description: "Barrido horizontal de derecha a izquierda",
     icon: ArrowLeft,
     prompt:
-      "Smooth horizontal camera pan sweeping from right to left across the scene, revealing the environment steadily",
+      "Paneo horizontal suave de derecha a izquierda por la escena, revelando el entorno de forma estable",
     gradient: "from-amber-600/30 to-orange-900/30",
   },
   {
     id: "pan-right",
-    label: "Pan Right",
-    description: "Horizontal sweep from left to right",
+    label: "Paneo derecha",
+    description: "Barrido horizontal de izquierda a derecha",
     icon: ArrowRight,
     prompt:
-      "Smooth horizontal camera pan sweeping from left to right across the scene, steady cinematic reveal",
+      "Paneo horizontal suave de izquierda a derecha por la escena, revelado cinematografico estable",
     gradient: "from-rose-600/30 to-pink-900/30",
   },
   {
     id: "tilt-up",
-    label: "Tilt Up",
-    description: "Vertical sweep looking upward",
+    label: "Tilt arriba",
+    description: "Barrido vertical mirando hacia arriba",
     icon: ArrowUp,
     prompt:
-      "Cinematic vertical tilt upward from ground level towards the sky, revealing height and grandeur of the architecture",
+      "Tilt vertical cinematografico desde nivel de suelo hacia el cielo, revelando altura y escala de la arquitectura",
     gradient: "from-sky-600/30 to-blue-900/30",
   },
   {
     id: "tilt-down",
-    label: "Tilt Down",
-    description: "Vertical sweep looking downward",
+    label: "Tilt abajo",
+    description: "Barrido vertical mirando hacia abajo",
     icon: ArrowDown,
     prompt:
-      "Cinematic vertical tilt downward from elevated view to ground, descending through the scene gracefully",
+      "Tilt vertical cinematografico desde una vista elevada hacia el suelo, descendiendo por la escena con suavidad",
     gradient: "from-fuchsia-600/30 to-purple-900/30",
   },
   {
     id: "dolly-forward",
-    label: "Dolly In",
-    description: "Camera physically moves forward through space",
+    label: "Dolly adelante",
+    description: "La camara avanza fisicamente por el espacio",
     icon: MoveRight,
     prompt:
-      "Smooth dolly-in shot moving physically forward through the space with visible parallax, depth and dimension",
+      "Dolly-in suave avanzando fisicamente por el espacio con paralaje visible, profundidad y dimension",
     gradient: "from-lime-600/30 to-green-900/30",
   },
   {
     id: "flyover",
-    label: "Flyover",
-    description: "Aerial drone-style sweeping descent",
+    label: "Sobrevuelo",
+    description: "Descenso aereo con estilo de drone",
     icon: Plane,
     prompt:
-      "Dramatic aerial flyover shot, drone-style camera descending and pulling back over the scene from above, sweeping cinematic movement",
+      "Sobrevuelo aereo dramatico, camara estilo drone descendiendo y alejandose sobre la escena desde arriba, movimiento cinematografico amplio",
     gradient: "from-orange-600/30 to-red-900/30",
     previewUrl:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/videos/flyover.mp4",
   },
   {
     id: "static",
-    label: "Static",
-    description: "No camera motion, subtle ambient movement only",
+    label: "Estatico",
+    description: "Sin movimiento de camara, solo movimiento ambiental sutil",
     icon: Pause,
     prompt:
-      "Static locked-off camera with zero movement, only subtle ambient motion such as gentle wind on foliage, drifting clouds, shifting natural light",
+      "Camara estatica bloqueada sin movimiento, solo movimiento ambiental sutil como viento suave en vegetacion, nubes desplazandose y luz natural cambiante",
     gradient: "from-neutral-600/30 to-neutral-900/30",
   },
 ];
@@ -152,13 +152,13 @@ export interface VideoScenePreset {
 export const VIDEO_SCENE_PRESETS: VideoScenePreset[] = [
   {
     id: "construction-rise",
-    label: "Construction Rise",
-    tagline: "From plot to skyline",
+    label: "Construccion en ascenso",
+    tagline: "Del terreno al skyline",
     description:
-      "Watch the building rise from an empty plot of land. The ground breaks, foundations are poured, steel beams climb skyward, and the finished structure emerges in a dramatic time-lapse.",
+      "Mira como el edificio se levanta desde un terreno vacio. Se abre el suelo, se vierten cimientos, las vigas suben hacia el cielo y la estructura terminada aparece en un timelapse dramatico.",
     icon: Hammer,
     prompt:
-      "Ultra-realistic cinematic time-lapse of a building being constructed from scratch. Begin with a barren empty plot of dirt and rubble. Heavy machinery arrives, excavators dig foundations. Steel rebar and concrete columns rise floor by floor. Construction cranes swing overhead. Workers in hard hats move across scaffolding. Glass curtain walls are installed panel by panel. The building grows taller and taller from the ground up, each floor materializing in rapid succession. Finally the completed building stands gleaming against the sky, polished and pristine. Dramatic orchestral score, dust particles catching golden sunlight, hyper-detailed 8K photorealistic construction time-lapse.",
+      "Timelapse cinematografico ultrarrealista de un edificio construido desde cero. Empieza con un terreno vacio de tierra y escombros. Llega maquinaria pesada, excavadoras abren cimientos. Armaduras de acero y columnas de hormigon suben planta por planta. Gruas giran sobre la obra. Trabajadores con casco se mueven por andamios. Los muros cortina de vidrio se instalan panel a panel. El edificio crece desde el suelo, cada planta aparece en sucesion rapida. Al final el edificio terminado brilla contra el cielo, pulido e impecable. Polvo atrapando luz dorada, timelapse de construccion fotorrealista 8K hiper detallado.",
     gradient: "from-amber-500/30 to-orange-900/30",
     previewUrl:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/videos/construction.mp4",
@@ -187,52 +187,52 @@ export const VIDEO_SCENE_PRESETS: VideoScenePreset[] = [
   // },
   {
     id: "four-seasons",
-    label: "Four Seasons",
-    tagline: "Spring bloom to winter frost",
+    label: "Cuatro estaciones",
+    tagline: "De floracion primaveral a escarcha invernal",
     description:
-      "The building experiences all four seasons — spring blossoms, lush summer greenery, autumn foliage, and a serene winter snowscape.",
+      "El edificio vive las cuatro estaciones: flores de primavera, vegetacion de verano, hojas de otono y un paisaje invernal sereno.",
     icon: TreePine,
     prompt:
-      "Magnificent cinematic four-seasons time-lapse of a building through an entire year. Spring: cherry blossom trees burst into pink and white flowers, fresh green grass emerges, soft rain drizzles, everything feels alive and renewed. Summer: lush deep green canopy, vibrant flowers in full bloom, brilliant blue sky, sharp crisp shadows, people enjoying the outdoors. Autumn: leaves transform into spectacular reds, oranges, and golds, falling gently through the air, warm amber light, puddles reflecting the colourful canopy. Winter: first snowflakes drift down, frost crystallizes on every surface, snow blankets the ground and rooftops, warm light glows from inside, icicles hang from edges, breath-visible cold air. Seamless transitions between seasons, ultra-photorealistic 8K cinematic time-lapse.",
+      "Timelapse cinematografico magnifico de un edificio durante todo un ano. Primavera: flores rosas y blancas, hierba fresca, lluvia suave, todo se siente vivo y renovado. Verano: copa verde profunda, flores vibrantes, cielo azul brillante, sombras nítidas, personas disfrutando del exterior. Otono: hojas rojas, naranjas y doradas caen suavemente, luz ambar y charcos reflejando la vegetacion. Invierno: copos de nieve, escarcha en superficies, nieve cubriendo suelo y cubiertas, luz interior calida e icicles en bordes. Transiciones fluidas entre estaciones, timelapse cinematografico 8K ultrafotorrealista.",
     gradient: "from-emerald-500/30 to-blue-900/30",
     previewUrl:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/videos/fourseasons.mp4",
   },
   {
     id: "weather-drama",
-    label: "Storm Passing",
-    tagline: "Calm, chaos, calm again",
+    label: "Tormenta pasajera",
+    tagline: "Calma, caos y calma otra vez",
     description:
-      "Dramatic storm clouds roll in, rain lashes the building, lightning illuminates the facade, then skies clear to reveal a stunning rainbow.",
+      "Nubes dramaticas entran en escena, la lluvia golpea el edificio, los relampagos iluminan la fachada y luego el cielo se abre para revelar un arcoiris.",
     icon: CloudRain,
     prompt:
-      "Dramatic cinematic storm time-lapse over a building. Begin with serene clear skies, gentle breeze. Dark ominous storm clouds rush in from the horizon, sky turns deep grey and purple. Wind intensifies, trees bend and sway violently. Heavy rain begins hammering every surface, water streaming down glass facades, splashing on concrete. Dramatic lightning bolts crack across the sky illuminating the entire building in split-second white flash. Thunder rumbles. Rain intensifies to a torrential downpour, sheets of water cascade. Then gradually the storm passes, clouds break apart, golden sunlight pierces through revealing a vivid double rainbow arcing behind the building. Wet surfaces gleam and reflect. Everything looks fresh and renewed. Ultra-cinematic 8K dramatic weather time-lapse with volumetric rain and lightning effects.",
+      "Timelapse cinematografico dramatico de tormenta sobre un edificio. Empieza con cielo despejado y brisa suave. Nubes oscuras entran desde el horizonte, el cielo se vuelve gris y purpura. El viento se intensifica, los arboles se doblan y se balancean. La lluvia golpea cada superficie, el agua baja por fachadas de vidrio y salpica el hormigon. Relampagos iluminan todo el edificio en destellos blancos. La lluvia se vuelve torrencial y luego la tormenta pasa gradualmente, las nubes se abren y la luz dorada revela un arcoiris doble. Superficies mojadas brillan y reflejan. Timelapse meteorologico 8K ultracinematografico con lluvia volumetrica y relampagos.",
     gradient: "from-slate-500/30 to-purple-900/30",
     previewUrl:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/videos/storm.mp4",
   },
   {
     id: "people-timelapse",
-    label: "Life in Motion",
-    tagline: "A day of human activity",
+    label: "Vida en movimiento",
+    tagline: "Un dia de actividad humana",
     description:
-      "Time-lapse of people flowing through and around the building — morning rush, midday activity, evening wind-down. The building pulses with life.",
+      "Timelapse de personas entrando, saliendo y rodeando el edificio: hora punta, actividad de mediodia y calma de tarde. El edificio late con vida.",
     icon: Users,
     prompt:
-      "Cinematic human-activity time-lapse around an architectural building throughout a full day. Early morning: a lone jogger passes, delivery trucks arrive, the first lights turn on. Morning rush: streams of people pour in through entrances, cars flow through nearby streets, the building awakens. Midday: the space buzzes with life, people sit on benches, walk through plazas, sunlight is at its peak, shadows are shortest. Afternoon: activity shifts, school children pass by, cyclists weave through, clouds cast moving shadows. Evening: golden hour light, people leave in waves, street lights turn on, the building transitions from work to leisure. Night: the building glows warm, scattered figures walk past, the city calms. Long-exposure light trails from passing vehicles streak through the scene. Ultra-photorealistic 8K cinematic life time-lapse.",
+      "Timelapse cinematografico de actividad humana alrededor de un edificio durante un dia completo. Manana temprana: pasa una persona corriendo, llegan entregas y se encienden las primeras luces. Hora punta: flujos de personas entran por accesos, coches circulan por calles cercanas y el edificio despierta. Mediodia: el espacio vibra con vida, personas se sientan en bancos y cruzan plazas. Tarde: cambia la actividad, pasan ciclistas y nubes proyectan sombras. Atardecer: golden hour, la gente sale en oleadas y se encienden farolas. Noche: el edificio brilla calido y la ciudad se calma. Estelas de luz de larga exposicion atraviesan la escena. Timelapse de vida 8K ultrafotorrealista.",
     gradient: "from-blue-500/30 to-violet-900/30",
     previewUrl:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/videos/life-people.mp4",
   },
   {
     id: "snow-blanket",
-    label: "Snowfall",
-    tagline: "Silent winter transformation",
+    label: "Nevada",
+    tagline: "Transformacion invernal silenciosa",
     description:
-      "A tranquil snowstorm slowly blankets the building and its surroundings in pristine white, transforming the scene into a winter wonderland.",
+      "Una nevada tranquila cubre poco a poco el edificio y su entorno de blanco, transformando la escena en un paisaje invernal.",
     icon: Snowflake,
     prompt:
-      "Serene cinematic snowfall time-lapse over an architectural building. Begin with the building under overcast grey winter sky, bare trees, cold atmosphere. The first delicate snowflakes begin to drift down, sparse at first, catching the ambient light. Snow gradually intensifies, millions of flakes swirling in gentle eddies. A thin white layer forms on every horizontal surface — rooftops, ledges, railings, ground. Snow accumulates steadily, transforming the scene inch by inch. Trees become laden with white. The ground disappears under a smooth pristine blanket. Footprints form and quickly fill in. The building emerges as a warm refuge, interior lights glowing golden against the cold white exterior. Everything is hushed, muffled, peaceful. A magical winter wonderland. Ultra-detailed 8K photorealistic snowfall time-lapse with individually visible snowflakes and volumetric atmosphere.",
+      "Timelapse cinematografico sereno de nevada sobre un edificio. Empieza con cielo gris invernal, arboles desnudos y atmosfera fria. Los primeros copos delicados caen lentamente, al principio escasos, atrapando la luz ambiente. La nieve se intensifica y millones de copos giran suavemente. Una capa blanca se forma en cubiertas, bordes, barandillas y suelo. La nieve se acumula, transformando la escena poco a poco. Los arboles se cargan de blanco y el suelo desaparece bajo una manta limpia. El edificio emerge como refugio calido, con luces interiores doradas frente al exterior frio. Timelapse fotorrealista 8K ultradetallado con atmosfera volumetrica.",
     gradient: "from-sky-400/30 to-slate-900/30",
     previewUrl:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/videos/snow-falling.mp4",
@@ -250,13 +250,13 @@ export const VIDEO_SCENE_PRESETS: VideoScenePreset[] = [
   // },
   {
     id: "timelapse-classic",
-    label: "Classic Timelapse",
-    tagline: "Clouds racing, shadows dancing",
+    label: "Timelapse clasico",
+    tagline: "Nubes rapidas y sombras en movimiento",
     description:
-      "A classic architectural time-lapse — fast-moving clouds, sweeping shadows, and the dynamic energy of time compressed around a still building.",
+      "Un timelapse arquitectonico clasico: nubes veloces, sombras que barren la fachada y energia dinamica del tiempo comprimido alrededor de un edificio inmovil.",
     icon: Clock,
     prompt:
-      "Classic architectural time-lapse of a building over several hours compressed into seconds. Dramatic fast-moving clouds race across the sky, their shadows sweeping rapidly across the building facade and surrounding ground. Sunlight and shadow alternate in rhythmic patterns. The sun's position shifts visibly, light angles change dramatically, warm and cool tones alternating. People and vehicles blur into streaks of motion. Trees sway in accelerated wind. Puddles appear and evaporate. The building stands resolute and still as the world rushes around it, a monument of permanence amid constant change. Shot from a locked tripod position, ultra-stable, hyper-detailed 8K photorealistic architectural time-lapse with silky smooth cloud motion.",
+      "Timelapse arquitectonico clasico de un edificio durante varias horas comprimidas en segundos. Nubes dramaticas y rapidas cruzan el cielo, sus sombras barren la fachada y el suelo alrededor. Luz y sombra alternan en patrones ritmicos. La posicion del sol cambia visiblemente, los angulos de luz varian y alternan tonos calidos y frios. Personas y vehiculos se desenfocan en estelas de movimiento. Arboles se balancean con viento acelerado. Charcos aparecen y se evaporan. El edificio permanece firme mientras el mundo corre a su alrededor. Toma desde tripode fijo, ultrastable, timelapse arquitectonico fotorrealista 8K hiper detallado.",
     gradient: "from-teal-500/30 to-cyan-900/30",
     previewUrl:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/videos/timelapse.mp4",

@@ -35,7 +35,7 @@ const BLUR_DATA_URL =
   "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkOAMAAPMASTyq3tQAAAAASUVORK5CYII=";
 
 function formatFullDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString("es-ES", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -111,7 +111,7 @@ export function ImagePreviewModal({
     [project],
   );
   const projectDescriptor = useMemo(
-    () => (project ? getGalleryProjectPrimaryDescriptor(project) : "Tool"),
+    () => (project ? getGalleryProjectPrimaryDescriptor(project) : "Herramienta"),
     [project],
   );
   const isCurrentVideo =
@@ -305,7 +305,7 @@ export function ImagePreviewModal({
                           ? "Video"
                           : item.mediaType === "model_3d"
                             ? "3D"
-                          : item.label.replace("Variation ", "V")}
+                          : item.label.replace("Variacion ", "V")}
                     </div>
                   </button>
                 ))}
@@ -317,7 +317,7 @@ export function ImagePreviewModal({
                   className="bg-white text-black hover:bg-neutral-200"
                 >
                   <Download className="mr-2 h-4 w-4" />
-                  Save
+                  Guardar
                 </Button>
                 <Button
                   variant="outline"
@@ -325,7 +325,7 @@ export function ImagePreviewModal({
                   className="border-neutral-700 text-neutral-200 hover:bg-neutral-800"
                 >
                   <Share2 className="mr-2 h-4 w-4" />
-                  Share
+                  Compartir
                 </Button>
                 <Button
                   variant="outline"
@@ -334,7 +334,7 @@ export function ImagePreviewModal({
                   className="border-neutral-700 text-neutral-200 hover:bg-neutral-800 disabled:opacity-40"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Delete
+                  Eliminar
                 </Button>
               </div>
             </div>
@@ -342,7 +342,7 @@ export function ImagePreviewModal({
 
           <aside className="hidden md:flex w-[360px] flex-col border-l border-neutral-900 bg-neutral-950/80">
             <div className="border-b border-neutral-900 px-5 py-4">
-              <p className="text-xs uppercase tracking-[0.24em] text-neutral-500">Project Stack</p>
+              <p className="text-xs uppercase tracking-[0.24em] text-neutral-500">Stack del proyecto</p>
               {isRenamingProject ? (
                 <div className="mt-3 space-y-3">
                   <Input
@@ -358,7 +358,7 @@ export function ImagePreviewModal({
                         onProjectRenameCancel?.();
                       }
                     }}
-                    placeholder="Project name"
+                    placeholder="Nombre del proyecto"
                     autoFocus
                   />
                   <div className="flex items-center justify-end gap-2">
@@ -368,7 +368,7 @@ export function ImagePreviewModal({
                       onClick={onProjectRenameCancel}
                       className="border-neutral-700 text-neutral-200 hover:bg-neutral-800"
                     >
-                      Cancel
+                      Cancelar
                     </Button>
                     <Button
                       variant="white"
@@ -377,7 +377,7 @@ export function ImagePreviewModal({
                       isLoading={isSavingProjectName}
                     >
                       <Save className="h-4 w-4" />
-                      Save
+                      Guardar
                     </Button>
                   </div>
                 </div>
@@ -386,7 +386,7 @@ export function ImagePreviewModal({
                   <div className="min-w-0">
                     <h3 className="text-lg font-medium text-white">{project.title}</h3>
                     <p className="mt-1 text-sm text-neutral-500">
-                      {project.variationCount} {project.variationCount === 1 ? "variation" : "variations"}
+                      {project.variationCount} {project.variationCount === 1 ? "variacion" : "variaciones"}
                       {project.original ? " + original" : ""}
                     </p>
                   </div>
@@ -464,7 +464,7 @@ export function ImagePreviewModal({
                             ? "Video"
                             : isModel
                               ? "3D"
-                              : item.label.replace("Variation ", "V")}
+                              : item.label.replace("Variacion ", "V")}
                       </div>
                     </button>
                   );
@@ -473,7 +473,7 @@ export function ImagePreviewModal({
 
               <div className="space-y-4">
                 <div>
-                  <p className="text-xs font-medium text-neutral-500">Selection</p>
+                  <p className="text-xs font-medium text-neutral-500">Seleccion</p>
                   <div className="mt-2 flex items-center gap-2">
                     <span className="inline-flex rounded-full border border-neutral-800 bg-neutral-900 px-2.5 py-1 text-xs text-neutral-200">
                       {currentItem.label}
@@ -491,30 +491,30 @@ export function ImagePreviewModal({
                 </div>
 
                 <div>
-                  <p className="text-xs font-medium text-neutral-500">Created</p>
+                  <p className="text-xs font-medium text-neutral-500">Creado</p>
                   <p className="mt-2 text-sm text-neutral-300">{formatFullDate(currentItem.createdAt)}</p>
                 </div>
 
                 {currentItem.kind === "original" ? (
                   <div>
-                    <p className="text-xs font-medium text-neutral-500">Original Input</p>
+                    <p className="text-xs font-medium text-neutral-500">Entrada original</p>
                     <p className="mt-2 text-sm text-neutral-300">
-                      {currentItem.filename || "Saved source image"}
+                      {currentItem.filename || "Imagen de origen guardada"}
                     </p>
                     <p className="mt-2 text-sm text-neutral-500">
-                      This is the source image used for this render project.
+                      Esta es la imagen de origen usada para este proyecto de render.
                     </p>
                   </div>
                 ) : (
                   <>
                     {currentItem.title && (
                       <div>
-                        <p className="text-xs font-medium text-neutral-500">Output</p>
+                        <p className="text-xs font-medium text-neutral-500">Resultado</p>
                         <p className="mt-2 text-sm text-neutral-300">{currentItem.title}</p>
                       </div>
                     )}
                     <div>
-                      <p className="text-xs font-medium text-neutral-500">Collection</p>
+                      <p className="text-xs font-medium text-neutral-500">Coleccion</p>
                       <p className="mt-2 text-sm text-neutral-300">
                         {getGalleryProjectCollectionLabel(projectCollection)}
                       </p>
@@ -540,7 +540,7 @@ export function ImagePreviewModal({
                 className="w-full bg-white text-black hover:bg-neutral-200"
               >
                 <Download className="mr-2 h-4 w-4" />
-                Download
+                Descargar
               </Button>
               <Button
                 variant="outline"
@@ -548,7 +548,7 @@ export function ImagePreviewModal({
                 className="w-full border-neutral-700 text-neutral-200 hover:bg-neutral-800"
               >
                 <Share2 className="mr-2 h-4 w-4" />
-                Share Link
+                Compartir enlace
               </Button>
               <Button
                 variant="outline"
@@ -556,7 +556,7 @@ export function ImagePreviewModal({
                 className="w-full border-neutral-700 text-neutral-200 hover:bg-neutral-800"
               >
                 <Pencil className="mr-2 h-4 w-4" />
-                Rename Project
+                Renombrar proyecto
               </Button>
               <Button
                 variant="outline"
@@ -565,7 +565,7 @@ export function ImagePreviewModal({
                 className="w-full border-neutral-700 text-neutral-200 hover:bg-neutral-800 disabled:opacity-40"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete Variation
+                Eliminar variacion
               </Button>
               <Button
                 variant="outline"
@@ -573,7 +573,7 @@ export function ImagePreviewModal({
                 className="w-full border-red-900/60 text-red-300 hover:bg-red-950/40 hover:text-red-200"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
-                Delete Project
+                Eliminar proyecto
               </Button>
             </div>
           </aside>

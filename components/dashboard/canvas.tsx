@@ -54,12 +54,12 @@ const ACCEPTED_TYPES = [
 const ACCEPTED_EXTENSIONS = ".jpg,.jpeg,.png,.webp,.svg,.tiff,.tif,.pdf,.dwg,.dxf";
 
 const GENERATION_TIPS = [
-  "Analyzing your input...",
-  "Understanding the architecture...",
-  "Generating the render...",
-  "Applying materials and lighting...",
-  "Fine-tuning details...",
-  "Almost there...",
+  "Analizando tu entrada...",
+  "Entendiendo la arquitectura...",
+  "Generando el render...",
+  "Aplicando materiales e iluminacion...",
+  "Afinando detalles...",
+  "Ya casi esta...",
 ];
 
 function GeneratingState() {
@@ -79,10 +79,10 @@ function GeneratingState() {
         <div className="absolute inset-0 w-16 h-16 rounded-full border-2 border-transparent border-t-white/60 animate-spin" />
       </div>
       <div className="text-center space-y-2">
-        <p className="text-white font-medium">Creating your render</p>
+        <p className="text-white font-medium">Creando tu render</p>
         <p className="text-sm text-neutral-500">{GENERATION_TIPS[tipIndex]}</p>
       </div>
-      <p className="text-xs text-neutral-600">This usually takes ~30 seconds</p>
+      <p className="text-xs text-neutral-600">Normalmente tarda unos 30 segundos</p>
     </div>
   );
 }
@@ -145,7 +145,7 @@ function PickFromGalleryModal({
   };
 
   const formatDate = (date: Date) =>
-    date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+    date.toLocaleDateString("es-ES", { month: "short", day: "numeric" });
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -156,11 +156,11 @@ function PickFromGalleryModal({
         <div className="flex-shrink-0 px-5 pt-5 pb-0 space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-white">Your Gallery</h2>
+              <h2 className="text-lg font-semibold text-white">Tu galeria</h2>
               <p className="text-sm text-neutral-500 mt-0.5">
                 {isLoading
-                  ? "Loading your images..."
-                  : `${images.length} image${images.length !== 1 ? "s" : ""} available`}
+                  ? "Cargando tus imagenes..."
+                  : `${images.length} imagen${images.length !== 1 ? "es" : ""} disponible${images.length !== 1 ? "s" : ""}`}
               </p>
             </div>
             <button
@@ -178,7 +178,7 @@ function PickFromGalleryModal({
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search by prompt or mode..."
+                placeholder="Buscar por prompt o modo..."
                 className="w-full bg-neutral-900/80 border border-neutral-800 rounded-xl pl-9 pr-3 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-neutral-600 transition-colors"
               />
             </div>
@@ -203,16 +203,16 @@ function PickFromGalleryModal({
               <div className="w-16 h-16 rounded-2xl bg-neutral-800/50 border border-neutral-700/50 flex items-center justify-center mx-auto mb-4">
                 <ImageIcon className="w-7 h-7 text-neutral-600" />
               </div>
-              <p className="text-sm font-medium text-neutral-400">No images yet</p>
+              <p className="text-sm font-medium text-neutral-400">Aun no hay imagenes</p>
               <p className="text-xs text-neutral-600 mt-1">
-                Generate some renders first, then pick them here
+                Genera algunos renders primero y luego elige uno aqui
               </p>
             </div>
           ) : filteredImages.length === 0 ? (
             <div className="py-16 text-center">
               <Search className="w-8 h-8 text-neutral-700 mx-auto mb-3" />
               <p className="text-sm text-neutral-500">
-                No results for &ldquo;{searchQuery}&rdquo;
+                No hay resultados para &ldquo;{searchQuery}&rdquo;
               </p>
             </div>
           ) : (
@@ -682,7 +682,8 @@ export const Canvas = memo(function Canvas({
               <img
                 ref={generatedImgRef}
                 src={displayUrl!}
-                alt="Generated render"
+                alt="Render generado"
+                data-render-image="true"
                 {...(!displayUrl?.startsWith("data:") && { crossOrigin: "anonymous" as const })}
                 onLoad={() => setImageLoaded(true)}
                 className={cn(
@@ -703,7 +704,7 @@ export const Canvas = memo(function Canvas({
                 <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/25 rounded-lg">
                   <div className="flex flex-col items-center gap-3">
                     <Loader2 className="w-8 h-8 text-white animate-spin" />
-                    <p className="text-sm text-white/80">Applying edit...</p>
+                    <p className="text-sm text-white/80">Aplicando edicion...</p>
                   </div>
                 </div>
               )}
@@ -731,7 +732,7 @@ export const Canvas = memo(function Canvas({
                         }
                         if (e.key === "Escape") handleClearSelection();
                       }}
-                      placeholder="Suggest change (1 brick)"
+                      placeholder="Sugiere un cambio (1 brick)"
                       className="flex-1 bg-transparent text-sm text-neutral-800 placeholder:text-neutral-400 outline-none min-w-0"
                       autoFocus
                       disabled={isEditGenerating}
@@ -760,12 +761,12 @@ export const Canvas = memo(function Canvas({
                   {/* Source input image */}
                   {sourcePreviewUrl && (
                     <div
-                      title="Input"
+                      title="Entrada"
                       className="relative w-10 h-10 rounded-lg overflow-hidden border-2 border-transparent opacity-50 shrink-0"
                     >
                       <img
                         src={sourcePreviewUrl}
-                        alt="Input"
+                        alt="Entrada"
                         className="w-full h-full object-cover"
                       />
                       <div className="absolute inset-0 flex items-end justify-center pb-0.5">
@@ -777,7 +778,7 @@ export const Canvas = memo(function Canvas({
                   )}
                   {/* Generated versions */}
                   {editHistory.map((url, idx) => {
-                    const label = idx === 0 ? "Original" : `Edit ${idx}`;
+                    const label = idx === 0 ? "Original" : `Edicion ${idx}`;
                     const isActive = idx === editHistoryIndex;
                     return (
                       <button
@@ -817,16 +818,16 @@ export const Canvas = memo(function Canvas({
         {/* Bottom editing toolbar */}
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-0.5 px-2 py-1.5 bg-neutral-900/95 backdrop-blur-md border border-neutral-700/60 rounded-xl shadow-2xl">
           {/* Drawing tools */}
-          <button title="Select region" className="w-9 h-9 flex items-center justify-center rounded-lg bg-white text-black">
+          <button title="Seleccionar region" className="w-9 h-9 flex items-center justify-center rounded-lg bg-white text-black">
             <BoxSelect className="w-4 h-4" />
           </button>
-          <button title="Comment" className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+          <button title="Comentario" className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
             <MessageSquare className="w-4 h-4" />
           </button>
-          <button title="Shape" className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+          <button title="Forma" className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
             <Pentagon className="w-4 h-4" />
           </button>
-          <button title="Eraser" className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+          <button title="Borrador" className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
             <Eraser className="w-4 h-4" />
           </button>
 
@@ -836,7 +837,7 @@ export const Canvas = memo(function Canvas({
           <button
             onClick={(e) => { e.stopPropagation(); if (editHistoryIndex > 0) onHistorySelect?.(editHistoryIndex - 1); }}
             disabled={editHistoryIndex <= 0}
-            title="Undo"
+            title="Deshacer"
             className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <Undo2 className="w-4 h-4" />
@@ -844,14 +845,14 @@ export const Canvas = memo(function Canvas({
           <button
             onClick={(e) => { e.stopPropagation(); if (editHistoryIndex < editHistory.length - 1) onHistorySelect?.(editHistoryIndex + 1); }}
             disabled={editHistoryIndex >= editHistory.length - 1}
-            title="Redo"
+            title="Rehacer"
             className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
             <Redo2 className="w-4 h-4" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); if (editHistory.length > 0) onHistorySelect?.(0); }}
-            title="Reset to original"
+            title="Restablecer al original"
             className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
           >
             <RotateCcw className="w-4 h-4" />
@@ -860,13 +861,13 @@ export const Canvas = memo(function Canvas({
           <div className="w-px h-6 bg-neutral-700 mx-1" />
 
           {/* View / actions */}
-          <button title="Fullscreen" className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
+          <button title="Pantalla completa" className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors">
             <Monitor className="w-4 h-4" />
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); if (canCompare) onToggleCompare?.(); }}
             disabled={!canCompare}
-            title="Compare with original"
+            title="Comparar con original"
             className={cn(
               "w-9 h-9 flex items-center justify-center rounded-lg transition-colors disabled:opacity-30 disabled:cursor-not-allowed",
               isComparing && canCompare
@@ -878,7 +879,7 @@ export const Canvas = memo(function Canvas({
           </button>
           <button
             onClick={(e) => { e.stopPropagation(); onDownload?.(); }}
-            title="Download"
+            title="Descargar"
             className="w-9 h-9 flex items-center justify-center rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors"
           >
             <Download className="w-4 h-4" />
@@ -963,7 +964,7 @@ export const Canvas = memo(function Canvas({
                 <div className="text-center">
                   <p className="text-sm font-medium text-white">{currentFile?.name}</p>
                   <p className="text-xs text-neutral-500 mt-1">
-                    {isPdf ? "PDF" : "CAD"} file ready for processing
+                    Archivo {isPdf ? "PDF" : "CAD"} listo para procesar
                   </p>
                 </div>
               </div>
@@ -971,7 +972,7 @@ export const Canvas = memo(function Canvas({
               <div className="relative flex-1 h-full flex items-center justify-center">
                 <img
                   src={displayUrl}
-                  alt="Source image"
+                  alt="Imagen de origen"
                   className="max-w-full max-h-full object-contain rounded-lg"
                 />
                 {/* Navigation arrows for multiple files */}
@@ -1011,7 +1012,7 @@ export const Canvas = memo(function Canvas({
             <div className="absolute inset-0 bg-white/5 backdrop-blur-sm flex items-center justify-center z-20">
               <div className="flex flex-col items-center gap-2">
                 <Upload className="w-8 h-8 text-white" />
-                <p className="text-sm font-medium text-white">Drop to add more files</p>
+                <p className="text-sm font-medium text-white">Suelta para agregar mas archivos</p>
               </div>
             </div>
           )}
@@ -1116,10 +1117,10 @@ export const Canvas = memo(function Canvas({
           </div>
           <div className="space-y-1.5">
             <h3 className="text-base md:text-lg font-medium text-white">
-              {isDragOver ? "Drop files here" : "Upload your source"}
+              {isDragOver ? "Suelta los archivos aqui" : "Sube tu fuente"}
             </h3>
             <p className="text-xs md:text-sm text-neutral-500 leading-relaxed">
-              Drag & drop floor plans, sketches, photos, AutoCAD files — or click to browse
+              Arrastra planos, bocetos, fotos o archivos AutoCAD, o haz clic para buscar
             </p>
           </div>
 
@@ -1133,7 +1134,7 @@ export const Canvas = memo(function Canvas({
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white text-black text-sm font-medium hover:bg-neutral-200 transition-colors"
             >
               <FolderOpen className="w-4 h-4" />
-              Browse Files
+              Buscar archivos
             </button>
             <button
               onClick={(e) => {
@@ -1143,7 +1144,7 @@ export const Canvas = memo(function Canvas({
               className="flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-800 text-neutral-300 text-sm font-medium border border-neutral-700 hover:bg-neutral-700 hover:text-white transition-colors"
             >
               <ImageIcon className="w-4 h-4" />
-              Pick from Gallery
+              Elegir de la galeria
             </button>
           </div>
 

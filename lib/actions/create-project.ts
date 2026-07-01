@@ -15,7 +15,7 @@ export async function createProject(
 ): Promise<{ projectId: string } | { error: string }> {
   try {
     const { organizationId, userId } = await requireWorkspaceContext();
-    const title = input?.title?.trim() || "Untitled project";
+    const title = input?.title?.trim() || "Proyecto sin titulo";
     const slug = await ensureUniqueProjectSlug(organizationId, title);
 
     const [project] = await db
@@ -35,7 +35,7 @@ export async function createProject(
       projectId: project.id,
       versionNumber: 1,
       createdByUserId: userId,
-      label: "Initial brief",
+      label: "Brief inicial",
       config: {
         sourceType: input?.sourceType ?? "upload",
       },
@@ -43,7 +43,8 @@ export async function createProject(
 
     return { projectId: project.id };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to create project";
+    const message =
+      error instanceof Error ? error.message : "No se pudo crear el proyecto";
     return { error: message };
   }
 }
@@ -56,12 +57,13 @@ export async function getLatestProject(): Promise<
     const project = await getLatestProjectForOrganization(organizationId);
 
     if (!project) {
-      return { error: "No project found", noProject: true };
+      return { error: "No se encontro ningun proyecto", noProject: true };
     }
 
     return { project };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load project";
+    const message =
+      error instanceof Error ? error.message : "No se pudo cargar el proyecto";
     return { error: message };
   }
 }

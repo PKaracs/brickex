@@ -13,10 +13,10 @@ export default function TextureDemoPage() {
     <div className="min-h-screen bg-neutral-950 p-8">
       <div className="max-w-2xl mx-auto space-y-6">
         <h1 className="text-lg font-semibold text-white">
-          Interior texture preview (rounded ball)
+          Vista previa de textura interior (esfera redondeada)
         </h1>
         <p className="text-sm text-neutral-500">
-          One sample texture for approval. More can be added to{" "}
+          Una textura de muestra para aprobacion. Se pueden agregar mas en{" "}
           <code className="text-neutral-400">lib/constants/interior-textures.ts</code>.
         </p>
         <div className="flex flex-wrap gap-4">

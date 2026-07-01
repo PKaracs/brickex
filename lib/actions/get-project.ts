@@ -34,12 +34,13 @@ export async function getProject(
     const project = await getProjectForOrganization(projectId, organizationId);
 
     if (!project) {
-      return { error: "Project not found" };
+      return { error: "Proyecto no encontrado" };
     }
 
     return { project };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load project";
+    const message =
+      error instanceof Error ? error.message : "No se pudo cargar el proyecto";
     return { error: message };
   }
 }

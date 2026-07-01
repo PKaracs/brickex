@@ -1,7 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
 if (!process.env.GOOGLE_GENAI_API_KEY) {
-  throw new Error("GOOGLE_GENAI_API_KEY environment variable is required");
+  throw new Error("La variable de entorno GOOGLE_GENAI_API_KEY es obligatoria");
 }
 
 export const genai = new GoogleGenAI({

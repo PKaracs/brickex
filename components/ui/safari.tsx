@@ -10,7 +10,7 @@ export interface SafariProps extends HTMLAttributes<HTMLDivElement> {
   alt?: string;
 }
 
-export function Safari({ imageSrc, priority, alt = "Richflex dashboard showing AI-generated luxury lifestyle photos", className, ...props }: SafariProps) {
+export function Safari({ imageSrc, priority, alt = "Dashboard de BrickEx mostrando visualizaciones inmobiliarias generadas con IA", className, ...props }: SafariProps) {
   return (
     <div
       className={cn("bg-[#1a1a1a] rounded-3xl p-4 md:p-6 shadow-sm", className)}

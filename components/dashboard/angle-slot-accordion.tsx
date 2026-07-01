@@ -55,7 +55,7 @@ export function AngleSlotAccordion({
   return (
     <div className="space-y-1.5">
       <h4 className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider">
-        Angles
+        Angulos
       </h4>
       <Accordion type="single" collapsible className="space-y-1">
         {slots.map((slot, index) => {
@@ -89,7 +89,7 @@ export function AngleSlotAccordion({
                     </span>
                     {overrideCount > 0 && (
                       <span className="text-[9px] text-neutral-400 bg-neutral-700/50 px-1.5 py-0.5 rounded-full">
-                        {overrideCount} override{overrideCount > 1 ? "s" : ""}
+                        {overrideCount} ajuste{overrideCount > 1 ? "s" : ""}
                       </span>
                     )}
                     <SlotStatusIcon status={slot.status} />

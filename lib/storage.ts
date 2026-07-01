@@ -25,7 +25,7 @@ export function toStorageKey(bucket: string, path: string) {
 export function parseStorageKey(storageKey: string) {
   const firstSlash = storageKey.indexOf("/");
   if (firstSlash === -1) {
-    throw new Error(`Invalid storage key: ${storageKey}`);
+    throw new Error(`Clave de storage no valida: ${storageKey}`);
   }
 
   return {
@@ -73,7 +73,7 @@ export async function createSignedUploadUrl(input: {
     });
 
   if (result.error || !result.data) {
-    throw new Error(result.error?.message || "Failed to create signed upload URL");
+    throw new Error(result.error?.message || "No se pudo crear la URL firmada de subida");
   }
 
   return result.data;
@@ -84,7 +84,7 @@ export async function getSignedDownloadUrl(storageKey: string, expiresIn = env.S
   const result = await supabaseAdmin.storage.from(bucket).createSignedUrl(path, expiresIn);
 
   if (result.error || !result.data) {
-    throw new Error(result.error?.message || "Failed to create signed URL");
+    throw new Error(result.error?.message || "No se pudo crear la URL firmada");
   }
 
   return result.data.signedUrl;
@@ -114,12 +114,12 @@ export async function getSignedDownloadUrls(
         .createSignedUrls(paths, expiresIn);
 
       if (result.error || !result.data) {
-        throw new Error(result.error?.message || "Failed to create signed URLs");
+        throw new Error(result.error?.message || "No se pudieron crear las URLs firmadas");
       }
 
       return result.data.map((item) => {
         if (item.error || !item.path || !item.signedUrl) {
-          throw new Error(item.error || "Failed to create signed URL");
+          throw new Error(item.error || "No se pudo crear la URL firmada");
         }
 
         return [toStorageKey(bucket, item.path), item.signedUrl] as const;
@@ -143,7 +143,7 @@ export async function uploadBufferToStorage(input: {
   });
 
   if (result.error || !result.data) {
-    throw new Error(result.error?.message || "Failed to upload object to Supabase Storage");
+    throw new Error(result.error?.message || "No se pudo subir el objeto a Supabase Storage");
   }
 
   return result.data;
@@ -154,7 +154,7 @@ export async function downloadStorageObject(storageKey: string) {
   const result = await supabaseAdmin.storage.from(bucket).download(path);
 
   if (result.error || !result.data) {
-    throw new Error(result.error?.message || "Failed to download object from Supabase Storage");
+    throw new Error(result.error?.message || "No se pudo descargar el objeto de Supabase Storage");
   }
 
   const arrayBuffer = await result.data.arrayBuffer();
@@ -166,7 +166,7 @@ export async function getStorageObjectInfo(storageKey: string) {
   const result = await supabaseAdmin.storage.from(bucket).info(path);
 
   if (result.error || !result.data) {
-    throw new Error(result.error?.message || "Failed to load object metadata");
+    throw new Error(result.error?.message || "No se pudo cargar la metadata del objeto");
   }
 
   return result.data;
@@ -181,7 +181,7 @@ export async function ingestExternalFileToStorage(input: {
   const response = await fetch(input.sourceUrl);
 
   if (!response.ok) {
-    throw new Error(`Failed to download external asset: HTTP ${response.status}`);
+    throw new Error(`No se pudo descargar el asset externo: HTTP ${response.status}`);
   }
 
   const arrayBuffer = await response.arrayBuffer();

@@ -73,11 +73,11 @@ const EditSidebar = memo(function EditSidebar({
         <div>
           <div className="flex items-center gap-2 mb-1">
             <Pencil className="w-4 h-4 text-neutral-400" />
-            <h2 className="text-sm font-semibold text-white">Edit Render</h2>
+            <h2 className="text-sm font-semibold text-white">Editar render</h2>
           </div>
           <p className="text-xs text-neutral-500">
-            Select a region on the image for targeted edits, or use the prompt
-            below for global changes.
+            Selecciona una region de la imagen para editarla, o usa el prompt
+            inferior para cambios globales.
           </p>
         </div>
 
@@ -85,14 +85,14 @@ const EditSidebar = memo(function EditSidebar({
           <BoxSelect className="w-4 h-4 text-green-400 shrink-0" />
           <span className="text-xs text-neutral-300">
             {hasSelection
-              ? "Region selected — use the prompt on the image"
-              : "Draw a rectangle on the image for region edits"}
+              ? "Region seleccionada: usa el prompt sobre la imagen"
+              : "Dibuja un rectangulo en la imagen para editar una region"}
           </span>
         </div>
 
         <div className="space-y-2">
           <label className="text-xs font-medium text-neutral-400 uppercase tracking-wider">
-            Global Edit
+            Edicion global
           </label>
           <div className="relative">
             <textarea
@@ -104,7 +104,7 @@ const EditSidebar = memo(function EditSidebar({
                   onGlobalEditSubmit();
                 }
               }}
-              placeholder="e.g. Make the lighting warmer, add more greenery..."
+              placeholder="ej. Haz la iluminacion mas calida, agrega mas vegetacion..."
               rows={3}
               disabled={isEditGenerating}
               className="w-full bg-neutral-800/50 border border-neutral-700/50 rounded-lg px-3 py-2.5 text-sm text-white placeholder:text-neutral-500 resize-none outline-none focus:border-neutral-600 transition-colors disabled:opacity-50"
@@ -121,7 +121,7 @@ const EditSidebar = memo(function EditSidebar({
             ) : (
               <ArrowUp className="h-4 w-4" />
             )}
-            {isEditGenerating ? "Applying..." : "Apply Edit"}
+            {isEditGenerating ? "Aplicando..." : "Aplicar edicion"}
             {!isEditGenerating && (
               <span className="text-neutral-400 text-[10px] ml-1">
                 ({EDIT_CREDIT_COST} bricks)
@@ -141,7 +141,7 @@ const EditSidebar = memo(function EditSidebar({
           )}
         >
           <SplitSquareHorizontal className="w-3.5 h-3.5" />
-          {isComparing && canCompare ? "Viewing Original" : "Compare with Original"}
+          {isComparing && canCompare ? "Viendo original" : "Comparar con original"}
         </button>
       </div>
 
@@ -154,7 +154,7 @@ const EditSidebar = memo(function EditSidebar({
             className="w-full h-10 text-xs"
           >
             <Download className="h-3.5 w-3.5" />
-            Download
+            Descargar
           </Button>
           <Button
             onClick={onNewProject}
@@ -163,7 +163,7 @@ const EditSidebar = memo(function EditSidebar({
             className="w-full h-10 text-xs"
           >
             <Plus className="h-3.5 w-3.5" />
-            New Project
+            Nuevo proyecto
           </Button>
         </div>
       </div>
@@ -244,9 +244,10 @@ export const Sidebar = memo(function Sidebar({
   onToggleCompare,
   isComparing = false,
 }: SidebarProps) {
-  const isDisabled = isGenerating || !canGenerate;
   const activeMode = currentMode ?? RENDER_MODES[0];
   const globalSettings = getGlobalOnlySettings(activeMode.id);
+  const generationBrickCost = slots.length * IMAGE_CREDIT_COST;
+  const isDisabled = isGenerating;
 
   if (hasGeneratedImage) {
     return (
@@ -281,7 +282,7 @@ export const Sidebar = memo(function Sidebar({
             Prompt
           </h4>
           <Textarea
-            placeholder="Describe what you want to generate..."
+            placeholder="Describe lo que quieres generar..."
             value={globalValues.customPrompt ?? ""}
             onChange={(e) => onGlobalValueChange("customPrompt", e.target.value)}
             disabled={isGenerating}
@@ -331,7 +332,7 @@ export const Sidebar = memo(function Sidebar({
             )}
           >
             <Plus className="w-3 h-3" />
-            Add Angle ({slots.length}/{MAX_SLOTS})
+            Agregar angulo ({slots.length}/{MAX_SLOTS})
           </button>
         )}
       </div>
@@ -356,11 +357,11 @@ export const Sidebar = memo(function Sidebar({
                     <Sparkles className="h-4 w-4" />
                   )}
                   {isGenerating
-                    ? "Generating..."
-                    : `Generate${slots.length > 1 ? ` All (${slots.length})` : ""}`}
+                    ? "Generando..."
+                    : `Generar${slots.length > 1 ? ` todo (${slots.length})` : ""}`}
                   {!isGenerating && (
                     <span className="text-neutral-400 text-[10px] ml-1">
-                      ({(slots.length * IMAGE_CREDIT_COST).toLocaleString()} bricks)
+                      ({generationBrickCost.toLocaleString()} bricks)
                     </span>
                   )}
                 </Button>
@@ -371,16 +372,14 @@ export const Sidebar = memo(function Sidebar({
                 side="top"
                 className="bg-neutral-900 border-neutral-700 text-white"
               >
-                {(subscription?.creationsRemaining ?? 0) <= 0
-                  ? "Not enough bricks — upgrade your plan"
-                  : "Upload a source image first"}
+                Sube primero un boceto o archivo
               </TooltipContent>
             )}
           </Tooltip>
           {subscription && (
             <p className="text-[10px] text-neutral-500 text-center">
-              {subscription.creationsRemaining.toLocaleString()} bricks remaining
-              {subscription.plan === "free" && " · Upgrade anytime"}
+              {subscription.creationsRemaining.toLocaleString()} bricks disponibles
+              {subscription.plan === "free" && " · Mejora cuando quieras"}
             </p>
           )}
         </div>
@@ -455,9 +454,10 @@ export const MobileBottomBar = memo(function MobileBottomBar({
   isEditGenerating = false,
 }: MobileBottomBarProps) {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const isDisabled = isGenerating || !canGenerate;
   const activeMode = currentMode ?? RENDER_MODES[0];
   const globalSettings = getGlobalOnlySettings(activeMode.id);
+  const generationBrickCost = slots.length * IMAGE_CREDIT_COST;
+  const isDisabled = isGenerating;
 
   if (hasGeneratedImage) {
     return (
@@ -472,7 +472,7 @@ export const MobileBottomBar = memo(function MobileBottomBar({
                 onGlobalEditSubmit?.();
               }
             }}
-            placeholder="Describe a global edit..."
+            placeholder="Describe una edicion global..."
             disabled={isEditGenerating}
             className="flex-1 bg-neutral-800 border border-neutral-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-neutral-500 outline-none min-w-0"
           />
@@ -511,7 +511,7 @@ export const MobileBottomBar = memo(function MobileBottomBar({
             className="h-9 text-xs px-3"
           >
             <Plus className="h-3.5 w-3.5" />
-            New
+            Nuevo
           </Button>
         </div>
       </div>
@@ -544,18 +544,18 @@ export const MobileBottomBar = memo(function MobileBottomBar({
               ) : (
                 <Sparkles className="h-5 w-5 mr-2" />
               )}
-              {isGenerating ? "Generating..." : "Generate"}
+              {isGenerating ? "Generando..." : "Generar"}
               {!isGenerating && (
                 <span className="text-neutral-400 text-[10px] ml-1">
-                  ({IMAGE_CREDIT_COST} bricks)
+                  ({generationBrickCost.toLocaleString()} bricks)
                 </span>
               )}
             </Button>
           </div>
           {subscription && (
             <p className="text-[10px] text-neutral-500 text-center">
-              {subscription.creationsRemaining.toLocaleString()} bricks remaining
-              {subscription.plan === "free" && " · Upgrade anytime"}
+              {subscription.creationsRemaining.toLocaleString()} bricks disponibles
+              {subscription.plan === "free" && " · Mejora cuando quieras"}
             </p>
           )}
         </div>
@@ -571,7 +571,7 @@ export const MobileBottomBar = memo(function MobileBottomBar({
           </div>
           <SheetHeader className="px-4 pb-2">
             <SheetTitle className="text-white text-lg">
-              {activeMode.label} Settings
+              Ajustes de {activeMode.label}
             </SheetTitle>
           </SheetHeader>
           <div className="flex-1 overflow-y-auto px-4 pb-6 space-y-4">
@@ -587,7 +587,7 @@ export const MobileBottomBar = memo(function MobileBottomBar({
                 Prompt
               </h4>
               <Textarea
-                placeholder="Describe what you want to generate..."
+                placeholder="Describe lo que quieres generar..."
                 value={globalValues.customPrompt ?? ""}
                 onChange={(e) => onGlobalValueChange("customPrompt", e.target.value)}
                 disabled={isGenerating}
@@ -637,7 +637,7 @@ export const MobileBottomBar = memo(function MobileBottomBar({
                 )}
               >
                 <Plus className="w-3 h-3" />
-                Add Angle ({slots.length}/{MAX_SLOTS})
+                Agregar angulo ({slots.length}/{MAX_SLOTS})
               </button>
             )}
           </div>
@@ -647,7 +647,7 @@ export const MobileBottomBar = memo(function MobileBottomBar({
               variant="white"
               className="w-full h-12"
             >
-              Done
+              Listo
             </Button>
           </div>
         </SheetContent>

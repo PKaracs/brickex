@@ -40,7 +40,7 @@ const RETRY_DELAY_MS = 1500;
 const IMAGE_TO_3D_TOOL_ID = "image-to-3d";
 const TRELLIS_MODEL_ID = "fal-ai/trellis-2";
 const IMAGE_TO_3D_PROMPT =
-  "Generate a textured 3D GLB model from the uploaded object image using Trellis 2.";
+  "Genera un modelo 3D GLB texturizado desde la imagen de objeto subida usando Trellis 2.";
 
 function sleep(ms: number) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -84,7 +84,7 @@ async function generateWithGemini(
   const parts: ContentPart[] = [{ text: spec.referenceInstruction }];
 
   for (const [index, asset] of [...inputAssets].reverse().entries()) {
-    const label = spec.referenceImageLabel ?? "REFERENCE IMAGE";
+    const label = spec.referenceImageLabel ?? "IMAGEN DE REFERENCIA";
     parts.push({
       text:
         spec.maxInputImages > 1
@@ -129,20 +129,20 @@ async function generateWithGemini(
           const blockReason = (response.promptFeedback as { blockReason?: string }).blockReason;
           if (blockReason) {
             return {
-              error: "Generation was blocked by content safety filters.",
+              error: "La generacion fue bloqueada por filtros de seguridad.",
             };
           }
         }
 
         if (!response.candidates?.length) {
           if (attempt < MAX_RETRIES) continue;
-          return { error: "The image model returned no candidates." };
+          return { error: "El modelo de imagen no devolvio candidatos." };
         }
 
         const candidate = response.candidates[0];
         if (candidate.finishReason === "SAFETY") {
           return {
-            error: "Generation was blocked by content safety filters.",
+            error: "La generacion fue bloqueada por filtros de seguridad.",
           };
         }
 
@@ -157,10 +157,10 @@ async function generateWithGemini(
         }
 
         if (attempt < MAX_RETRIES) continue;
-        return { error: "Gemini did not return an image." };
+        return { error: "Gemini no devolvio una imagen." };
       } catch (error) {
         const message =
-          error instanceof Error ? error.message : "Generation failed.";
+          error instanceof Error ? error.message : "La generacion fallo.";
         const status =
           typeof error === "object" &&
           error !== null &&
@@ -188,7 +188,7 @@ async function generateWithGemini(
     }
   }
 
-  return { error: "All Gemini image models failed." };
+  return { error: "Todos los modelos de imagen Gemini fallaron." };
 }
 
 export async function generateToolImage(
@@ -196,7 +196,7 @@ export async function generateToolImage(
   toolId: string,
 ): Promise<{ outputUrl?: string; error?: string; mediaType?: "image" | "model_3d" }> {
   if (!projectId) {
-    return { error: "Project ID is required." };
+    return { error: "Se requiere el ID del proyecto." };
   }
 
   const is3DTool = toolId === IMAGE_TO_3D_TOOL_ID;
@@ -205,7 +205,7 @@ export async function generateToolImage(
     return {
       error:
         getToolById(toolId)?.unavailableReason ??
-        "This tool is not available in the current Gemini image workflow.",
+        "Esta herramienta no esta disponible en el flujo actual de imagen Gemini.",
     };
   }
 
@@ -220,7 +220,7 @@ export async function generateToolImage(
   );
 
   if (sourceAssets.length === 0) {
-    return { error: "Upload an image before generating." };
+    return { error: "Sube una imagen antes de generar." };
   }
 
   if (is3DTool) {
@@ -233,7 +233,7 @@ export async function generateToolImage(
       prompt: IMAGE_TO_3D_PROMPT,
       settings: {
         kind: "tool-generation",
-        toolLabel: tool?.label ?? "Image to 3D Object",
+        toolLabel: tool?.label ?? "Imagen a objeto 3D",
         inputAssetCount: sourceAssets.length,
         outputKind: "model_3d",
       },
@@ -257,11 +257,11 @@ export async function generateToolImage(
         contentType: result.contentType || "model/gltf-binary",
         assetKind: "other",
         deliverableType: "other",
-        deliverableTitle: "3D object model",
+        deliverableTitle: "Modelo de objeto 3D",
         deliverableMetadata: {
           kind: "tool-generation",
           toolId,
-          toolLabel: tool?.label ?? "Image to 3D Object",
+          toolLabel: tool?.label ?? "Imagen a objeto 3D",
           providerRequestId: result.requestId,
         },
         promoteToHero: false,
@@ -273,7 +273,7 @@ export async function generateToolImage(
       };
     } catch (error) {
       const message =
-        error instanceof Error ? error.message : "3D generation failed.";
+        error instanceof Error ? error.message : "La generacion 3D fallo.";
 
       await finishProjectImageRunFailure({
         run,
@@ -285,7 +285,7 @@ export async function generateToolImage(
   }
 
   if (!spec) {
-    return { error: "This tool is missing a generation spec." };
+    return { error: "A esta herramienta le falta una especificacion de generacion." };
   }
 
   const run = await startProjectImageRun({
@@ -309,9 +309,9 @@ export async function generateToolImage(
     if (result.error || !result.outputUrl) {
       await finishProjectImageRunFailure({
         run,
-        errorMessage: result.error || "Gemini did not return an image.",
+        errorMessage: result.error || "Gemini no devolvio una imagen.",
       });
-      return { error: result.error || "Gemini did not return an image." };
+      return { error: result.error || "Gemini no devolvio una imagen." };
     }
 
     const persisted = await finishProjectImageRunSuccess({
@@ -333,7 +333,7 @@ export async function generateToolImage(
     };
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Generation failed.";
+      error instanceof Error ? error.message : "La generacion fallo.";
 
     await finishProjectImageRunFailure({
       run,

@@ -78,8 +78,8 @@ type PresetItem = {
 const ALL_ITEMS: PresetItem[] = [
   {
     id: null,
-    label: "Default",
-    description: "AI chooses the best motion",
+    label: "Predeterminado",
+    description: "La IA elige el mejor movimiento",
     icon: Wand2,
     gradient: "from-neutral-500/20 to-neutral-800/20",
   },
@@ -315,10 +315,10 @@ function ScenePresetSelectorCard({
           </div>
           <div className="flex-1 min-w-0 text-left">
             <div className="text-[10px] uppercase tracking-wider text-neutral-500 font-semibold leading-none">
-              Video Preset
+              Preset de video
             </div>
             <div className="text-sm font-semibold text-white mt-1 truncate">
-              {activePreset ? activePreset.label : "None selected"}
+              {activePreset ? activePreset.label : "Nada seleccionado"}
             </div>
           </div>
           <ChevronRight className="w-4 h-4 text-neutral-500 group-hover:text-neutral-300 transition-colors flex-shrink-0" />
@@ -365,7 +365,7 @@ function SidebarContent({
 
         <div>
           <label className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider mb-2.5 block">
-            Motion Preset
+            Preset de movimiento
           </label>
           <PresetSlotMachine selectedPresetId={selectedPresetId} onPresetSelect={onPresetSelect} />
         </div>
@@ -377,7 +377,7 @@ function SidebarContent({
           <textarea
             value={prompt}
             onChange={(e) => onPromptChange(e.target.value)}
-            placeholder="Describe the motion you want..."
+            placeholder="Describe el movimiento que quieres..."
             rows={3}
             className="w-full bg-neutral-800/50 border border-neutral-700/50 rounded-xl px-3 py-2.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-neutral-600 resize-none transition-colors"
           />
@@ -385,10 +385,10 @@ function SidebarContent({
 
         <div className="space-y-3">
           <label className="text-[11px] font-semibold text-neutral-500 uppercase tracking-wider block">
-            Settings
+            Ajustes
           </label>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-neutral-400">Duration</span>
+            <span className="text-xs text-neutral-400">Duracion</span>
             <div className="flex gap-1">
               {DURATIONS.map((d) => (
                 <button
@@ -407,7 +407,7 @@ function SidebarContent({
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-neutral-400">Aspect Ratio</span>
+            <span className="text-xs text-neutral-400">Relacion de aspecto</span>
             <div className="flex gap-1">
               {ASPECT_RATIOS.map((r) => (
                 <button
@@ -426,7 +426,7 @@ function SidebarContent({
             </div>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-xs text-neutral-400">Resolution</span>
+            <span className="text-xs text-neutral-400">Resolucion</span>
             <div className="flex gap-1">
               {RESOLUTIONS.map((r) => (
                 <button
@@ -455,14 +455,14 @@ function SidebarContent({
               className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all"
             >
               <Download className="w-4 h-4" />
-              Download Video
+              Descargar video
             </button>
             <button
               onClick={onNewVideo}
               className="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold bg-neutral-800 text-white border border-neutral-700 hover:bg-neutral-700 active:scale-[0.98] transition-all"
             >
               <RotateCcw className="w-4 h-4" />
-              New Video
+              Nuevo video
             </button>
           </div>
         ) : (
@@ -479,12 +479,12 @@ function SidebarContent({
             {isGenerating ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Generating...
+                Generando...
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Generate Video
+                Generar video
               </>
             )}
           </button>
@@ -526,7 +526,7 @@ export const VideoMobileBottomBar = memo(function VideoMobileBottomBar(props: Vi
               className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold bg-white text-black hover:bg-neutral-200 active:scale-[0.98] transition-all"
             >
               <Download className="w-4 h-4" />
-              Download
+              Descargar
             </button>
             <button
               onClick={onNewVideo}
@@ -549,12 +549,12 @@ export const VideoMobileBottomBar = memo(function VideoMobileBottomBar(props: Vi
             {isGenerating ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                Generating...
+                Generando...
               </>
             ) : (
               <>
                 <Sparkles className="w-4 h-4" />
-                Generate Video
+                Generar video
               </>
             )}
           </button>

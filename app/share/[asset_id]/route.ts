@@ -31,7 +31,7 @@ export async function GET(
     .then((rows) => rows[0] ?? null);
 
   if (!asset || (asset.mediaType !== "image" && asset.mediaType !== "video")) {
-    return NextResponse.json({ error: "Asset not found" }, { status: 404 });
+    return NextResponse.json({ error: "Recurso no encontrado" }, { status: 404 });
   }
 
   const signedUrl = await getSignedDownloadUrl(toStorageKey(asset.bucket, asset.path));

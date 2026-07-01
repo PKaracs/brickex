@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
 
     if (!imageBase64) {
       return NextResponse.json(
-        { error: "An image is required" },
+        { error: "Se requiere una imagen" },
         { status: 400 }
       );
     }
@@ -88,7 +88,7 @@ export async function POST(req: NextRequest) {
       finalPrompt = motionPreset.prompt;
     } else {
       finalPrompt =
-        "Smooth cinematic camera movement, high quality, photorealistic, professional cinematography";
+        "Movimiento de camara cinematografico suave, alta calidad, fotorrealista, cinematografia profesional";
     }
 
     console.log(`[BrickEx:Video] Final prompt: ${finalPrompt.substring(0, 200)}...`);
@@ -146,7 +146,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ videoUrl: savedUrl, requestId });
   } catch (error: unknown) {
     const message =
-      error instanceof Error ? error.message : "Something went wrong";
+      error instanceof Error ? error.message : "Algo salio mal";
     console.error("[BrickEx:Video] Generation error:", message);
     if (userId) {
       posthog.capture({

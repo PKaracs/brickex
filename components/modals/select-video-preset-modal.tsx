@@ -143,10 +143,10 @@ export function SelectVideoPresetModal({
       <DialogContent className="max-w-3xl w-full md:w-[88vw] max-h-[80vh] bg-neutral-950 border-neutral-800 flex flex-col p-0 overflow-hidden">
         <DialogHeader className="flex-shrink-0 px-6 pt-6 pb-0">
           <DialogTitle className="text-lg text-white">
-            Video Presets
+            Presets de video
           </DialogTitle>
           <p className="text-sm text-neutral-500 mt-1">
-            Choose a cinematic scene style for your building
+            Elige un estilo de escena cinematica para tu edificio
           </p>
         </DialogHeader>
 

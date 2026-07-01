@@ -35,7 +35,7 @@ export async function uploadToStorage(
     });
     return { success: true };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Storage upload failed";
+    const message = error instanceof Error ? error.message : "La subida a storage fallo";
     return { error: message };
   }
 }
@@ -52,7 +52,7 @@ export async function getSignedUrl(
 }
 
 export class NsfwContentError extends Error {
-  constructor(message = "NSFW content detected") {
+  constructor(message = "Contenido NSFW detectado") {
     super(message);
     this.name = "NsfwContentError";
   }

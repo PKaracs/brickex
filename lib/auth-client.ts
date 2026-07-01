@@ -7,7 +7,6 @@ import {
   twoFactorClient,
   usernameClient,
 } from "better-auth/client/plugins";
-import { polarClient } from "@polar-sh/better-auth";
 import { normalizeBrickexSiteOrigin } from "@/lib/brickex-url";
 
 const resolveBaseUrl = () => {
@@ -26,15 +25,60 @@ const resolveBaseUrl = () => {
   return "http://localhost:3000";
 };
 
-export const authClient = createAuthClient({
+const baseAuthClient = createAuthClient({
   baseURL: resolveBaseUrl(),
   plugins: [
     usernameClient(),
     organizationClient(),
     twoFactorClient(),
-    polarClient(),
     ...(process.env.NEXT_PUBLIC_AUTH_MAGIC_LINK_ENABLED === "false"
       ? []
       : [magicLinkClient()]),
   ],
 });
+
+type AuthClientResult<T> =
+  | {
+      data: T;
+      error: null;
+    }
+  | {
+      data: null;
+      error: {
+        message?: string;
+        status?: number;
+        statusText?: string;
+      };
+    };
+
+type CheckoutInput = {
+  products?: string | string[];
+  slug?: string;
+  referenceId?: string;
+  customFieldData?: Record<string, string | number | boolean>;
+  metadata?: Record<string, string | number | boolean>;
+  allowDiscountCodes?: boolean;
+  discountId?: string;
+  redirect?: boolean;
+};
+
+type RedirectResponse = {
+  url: string;
+  redirect: boolean;
+};
+
+const billingActions = {
+  checkout: (body: CheckoutInput) =>
+    baseAuthClient.$fetch("/checkout", {
+      method: "POST",
+      body,
+    }) as Promise<AuthClientResult<RedirectResponse>>,
+  customer: {
+    portal: () =>
+      baseAuthClient.$fetch("/customer/portal", {
+        method: "GET",
+      }) as Promise<AuthClientResult<RedirectResponse>>,
+  },
+};
+
+export const authClient = Object.assign(baseAuthClient, billingActions);

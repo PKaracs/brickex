@@ -46,7 +46,7 @@ export async function updateMetaTracking(
     });
 
     if (!user) {
-      return { success: false, error: "User not found" };
+      return { success: false, error: "Usuario no encontrado" };
     }
 
     await db
@@ -75,7 +75,7 @@ export async function updateMetaTracking(
       error:
         error instanceof Error
           ? error.message
-          : "Failed to update Meta tracking",
+          : "No se pudo actualizar el tracking de Meta",
     };
   }
 }

@@ -85,10 +85,10 @@ export default function BlogTableOfContents({
           "mb-8 rounded-xl border border-gray-100 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 p-5 shadow-sm",
           className
         )}
-        aria-label="Table of contents"
+        aria-label="Tabla de contenidos"
       >
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
-          On this page
+          En esta pagina
         </h2>
         <ul className="space-y-1.5">
           {headings.slice(0, 8).map((heading, idx) => (
@@ -119,11 +119,11 @@ export default function BlogTableOfContents({
         "sticky top-24 hidden xl:block w-56 shrink-0",
         className
       )}
-      aria-label="Table of contents"
+      aria-label="Tabla de contenidos"
     >
       <nav className="rounded-xl border border-gray-100 bg-gradient-to-br from-slate-50 via-white to-blue-50/30 p-4 shadow-sm">
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
-          On this page
+          En esta pagina
         </h2>
         <ul className="space-y-1">
           {headings.slice(0, 10).map((heading, idx) => (
@@ -153,4 +153,3 @@ export default function BlogTableOfContents({
     </aside>
   );
 }
-

@@ -17,7 +17,7 @@ export async function getUserAvatar(
 }
 
 export async function deleteAvatarImage(imageId: string, userId: string) {
-  return { error: "Not available in development mode" };
+  return { error: "No disponible en modo desarrollo" };
 }
 
 export async function userHasAvatar(userId: string): Promise<boolean> {

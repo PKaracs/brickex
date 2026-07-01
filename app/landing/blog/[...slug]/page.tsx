@@ -80,7 +80,7 @@ export async function generateMetadata({
       authors: [AUTHOR_NAME],
       url: canonicalUrl,
       siteName: "BrickEx",
-      locale: "en_US",
+      locale: "es_ES",
       images: [
         {
           url: blog.image,
@@ -171,7 +171,7 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
       {
         "@type": "ListItem",
         position: 1,
-        name: "Home",
+        name: "Inicio",
         item: SITE_URL,
       },
       {
@@ -220,7 +220,7 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
                   className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-gray-900 transition-colors mb-4"
                 >
                   <ChevronLeft className="h-4 w-4" />
-                  <span>All articles</span>
+                  <span>Todos los articulos</span>
                 </Link>
 
                 {/* Meta info row with author byline */}
@@ -237,7 +237,7 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
                   <span className="text-gray-300">•</span>
                   <span className="flex items-center gap-1">
                     <Clock className="h-4 w-4" />
-                    {readingTime} min read
+                    {readingTime} min de lectura
                   </span>
                 </div>
 
@@ -255,7 +255,7 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
                 <figure className="w-full my-6 sm:my-8">
                   <Image
                     src={blog.image}
-                    alt={`Featured image for ${blog.title} - ${blog.description.slice(0, 100)}`}
+                    alt={`Imagen destacada de ${blog.title} - ${blog.description.slice(0, 100)}`}
                     width={720}
                     height={405}
                     priority
@@ -299,7 +299,7 @@ export default async function BlogPageItem({ params }: BlogPageItemProps) {
               )}
             >
               <ChevronLeft className="mr-2 size-4" />
-              Back to all articles
+              Volver a todos los articulos
             </Link>
           </div>
         </div>

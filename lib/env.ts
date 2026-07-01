@@ -10,27 +10,27 @@ const serverSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
     .default("development"),
-  DATABASE_URL: z.string().min(1, "DATABASE_URL is required"),
+  DATABASE_URL: z.string().min(1, "DATABASE_URL es obligatoria"),
   DATABASE_SSL_MODE: z
     .enum(["disable", "prefer", "require"])
     .default("require"),
   DATABASE_MAX_CONNECTIONS: z.number().int().min(1).max(50).default(10),
   BETTER_AUTH_SECRET: z
     .string()
-    .min(32, "BETTER_AUTH_SECRET must be at least 32 characters"),
-  BETTER_AUTH_URL: z.string().url("BETTER_AUTH_URL must be a valid URL"),
+    .min(32, "BETTER_AUTH_SECRET debe tener al menos 32 caracteres"),
+  BETTER_AUTH_URL: z.string().url("BETTER_AUTH_URL debe ser una URL valida"),
   AUTH_TRUSTED_ORIGINS: z.array(z.string().url()).default([]),
   AUTH_FROM_EMAIL: z.string().min(1).default("Brickex <auth@brickex.co>"),
   AUTH_REQUIRE_EMAIL_VERIFICATION: z.boolean().default(false),
   NEXT_PUBLIC_SUPABASE_URL: z
     .string()
-    .url("NEXT_PUBLIC_SUPABASE_URL must be a valid URL"),
+    .url("NEXT_PUBLIC_SUPABASE_URL debe ser una URL valida"),
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z
     .string()
-    .min(1, "NEXT_PUBLIC_SUPABASE_ANON_KEY is required"),
+    .min(1, "NEXT_PUBLIC_SUPABASE_ANON_KEY es obligatoria"),
   SUPABASE_SERVICE_ROLE_KEY: z
     .string()
-    .min(1, "SUPABASE_SERVICE_ROLE_KEY is required"),
+    .min(1, "SUPABASE_SERVICE_ROLE_KEY es obligatoria"),
   SUPABASE_BUCKET_PROJECT_ASSETS: z
     .string()
     .min(1)
@@ -44,8 +44,8 @@ const serverSchema = z.object({
     .min(60)
     .max(60 * 60 * 24 * 7)
     .default(60 * 60),
-  POLAR_ACCESS_TOKEN: z.string().min(1, "POLAR_ACCESS_TOKEN is required"),
-  POLAR_WEBHOOK_SECRET: z.string().min(1, "POLAR_WEBHOOK_SECRET is required"),
+  POLAR_ACCESS_TOKEN: z.string().min(1, "POLAR_ACCESS_TOKEN es obligatorio"),
+  POLAR_WEBHOOK_SECRET: z.string().min(1, "POLAR_WEBHOOK_SECRET es obligatorio"),
   POLAR_SUCCESS_URL: z
     .string()
     .url()

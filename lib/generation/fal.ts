@@ -13,7 +13,7 @@ function getFalClient() {
     process.env["fal_api_key"];
   if (!key) {
     throw new Error(
-      "Set FAL_KEY, FAL_API_KEY, or fal_api_key to generate 3D models.",
+      "Configura FAL_KEY, FAL_API_KEY o fal_api_key para generar modelos 3D.",
     );
   }
 
@@ -67,7 +67,7 @@ export async function generateTrellis3DModel(
 
   const modelUrl = result.data?.model_glb?.url;
   if (!modelUrl) {
-    throw new Error("Trellis completed without returning a GLB.");
+    throw new Error("Trellis termino sin devolver un GLB.");
   }
 
   return {

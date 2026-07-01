@@ -31,7 +31,7 @@ export default function BlogNavbar() {
           <a href="/" className="flex items-center gap-2.5">
             <Image
               src="/inverted-logo.png"
-              alt="BrickEx Logo"
+              alt="Logo de BrickEx"
               width={44}
               height={36}
               className="w-9 h-auto sm:w-10"
@@ -57,7 +57,7 @@ export default function BlogNavbar() {
               className="px-5 py-2.5 min-h-[44px] text-sm font-medium bg-gray-900 text-white hover:bg-gray-800"
               asChild
             >
-              <a href={signupUrl}>Get Started</a>
+              <a href={signupUrl}>Empezar</a>
             </Button>
           </div>
         </div>

@@ -10,7 +10,7 @@ export async function requireAuth(): Promise<string> {
   const session = await getSession();
 
   if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+    throw new Error("No autorizado");
   }
 
   return session.user.id;
@@ -25,7 +25,7 @@ export async function requireAuthWithSession() {
   const session = await getSession();
 
   if (!session?.user?.id) {
-    throw new Error("Unauthorized");
+    throw new Error("No autorizado");
   }
 
   return session;
@@ -49,7 +49,7 @@ export async function requireWorkspaceContext() {
   }
 
   if (!organizationId) {
-    throw new Error("No active workspace found");
+    throw new Error("No se encontro un workspace activo");
   }
 
   return {

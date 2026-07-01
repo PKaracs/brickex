@@ -6,6 +6,7 @@ import AppShellClient from "./app-shell-client";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getSession } from "@/lib/auth-session";
 import { getUserSubscription } from "@/lib/actions/get-user-subscription";
+import { isAppAuthRoute, toCanonicalAppPathname } from "@/lib/app-routes";
 
 function LayoutSkeleton() {
   return (
@@ -23,36 +24,22 @@ function LayoutSkeleton() {
   );
 }
 
-function isAuthRoute(pathname: string | null) {
-  if (!pathname) return false;
-
-  return (
-    pathname === "/login" ||
-    pathname === "/app/login" ||
-    pathname === "/register" ||
-    pathname === "/app/register" ||
-    pathname === "/forgot-password" ||
-    pathname === "/app/forgot-password" ||
-    pathname.startsWith("/reset-password") ||
-    pathname.startsWith("/app/reset-password")
-  );
-}
-
 export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const requestHeaders = await headers();
-  const pathname = requestHeaders.get("x-pathname");
+  const pathname = toCanonicalAppPathname(requestHeaders.get("x-pathname"));
   const session = await getSession();
+  const isAuthRoute = isAppAuthRoute(pathname);
 
-  if (!isAuthRoute(pathname) && !session?.user?.id) {
+  if (!isAuthRoute && !session?.user?.id) {
     redirect("/app/login");
   }
 
   const subscriptionResult =
-    !isAuthRoute(pathname) && session?.user?.id
+    !isAuthRoute && session?.user?.id
       ? await getUserSubscription()
       : null;
   const subscription =

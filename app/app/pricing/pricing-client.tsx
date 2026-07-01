@@ -38,11 +38,11 @@ const PLAN_TIERS: {
     badge: null,
     featured: false,
     benefits: [
-      `${SUBSCRIPTION_PLANS.STARTER.bricks.toLocaleString()} bricks per month`,
-      "Exterior + Interior modes",
-      "All architecture styles",
-      "4K exports, no watermarks",
-      "Cancel anytime",
+      `${SUBSCRIPTION_PLANS.STARTER.bricks.toLocaleString()} bricks al mes`,
+      "Modos exterior e interior",
+      "Todos los estilos arquitectonicos",
+      "Exportaciones 4K, sin marcas de agua",
+      "Cancela cuando quieras",
     ],
   },
   {
@@ -52,27 +52,27 @@ const PLAN_TIERS: {
     badge: "Popular",
     featured: true,
     benefits: [
-      `${SUBSCRIPTION_PLANS.PRO.bricks.toLocaleString()} bricks per month`,
-      "Everything in Starter",
-      "Video generation",
-      "Region editing & refinement",
-      "Priority processing",
-      "Cancel anytime",
+      `${SUBSCRIPTION_PLANS.PRO.bricks.toLocaleString()} bricks al mes`,
+      "Todo lo de Starter",
+      "Generacion de video",
+      "Edicion por region y refinado",
+      "Procesamiento prioritario",
+      "Cancela cuando quieras",
     ],
   },
   {
     key: "studio",
     config: SUBSCRIPTION_PLANS.STUDIO,
     icon: <Building2 className="w-4 h-4" />,
-    badge: "Teams",
+    badge: "Equipos",
     featured: false,
     benefits: [
-      `${SUBSCRIPTION_PLANS.STUDIO.bricks.toLocaleString()} bricks per month`,
-      "Everything in Pro",
-      "Batch rendering",
-      "API access",
-      "Dedicated account manager",
-      "Cancel anytime",
+      `${SUBSCRIPTION_PLANS.STUDIO.bricks.toLocaleString()} bricks al mes`,
+      "Todo lo de Pro",
+      "Renderizado por lotes",
+      "Acceso a la API",
+      "Gestor de cuenta dedicado",
+      "Cancela cuando quieras",
     ],
   },
 ];
@@ -167,13 +167,13 @@ export default function PricingPageClient({
         window.location.href = result.data.url;
       } else if (result?.error) {
         console.error("Checkout returned error:", result.error);
-        toast.error("Unable to start checkout. Please try again.");
+        toast.error("No se pudo iniciar el pago. Intentalo de nuevo.");
         setIsLoading(false);
         setLoadingPlan(null);
       }
     } catch (err) {
       console.error("Checkout error:", err);
-      toast.error("Something went wrong. Please try again.");
+      toast.error("Algo salio mal. Intentalo de nuevo.");
       setIsLoading(false);
       setLoadingPlan(null);
     }
@@ -186,11 +186,11 @@ export default function PricingPageClient({
       if (result?.data?.url) {
         window.location.href = result.data.url;
       } else {
-        toast.error("Could not open subscription portal.");
+        toast.error("No se pudo abrir el portal de suscripcion.");
       }
     } catch (err) {
       console.error("Portal error:", err);
-      toast.error("Failed to open subscription portal.");
+      toast.error("No se pudo abrir el portal de suscripcion.");
     } finally {
       setIsLoading(false);
     }
@@ -200,12 +200,12 @@ export default function PricingPageClient({
     <div className="min-h-screen bg-neutral-950 flex flex-col items-center px-4 py-16 sm:py-24">
       <div className="text-center mb-12 max-w-lg">
         <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight mb-3">
-          {isPaidUser ? "Manage your plan" : "Choose your plan"}
+          {isPaidUser ? "Gestiona tu plan" : "Elige tu plan"}
         </h1>
         <p className="text-sm text-neutral-500">
           {isPaidUser
-            ? `You're on the ${subscription?.plan} plan with ${subscription?.creationsRemaining} bricks remaining.`
-            : "Unlock more bricks and premium features to power your renders."}
+            ? `Estas en el plan ${subscription?.plan} con ${subscription?.creationsRemaining} bricks disponibles.`
+            : "Desbloquea mas bricks y funciones premium para impulsar tus renders."}
         </p>
       </div>
 
@@ -217,7 +217,7 @@ export default function PricingPageClient({
             variant="default"
           >
             {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-            Manage Subscription
+            Gestionar suscripcion
           </Button>
         </div>
       )}
@@ -261,10 +261,10 @@ export default function PricingPageClient({
                   <span className="text-[28px] font-bold text-white tracking-tight">
                     ${tier.config.price}
                   </span>
-                  <span className="text-xs text-neutral-500 ml-1">/mo</span>
+                  <span className="text-xs text-neutral-500 ml-1">/mes</span>
                 </div>
                 <p className="text-[11px] text-neutral-500 mt-1.5 tracking-wide">
-                  {tier.config.bricks.toLocaleString()} bricks included
+                  {tier.config.bricks.toLocaleString()} bricks incluidos
                 </p>
               </div>
 
@@ -277,9 +277,9 @@ export default function PricingPageClient({
                 {isLoading && loadingPlan === tier.key ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : isCurrentPlan ? (
-                  "Current Plan"
+                  "Plan actual"
                 ) : (
-                  `Get ${tier.config.name}`
+                  `Obtener ${tier.config.name}`
                 )}
               </Button>
 
@@ -300,7 +300,7 @@ export default function PricingPageClient({
       </div>
 
       <p className="text-[11px] text-neutral-600 tracking-wide mt-8">
-        Secure payment &middot; Cancel anytime
+        Pago seguro &middot; Cancela cuando quieras
       </p>
     </div>
   );

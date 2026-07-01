@@ -18,19 +18,19 @@ export function GalleryEmpty() {
           {/* Text Content */}
           <div className="space-y-2">
             <h3 className="text-xl font-semibold text-white">
-              No generations yet
+              Aun no hay generaciones
             </h3>
             <p className="text-sm text-neutral-400 leading-relaxed">
-              Your generated images will appear here. Start creating stunning
-              architectural visualizations with BrickEx.
+              Tus imagenes generadas apareceran aqui. Empieza a crear
+              visualizaciones arquitectonicas con BrickEx.
             </p>
           </div>
 
           {/* CTA Button */}
-          <Link href="/app/dashboard/new">
+          <Link href="/app/dashboard/new" prefetch={false}>
             <Button className="bg-white text-black hover:bg-neutral-200 font-semibold h-11 px-6">
               <Sparkles className="h-4 w-4 mr-2" />
-              Create Your First Image
+              Crea tu primera imagen
             </Button>
           </Link>
         </div>

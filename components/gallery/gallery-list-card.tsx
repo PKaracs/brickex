@@ -27,7 +27,7 @@ import {
 } from "./gallery-media-preview";
 
 function formatDate(date: Date): string {
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString("es-ES", {
     month: "short",
     day: "numeric",
     year: "numeric",
@@ -183,7 +183,7 @@ export const GalleryListCard = memo(function GalleryListCard({
           <div className="space-y-1">
             <p className="text-sm font-medium text-white truncate">{project.title}</p>
             <p className="text-xs text-neutral-500">
-              {project.variationCount} {project.variationCount === 1 ? "variation" : "variations"}
+              {project.variationCount} {project.variationCount === 1 ? "variacion" : "variaciones"}
               {project.original ? " + original" : ""}
             </p>
           </div>
@@ -213,7 +213,7 @@ export const GalleryListCard = memo(function GalleryListCard({
               );
             })}
             <span className="text-[10px] text-neutral-600">
-              Updated {formatDate(project.latestCreatedAt)}
+              Actualizado {formatDate(project.latestCreatedAt)}
             </span>
             <span className="text-[10px] text-neutral-600">
               {getGalleryProjectCollectionLabel(collection)}
@@ -273,7 +273,7 @@ export const GalleryListCard = memo(function GalleryListCard({
                 className="focus:bg-neutral-800 focus:text-white"
               >
                 <Pencil className="h-4 w-4" />
-                Rename Project
+                Renombrar proyecto
               </DropdownMenuItem>
               {latestVariation && (
                 <DropdownMenuItem
@@ -284,7 +284,7 @@ export const GalleryListCard = memo(function GalleryListCard({
                   className="focus:bg-neutral-800 focus:text-white"
                 >
                   <Trash2 className="h-4 w-4" />
-                  Delete Latest Variation
+                  Eliminar ultima variacion
                 </DropdownMenuItem>
               )}
               <DropdownMenuItem
@@ -295,7 +295,7 @@ export const GalleryListCard = memo(function GalleryListCard({
                 className="text-red-400 focus:bg-neutral-800 focus:text-red-300"
               >
                 <Trash2 className="h-4 w-4" />
-                Delete Project
+                Eliminar proyecto
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

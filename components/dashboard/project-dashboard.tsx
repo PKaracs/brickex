@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { Canvas } from "@/components/dashboard/canvas";
 import { Sidebar, MobileBottomBar } from "@/components/dashboard/sidebar";
+import { SubscriptionModal } from "@/components/modals/subscription-modal";
 import { Project } from "@/db/schema";
 import { createProject } from "@/lib/actions/create-project";
 import { useRouter } from "next/navigation";
@@ -95,6 +96,7 @@ export function ProjectDashboard({
   const [subscription, setSubscription] = useState<SubscriptionData | null>(
     initialSubscription ?? null,
   );
+  const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
 
   // Per-slot edit state
   const [editHistories, setEditHistories] = useState<Record<string, string[]>>(
@@ -124,7 +126,6 @@ export function ProjectDashboard({
   const generationBrickCost = slots.length * IMAGE_CREDIT_COST;
   const hasEnoughBricks =
     (subscription?.creationsRemaining ?? 0) >= generationBrickCost;
-  const canStartGeneration = canGenerate && hasEnoughBricks;
 
   // Keep a stable preview URL for the source image
   useEffect(() => {
@@ -251,7 +252,7 @@ export function ProjectDashboard({
       sessionStorage.removeItem(SESSION_STORAGE_KEYS.META_PURCHASE_EVENT_ID);
       sessionStorage.removeItem(SESSION_STORAGE_KEYS.META_PURCHASE_VALUE);
       window.history.replaceState(null, "", `/app/dashboard/${project.id}`);
-      toast.success("Subscription active. Your BrickEx balance is updated.");
+      toast.success("Suscripcion activa. Tu saldo de BrickEx esta actualizado.");
     })();
 
     return () => {
@@ -391,18 +392,17 @@ export function ProjectDashboard({
   };
 
   const handleGenerate = useCallback(async () => {
-    if (!canStartGeneration) {
-      if (!canGenerate) {
-        toast("Upload a source image first", {
-          description:
-            "Drag & drop or click the canvas to upload a floor plan, sketch, or photo.",
-          duration: 5000,
-        });
-      } else {
-        toast.error(
-          `Not enough bricks. This generation costs ${generationBrickCost.toLocaleString()} bricks.`,
-        );
-      }
+    if (!canGenerate) {
+      toast("Sube primero un boceto o archivo", {
+        description:
+          "Arrastra y suelta, o haz clic en el lienzo para subir un plano, boceto o foto antes de generar.",
+        duration: 5000,
+      });
+      return;
+    }
+
+    if (!hasEnoughBricks) {
+      setSubscriptionModalOpen(true);
       return;
     }
 
@@ -438,7 +438,7 @@ export function ProjectDashboard({
           ),
         );
       } else {
-        toast.error("No source image found.");
+        toast.error("No se encontro una imagen de origen.");
         setIsGenerating(false);
         return;
       }
@@ -512,7 +512,7 @@ export function ProjectDashboard({
           return {
             ...slot,
             status: "error" as const,
-            error: r?.error ?? "Generation failed.",
+            error: r?.error ?? "La generacion fallo.",
             outputUrl: null,
           };
         }),
@@ -530,7 +530,7 @@ export function ProjectDashboard({
         }
       } else {
         haptic("error");
-        toast.error("All generations failed. Please try again.");
+        toast.error("Todas las generaciones fallaron. Intentalo de nuevo.");
       }
     } catch (error: any) {
       haptic("error");
@@ -539,14 +539,14 @@ export function ProjectDashboard({
         prev.map((s) => ({
           ...s,
           status: "error" as const,
-          error: "Generation failed.",
+          error: "La generacion fallo.",
         })),
       );
       if (!navigator.onLine) {
-        toast.error("No internet connection. Please check and try again.");
+        toast.error("Sin conexion a internet. Revisala e intentalo de nuevo.");
       } else {
         toast.error(
-          error?.message || "Something went wrong. Please try again.",
+          error?.message || "Algo salio mal. Intentalo de nuevo.",
         );
       }
     } finally {
@@ -554,8 +554,8 @@ export function ProjectDashboard({
       await syncSubscription();
     }
   }, [
-    canStartGeneration,
     canGenerate,
+    hasEnoughBricks,
     uploadedFiles,
     sourceUrl,
     currentMode,
@@ -563,7 +563,6 @@ export function ProjectDashboard({
     objectFiles,
     slots,
     project.id,
-    generationBrickCost,
     syncSubscription,
   ]);
 
@@ -613,7 +612,7 @@ export function ProjectDashboard({
         }
       } catch (error: any) {
         haptic("error");
-        toast.error(error?.message || "Edit failed. Please try again.");
+        toast.error(error?.message || "La edicion fallo. Intentalo de nuevo.");
       } finally {
         setIsEditGenerating(false);
         await syncSubscription();
@@ -628,10 +627,10 @@ export function ProjectDashboard({
     setIsEditGenerating(true);
     try {
       const img = document.querySelector(
-        'img[alt="Generated render"]',
+        'img[data-render-image="true"]',
       ) as HTMLImageElement;
       if (!img) {
-        toast.error("Could not read the current image.");
+        toast.error("No se pudo leer la imagen actual.");
         setIsEditGenerating(false);
         return;
       }
@@ -649,7 +648,7 @@ export function ProjectDashboard({
       offscreen.height = outH;
       const ctx = offscreen.getContext("2d");
       if (!ctx) {
-        toast.error("Canvas error.");
+        toast.error("Error del lienzo.");
         setIsEditGenerating(false);
         return;
       }
@@ -675,7 +674,7 @@ export function ProjectDashboard({
       }
     } catch (error: any) {
       haptic("error");
-      toast.error(error?.message || "Edit failed. Please try again.");
+      toast.error(error?.message || "La edicion fallo. Intentalo de nuevo.");
     } finally {
       setIsEditGenerating(false);
       await syncSubscription();
@@ -765,7 +764,7 @@ export function ProjectDashboard({
       const file = new File([blob], `brickex-render.png`, {
         type: "image/png",
       });
-      await navigator.share({ title: "My BrickEx render", files: [file] });
+      await navigator.share({ title: "Mi render de BrickEx", files: [file] });
     } catch (error) {
       if (error instanceof Error && error.name !== "AbortError") {
         console.error("Share failed:", error);
@@ -818,7 +817,7 @@ export function ProjectDashboard({
               onNewProject={handleNewProject}
               onDownload={handleDownload}
               isGenerating={isGenerating}
-              canGenerate={canStartGeneration}
+              canGenerate={canGenerate}
               hasGeneratedImage={hasAnyOutput}
               subscription={subscription}
               currentMode={currentMode}
@@ -856,7 +855,7 @@ export function ProjectDashboard({
           onDownload={handleDownload}
           onShare={handleShare}
           isGenerating={isGenerating}
-          canGenerate={canStartGeneration}
+          canGenerate={canGenerate}
           hasGeneratedImage={hasAnyOutput}
           subscription={subscription}
           currentMode={currentMode}
@@ -879,6 +878,13 @@ export function ProjectDashboard({
           onEditPromptChange={setEditPrompt}
           onGlobalEditSubmit={handleGlobalEditSubmit}
           isEditGenerating={isEditGenerating}
+        />
+
+        <SubscriptionModal
+          open={subscriptionModalOpen}
+          onOpenChange={setSubscriptionModalOpen}
+          subscription={subscription}
+          projectId={project.id}
         />
       </div>
     </TooltipProvider>

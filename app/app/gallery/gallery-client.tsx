@@ -83,31 +83,31 @@ const GALLERY_SECTION_META: Record<
   }
 > = {
   video: {
-    eyebrow: "Motion Library",
-    title: "Video Generations",
+    eyebrow: "Biblioteca de movimiento",
+    title: "Generaciones de video",
     description:
-      "Walkthroughs, transitions, and cinematic motion studies grouped in one place.",
+      "Recorridos, transiciones y estudios de movimiento cinematico agrupados en un solo lugar.",
     icon: Play,
   },
   interior: {
-    eyebrow: "Interior Collection",
-    title: "Interior Renders",
+    eyebrow: "Coleccion interior",
+    title: "Renders interiores",
     description:
-      "Rooms, moods, and styling directions with a cleaner editorial presentation.",
+      "Habitaciones, ambientes y direcciones de estilo con una presentacion editorial mas limpia.",
     icon: Layers3,
   },
   exterior: {
-    eyebrow: "Exterior Collection",
-    title: "Exterior Renders",
+    eyebrow: "Coleccion exterior",
+    title: "Renders exteriores",
     description:
-      "Facade concepts, curb appeal, and polished hero shots separated from the rest.",
+      "Conceptos de fachada, atractivo exterior y tomas hero pulidas separadas del resto.",
     icon: Building2,
   },
   tool: {
-    eyebrow: "Tool Outputs",
-    title: "Tool Generations",
+    eyebrow: "Resultados de herramientas",
+    title: "Generaciones de herramientas",
     description:
-      "Edits, utility generations, and everything that does not belong in the render stacks.",
+      "Ediciones, generaciones utiles y todo lo que no pertenece a los stacks de render.",
     icon: Sparkles,
   },
 };
@@ -160,7 +160,7 @@ function toClientProject(project: RawGalleryProjectStack): GalleryProjectStack {
 }
 
 function formatProjectDate(date: Date) {
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString("es-ES", {
     month: "short",
     day: "numeric",
   });
@@ -316,11 +316,11 @@ function CollectionFilterBar({
     label: string;
     count: number;
   }> = [
-    { value: "all", label: "All", count: counts.all },
+    { value: "all", label: "Todo", count: counts.all },
     { value: "exterior", label: "Exterior", count: counts.exterior },
     { value: "interior", label: "Interior", count: counts.interior },
     { value: "video", label: "Videos", count: counts.video },
-    { value: "tool", label: "Tools", count: counts.tool },
+    { value: "tool", label: "Herramientas", count: counts.tool },
   ].filter(
     (option): option is {
       value: GalleryCollectionFilter;
@@ -381,7 +381,7 @@ function CollectionSectionHeader({
         onClick={() => onFocus(collection)}
         className="self-start rounded-full border border-neutral-800 bg-neutral-950 px-4 py-2 text-xs font-medium text-neutral-200 transition-colors hover:bg-neutral-900 hover:text-white"
       >
-        Show Only
+        Ver solo
       </button>
     </div>
   );
@@ -493,7 +493,7 @@ const GridStackCard = memo(function GridStackCard({
               className="focus:bg-neutral-800 focus:text-white"
             >
               <Pencil className="h-4 w-4" />
-              Rename Project
+              Renombrar proyecto
             </DropdownMenuItem>
             <DropdownMenuItem
               onClick={(e) => {
@@ -503,7 +503,7 @@ const GridStackCard = memo(function GridStackCard({
               className="text-red-400 focus:bg-neutral-800 focus:text-red-300"
             >
               <Trash2 className="h-4 w-4" />
-              Delete Project
+              Eliminar proyecto
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -517,7 +517,7 @@ const GridStackCard = memo(function GridStackCard({
             </p>
             <div className="mt-1 flex items-center gap-2 text-[11px] text-neutral-400">
               <span>
-                {project.variationCount} {project.variationCount === 1 ? "variation" : "variations"}
+                {project.variationCount} {project.variationCount === 1 ? "variacion" : "variaciones"}
               </span>
               <span className="text-neutral-600">•</span>
               <span>{formatProjectDate(project.latestCreatedAt)}</span>
@@ -525,7 +525,7 @@ const GridStackCard = memo(function GridStackCard({
           </div>
           <div className="inline-flex flex-shrink-0 items-center gap-1 text-[11px] text-neutral-300">
             <Sparkles className="h-3.5 w-3.5 text-neutral-500" />
-            Open stack
+            Abrir stack
           </div>
         </div>
 
@@ -566,16 +566,16 @@ function ProjectDeleteDialog({
     <Dialog open={!!project} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-md border-neutral-800 bg-neutral-950 text-white">
         <DialogHeader>
-          <DialogTitle>Delete Project</DialogTitle>
+          <DialogTitle>Eliminar proyecto</DialogTitle>
           <DialogDescription className="text-neutral-400">
-            This will remove the entire stack from gallery, including all saved variations in this project.
+            Esto eliminara todo el stack de la galeria, incluidas todas las variaciones guardadas en este proyecto.
           </DialogDescription>
         </DialogHeader>
         <div className="rounded-2xl border border-red-950/70 bg-red-950/20 p-4">
           <p className="text-sm font-medium text-white">{project?.title}</p>
           <p className="mt-1 text-sm text-neutral-400">
-            {project?.variationCount ?? 0} saved {project?.variationCount === 1 ? "variation" : "variations"}
-            {project?.original ? " + original source" : ""}
+            {project?.variationCount ?? 0} {project?.variationCount === 1 ? "variacion guardada" : "variaciones guardadas"}
+            {project?.original ? " + fuente original" : ""}
           </p>
         </div>
         <DialogFooter className="gap-2">
@@ -584,14 +584,14 @@ function ProjectDeleteDialog({
             onClick={() => onOpenChange(false)}
             className="border-neutral-700 text-neutral-200 hover:bg-neutral-800"
           >
-            Cancel
+            Cancelar
           </Button>
           <Button
             variant="destructive"
             onClick={onConfirm}
             isLoading={isDeleting}
           >
-            Delete Project
+            Eliminar proyecto
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -636,7 +636,7 @@ function FacetFilterBar({
             : "bg-neutral-800/60 text-neutral-400 hover:bg-neutral-800 hover:text-neutral-200",
         )}
       >
-        All
+        Todo
       </button>
       {facets.map((facet) => {
         const FacetIcon = facet.icon;
@@ -935,7 +935,7 @@ export function GalleryClient() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "BrickEx render",
+          title: "Render de BrickEx",
           url: shareUrl,
         });
         return;
@@ -947,7 +947,7 @@ export function GalleryClient() {
     }
 
     await navigator.clipboard.writeText(shareUrl);
-    toast.success("Share link copied.");
+    toast.success("Enlace para compartir copiado.");
   }, []);
 
   const openProject = useCallback((project: GalleryProjectStack, itemId?: string | null) => {
@@ -978,7 +978,7 @@ export function GalleryClient() {
 
     const nextTitle = renameValue.trim();
     if (!nextTitle) {
-      toast.error("Project name can't be empty.");
+      toast.error("El nombre del proyecto no puede estar vacio.");
       return;
     }
 
@@ -1008,10 +1008,10 @@ export function GalleryClient() {
       );
       setProjectToRename(null);
       setRenameValue("");
-      toast.success("Project renamed.");
+      toast.success("Proyecto renombrado.");
     } catch (error) {
       console.error("Failed to rename project:", error);
-      toast.error("Failed to rename project.");
+      toast.error("No se pudo renombrar el proyecto.");
     } finally {
       setIsRenamingProject(false);
     }
@@ -1050,10 +1050,10 @@ export function GalleryClient() {
       }
 
       setProjectToDelete(null);
-      toast.success("Project deleted.");
+      toast.success("Proyecto eliminado.");
     } catch (error) {
       console.error("Failed to delete project:", error);
-      toast.error("Failed to delete project.");
+      toast.error("No se pudo eliminar el proyecto.");
     } finally {
       setIsDeletingProject(false);
     }
@@ -1200,7 +1200,7 @@ export function GalleryClient() {
                   </div>
                 ) : filteredProjects.length === 0 ? (
                   <div className="py-16 text-center text-sm text-neutral-500">
-                    No project stacks match this filter.
+                    Ningun stack de proyecto coincide con este filtro.
                   </div>
                 ) : activeCollection === "all" ? (
                   <div className="space-y-10 sm:space-y-12">
@@ -1231,7 +1231,7 @@ export function GalleryClient() {
                   </div>
                 ) : filteredProjects.length === 0 ? (
                   <div className="py-16 text-center text-sm text-neutral-500">
-                    No project stacks match this filter.
+                    Ningun stack de proyecto coincide con este filtro.
                   </div>
                 ) : activeCollection === "all" ? (
                   <div className="space-y-10 sm:space-y-12">

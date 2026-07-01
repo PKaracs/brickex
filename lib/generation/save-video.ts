@@ -41,7 +41,7 @@ export async function saveVideoToGallery(
       organizationId,
       createdByUserId: userId,
       slug: projectSlug,
-      title: "Video Generation",
+      title: "Generacion de video",
       projectType: "other",
       sourceType: "upload",
       status: "complete",
@@ -125,7 +125,7 @@ export async function saveVideoToGallery(
     toolRunId: run.id,
     type: "animation",
     status: "draft",
-    title: "Generated video",
+    title: "Video generado",
     metadata: {
       scenePresetId: input.scenePresetId ?? null,
       motionPresetId: input.motionPresetId ?? null,

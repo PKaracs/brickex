@@ -71,7 +71,7 @@ const CategoryCard = memo(function CategoryCard({
             {category.label}
           </span>
           <span className="mt-1 block text-[11px] uppercase tracking-[0.16em] text-neutral-300">
-            {category.count} images
+            {category.count} imagenes
           </span>
         </div>
       </div>
@@ -181,7 +181,7 @@ function ExploreImageModal({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-3xl w-full p-0 bg-transparent border-none shadow-none gap-0 [&>button]:hidden max-h-[95dvh] md:max-h-[90vh]">
         <VisuallyHidden>
-          <DialogTitle>Image preview</DialogTitle>
+          <DialogTitle>Vista previa de imagen</DialogTitle>
         </VisuallyHidden>
         <div className="flex flex-col bg-neutral-950 rounded-2xl overflow-hidden border border-neutral-800/50">
           {/* Close button */}
@@ -224,7 +224,7 @@ function ExploreImageModal({
               className="w-full h-12 sm:h-13 bg-white hover:bg-neutral-200 text-black font-semibold text-base rounded-xl transition-all active:scale-[0.98]"
             >
               <Sparkles className="h-4.5 w-4.5 mr-2" />
-              Generate yours
+              Generar la tuya
             </Button>
           </div>
         </div>
@@ -347,10 +347,10 @@ export function ExploreClient() {
         {/* ── Header ───────────────────────────────────────────────────── */}
         <div className="space-y-1.5">
           <h1 className="text-3xl sm:text-4xl font-bold text-white tracking-tight">
-            Explore
+            Explorar
           </h1>
           <p className="text-sm text-neutral-500">
-            Tap any picture to recreate it for yourself
+            Toca cualquier imagen para recrearla para ti
           </p>
         </div>
 
@@ -377,8 +377,8 @@ export function ExploreClient() {
             {isLoading
               ? ""
               : activeCategory === "all"
-                ? `${total} architecture images across BrickEx`
-                : `${total} images in ${activeCategoryMeta?.label ?? "this category"}`}
+                ? `${total} imagenes de arquitectura en BrickEx`
+                : `${total} imagenes en ${activeCategoryMeta?.label ?? "esta categoria"}`}
           </p>
         </div>
 
@@ -392,8 +392,8 @@ export function ExploreClient() {
         ) : images.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-neutral-500">
             <Sparkles className="h-12 w-12 mb-4 opacity-40" />
-            <p className="text-lg font-medium">No images in this pack yet</p>
-            <p className="text-sm">Pick another idea category to keep browsing</p>
+            <p className="text-lg font-medium">Aun no hay imagenes en este pack</p>
+            <p className="text-sm">Elige otra categoria de ideas para seguir explorando</p>
           </div>
         ) : (
           <div className="columns-2 sm:columns-2 md:columns-3 gap-2 sm:gap-3">

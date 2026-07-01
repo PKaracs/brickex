@@ -7,14 +7,14 @@ export async function uploadProjectImages(
   const files = formData.getAll("files");
 
   if (!projectId) {
-    return { error: "Project ID is required" };
+    return { error: "Se requiere el ID del proyecto" };
   }
 
   if (files.length === 0) {
-    return { error: "No files provided" };
+    return { error: "No se proporcionaron archivos" };
   }
 
   return {
-    error: "Use the direct upload flow via /api/projects/images/setup and /confirm",
+    error: "Usa el flujo de subida directa mediante /api/projects/images/setup y /confirm",
   };
 }

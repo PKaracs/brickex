@@ -29,12 +29,13 @@ export async function deleteProject(
       .returning({ id: schema.projects.id });
 
     if (!project) {
-      return { error: "Project not found" };
+      return { error: "Proyecto no encontrado" };
     }
 
     return { success: true };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to delete project";
+    const message =
+      error instanceof Error ? error.message : "No se pudo eliminar el proyecto";
     return { error: message };
   }
 }

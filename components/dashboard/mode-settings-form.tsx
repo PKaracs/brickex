@@ -187,7 +187,7 @@ function SettingSelectWithUpload({
           )}
         >
           <Upload className="w-3 h-3" />
-          Upload Reference
+          Subir referencia
         </button>
       )}
 
@@ -247,12 +247,12 @@ function ObjectPicker({
         </div>
         <div className="flex-1 min-w-0">
           <div className="text-xs font-medium text-white">
-            Upload Objects
+            Subir objetos
           </div>
           <div className="text-[10px] text-neutral-500">
             {uploadCount === 0
-              ? "Add reference images of objects to include"
-              : `${uploadCount} object${uploadCount > 1 ? "s" : ""} uploaded`}
+              ? "Agrega imagenes de referencia de objetos para incluir"
+              : `${uploadCount} objeto${uploadCount > 1 ? "s" : ""} subido${uploadCount > 1 ? "s" : ""}`}
           </div>
         </div>
         <Upload className="w-3.5 h-3.5 text-neutral-500" />
@@ -347,8 +347,8 @@ function TexturePicker({
           <div className="flex-1 min-w-0">
             <div className="text-xs font-medium text-white truncate">
               {selectedValues.length === 0
-                ? "None selected"
-                : `${selectedValues.length} texture${selectedValues.length > 1 ? "s" : ""} selected`}
+                ? "Nada seleccionado"
+                : `${selectedValues.length} textura${selectedValues.length > 1 ? "s" : ""} seleccionada${selectedValues.length > 1 ? "s" : ""}`}
             </div>
           </div>
           <ChevronDown className={cn(
@@ -460,7 +460,7 @@ export function ModeSettingsForm({
                 Prompt
               </h4>
               <Textarea
-                placeholder="Describe what you want to generate..."
+                placeholder="Describe lo que quieres generar..."
                 value={values.customPrompt ?? ""}
                 onChange={(e) => onChange("customPrompt", e.target.value)}
                 disabled={disabled}
@@ -480,11 +480,11 @@ export function ModeSettingsForm({
                 {isOverridden && onResetToGlobal && (
                   <button
                     onClick={() => onResetToGlobal(group.key)}
-                    title="Reset to global"
+                    title="Restablecer al global"
                     className="flex items-center gap-1 text-[9px] text-neutral-500 hover:text-white transition-colors"
                   >
                     <RotateCcw className="w-2.5 h-2.5" />
-                    Reset
+                    Restablecer
                   </button>
                 )}
               </div>

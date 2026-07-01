@@ -48,21 +48,21 @@ export async function POST(request: NextRequest) {
 
     if (!(file instanceof File)) {
       return NextResponse.json(
-        { error: "Profile image file is required." },
+        { error: "Se requiere un archivo de imagen de perfil." },
         { status: 400 }
       );
     }
 
     if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
       return NextResponse.json(
-        { error: "Use a JPG, PNG, WebP, or GIF image." },
+        { error: "Usa una imagen JPG, PNG, WebP o GIF." },
         { status: 400 }
       );
     }
 
     if (file.size > MAX_FILE_SIZE_BYTES) {
       return NextResponse.json(
-        { error: "Profile photos must be 10MB or smaller." },
+        { error: "Las fotos de perfil deben pesar 10 MB o menos." },
         { status: 400 }
       );
     }
@@ -86,7 +86,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to upload profile image.";
+      error instanceof Error ? error.message : "No se pudo subir la imagen de perfil.";
 
     return NextResponse.json({ error: message }, { status: 400 });
   }

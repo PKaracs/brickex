@@ -103,7 +103,7 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
 
   const primaryLinks: SidebarLinkItem[] = [
     {
-      label: "Create",
+      label: "Crear",
       href: "/app/dashboard/new",
       icon: <Sparkles className="h-5 w-5 flex-shrink-0" />,
       matchPath: "/dashboard",
@@ -115,19 +115,19 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
       matchPath: "/video",
     },
     {
-      label: "Tools",
+      label: "Herramientas",
       href: "/app/tools",
       icon: <Wrench className="h-5 w-5 flex-shrink-0" />,
       matchPath: "/tools",
     },
     {
-      label: "Explore",
+      label: "Explorar",
       href: "/app/explore",
       icon: <Compass className="h-5 w-5 flex-shrink-0" />,
       matchPath: "/explore",
     },
     {
-      label: "Gallery",
+      label: "Galeria",
       href: "/app/gallery",
       icon: <ImageIcon className="h-5 w-5 flex-shrink-0" />,
       matchPath: "/gallery",
@@ -136,7 +136,7 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
 
   const secondaryLinks: SidebarLinkItem[] = [
     {
-      label: "Chat with Founder",
+      label: "Chat con el fundador",
       href: "#",
       icon: <MessageCircle className="h-5 w-5 flex-shrink-0" />,
     },
@@ -164,11 +164,12 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
           {/* Logo */}
           <Link
             href="/app/dashboard/new"
+            prefetch={false}
             className="flex items-center gap-2.5 px-3 py-1 mb-1"
           >
             <Image
               src="/brickex-logo.png"
-              alt="BrickEx Logo"
+              alt="Logo de BrickEx"
               width={26}
               height={26}
               className="flex-shrink-0"
@@ -220,7 +221,7 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
                 active={false}
                 isOpen={isOpen}
                 onClick={() => {
-                  if (link.label === "Chat with Founder") {
+                  if (link.label === "Chat con el fundador") {
                     openCrisp();
                   }
                 }}
@@ -247,7 +248,7 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
                 ) : (
                   <ChevronsRight className="h-3.5 w-3.5" />
                 )}
-                <span>{pinned ? "Collapse sidebar" : "Pin sidebar open"}</span>
+                <span>{pinned ? "Colapsar sidebar" : "Fijar sidebar abierto"}</span>
               </motion.button>
             )}
           </AnimatePresence>
@@ -311,11 +312,11 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
                   >
                     <p className="text-sm font-medium text-neutral-200 truncate">
                       {hasMounted && !isPending
-                        ? session?.user?.name || "User"
+                        ? session?.user?.name || "Usuario"
                         : "..."}
                     </p>
                     <p className="text-xs text-neutral-500 truncate">
-                      Profile settings
+                      Ajustes de perfil
                     </p>
                   </motion.div>
                 )}
@@ -398,10 +399,14 @@ function MobileSidebar({
     <>
       {/* Mobile top bar */}
       <div className="flex h-[52px] w-full items-center justify-between bg-neutral-800 px-4 md:hidden fixed top-0 left-0 right-0 z-50">
-        <Link href="/app/dashboard/new" className="flex items-center gap-2">
+        <Link
+          href="/app/dashboard/new"
+          prefetch={false}
+          className="flex items-center gap-2"
+        >
           <Image
             src="/brickex-logo.png"
-            alt="BrickEx Logo"
+            alt="Logo de BrickEx"
             width={22}
             height={22}
             priority
@@ -444,10 +449,14 @@ function MobileSidebar({
           >
             <div>
               <div className="flex items-center justify-between mb-8">
-                <Link href="/app/dashboard/new" className="flex items-center gap-2">
+                <Link
+                  href="/app/dashboard/new"
+                  prefetch={false}
+                  className="flex items-center gap-2"
+                >
                   <Image
                     src="/brickex-logo.png"
-                    alt="BrickEx Logo"
+                    alt="Logo de BrickEx"
                     width={28}
                     height={28}
                     priority
@@ -474,6 +483,9 @@ function MobileSidebar({
                   <Link
                     key={idx}
                     href={link.href}
+                    prefetch={
+                      link.href === "/app/dashboard/new" ? false : undefined
+                    }
                     onClick={() => setOpen(false)}
                     className={cn(
                       "flex items-center gap-3 px-4 py-3.5 rounded-xl transition-colors",
@@ -500,7 +512,7 @@ function MobileSidebar({
                 >
                   <div className="flex items-center gap-3">
                     <MessageCircle className="h-5 w-5" />
-                    <span className="font-medium">Chat with Founder</span>
+                    <span className="font-medium">Chat con el fundador</span>
                   </div>
                   {crispUnreadCount > 0 && (
                     <span className="relative flex h-2 w-2 ml-2">
@@ -550,7 +562,7 @@ function MobileSidebar({
                 <div className="flex-1 min-w-0 text-left">
                   <p className="text-sm font-medium text-neutral-200 truncate">
                     {hasMounted && !isPending
-                      ? session?.user?.name || "User"
+                      ? session?.user?.name || "Usuario"
                       : "..."}
                   </p>
                   <p className="text-xs text-neutral-500 truncate">
@@ -639,6 +651,7 @@ function NavSidebarLink({
   return (
     <Link
       href={link.href}
+      prefetch={link.href === "/app/dashboard/new" ? false : undefined}
       className={sharedClass}
       onMouseEnter={() => setHovered(id)}
       onMouseLeave={() => setHovered(null)}

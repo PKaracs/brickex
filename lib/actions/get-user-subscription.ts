@@ -36,7 +36,7 @@ export async function getUserSubscription(): Promise<
     const userId = await getAuthUserId();
 
     if (!userId) {
-      return { error: "Unauthorized" };
+      return { error: "No autorizado" };
     }
 
     const user = await db.query.users.findFirst({
@@ -51,7 +51,7 @@ export async function getUserSubscription(): Promise<
     });
 
     if (!user) {
-      return { error: "User not found" };
+      return { error: "Usuario no encontrado" };
     }
 
     const creationsRemaining = Math.max(user.creationsLimit - user.creationsUsed, 0);
@@ -68,7 +68,8 @@ export async function getUserSubscription(): Promise<
       isPastDue: user.subscriptionStatus === "past_due",
     };
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Failed to load subscription";
+    const message =
+      error instanceof Error ? error.message : "No se pudo cargar la suscripcion";
     return { error: message };
   }
 }
@@ -94,7 +95,7 @@ export async function checkCanGenerate(): Promise<{
 
   return {
     canGenerate: subscription.canGenerate,
-    reason: subscription.canGenerate ? undefined : "Generation limit reached",
+    reason: subscription.canGenerate ? undefined : "Limite de generaciones alcanzado",
     creationsRemaining: subscription.creationsRemaining,
     resetAt: subscription.currentPeriodEnd ?? undefined,
     isProUser:
@@ -114,12 +115,12 @@ export async function deductBricks(
   amount: number,
 ): Promise<{ success: true; remaining: number } | { success: false; error: string }> {
   if (amount <= 0) {
-    return { success: false, error: "Invalid deduction amount" };
+    return { success: false, error: "Cantidad de descuento no valida" };
   }
 
   const userId = await getAuthUserId();
   if (!userId) {
-    return { success: false, error: "Unauthorized" };
+    return { success: false, error: "No autorizado" };
   }
 
   const user = await db.query.users.findFirst({
@@ -131,14 +132,14 @@ export async function deductBricks(
   });
 
   if (!user) {
-    return { success: false, error: "User not found" };
+    return { success: false, error: "Usuario no encontrado" };
   }
 
   const remaining = user.creationsLimit - user.creationsUsed;
   if (remaining < amount) {
     return {
       success: false,
-      error: `Not enough bricks. Need ${amount}, have ${remaining}.`,
+      error: `No hay suficientes bricks. Necesitas ${amount} y tienes ${remaining}.`,
     };
   }
 

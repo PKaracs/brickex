@@ -31,7 +31,7 @@ export default function Navbar() {
           <a href="/" className="flex items-center gap-2.5">
             <Image
               src="/brickex-logo.png"
-              alt="BrickEx Logo"
+              alt="Logo de BrickEx"
               width={36}
               height={36}
               className="w-8 h-8 sm:w-9 sm:h-9"
@@ -61,7 +61,7 @@ export default function Navbar() {
               className="px-3 sm:px-5 py-2 sm:py-2.5 min-h-[40px] sm:min-h-[44px] text-xs sm:text-sm font-medium"
               asChild
             >
-              <a href={signupUrl}>Start Free</a>
+              <a href={signupUrl}>Empezar gratis</a>
             </Button>
           </div>
         </div>

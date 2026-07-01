@@ -2,7 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import { PricingCard, type Plan } from "@/components/ui/pricing-card";
-import { BlurFade } from "@/components/ui/blur-fade";
+import { StaticReveal as BlurFade } from "@/components/landing/StaticReveal";
 import { getSignupUrl } from "@/lib/app-url";
 
 export default function PricingGrid() {
@@ -15,71 +15,71 @@ export default function PricingGrid() {
   const plans: Plan[] = [
     {
       id: "free",
-      name: "Free",
+      name: "Gratis",
       price: 0,
       currency: "$",
       features: [
-        "100 bricks to try BrickEx",
-        "Exterior render mode",
-        "2K resolution output",
-        "SketchUp, AutoCAD & PDF support",
-        "Basic architecture styles",
+        "100 bricks para probar BrickEx",
+        "Modo de render exterior",
+        "Salida en resolucion 2K",
+        "Soporte para SketchUp, AutoCAD y PDF",
+        "Estilos arquitectonicos basicos",
       ],
-      buttonText: "Start Free",
+      buttonText: "Empezar gratis",
       onClick: navigate,
     },
     {
       id: "starter",
       name: "Starter",
       price: "29",
-      subText: "/month",
+      subText: "/mes",
       currency: "$",
       features: [
-        "4,000 bricks per month",
-        "Exterior + Interior modes",
-        "All architecture styles",
-        "All lighting & weather variations",
-        "4K exports, no watermarks",
-        "30-second generation",
+        "4,000 bricks al mes",
+        "Modos exterior + interior",
+        "Todos los estilos arquitectonicos",
+        "Todas las variaciones de luz y clima",
+        "Exportaciones 4K sin marcas de agua",
+        "Generacion en 30 segundos",
       ],
-      additionalFeatures: ["Everything in Free"],
-      buttonText: "Get Started",
+      additionalFeatures: ["Todo lo de Gratis"],
+      buttonText: "Empezar",
       onClick: navigate,
     },
     {
       id: "pro",
       name: "Pro",
       price: "49",
-      subText: "/month",
+      subText: "/mes",
       currency: "$",
       featured: true,
       features: [
-        "12,000 bricks per month",
-        "Video generation (walkthroughs, timelapses)",
-        "Region editing & refinement",
-        "Priority processing",
-        "All tools included",
+        "12,000 bricks al mes",
+        "Generacion de video (recorridos y timelapses)",
+        "Edicion y refinamiento por zonas",
+        "Procesamiento prioritario",
+        "Todas las herramientas incluidas",
       ],
-      additionalFeatures: ["Everything in Starter"],
-      buttonText: "Start Creating",
+      additionalFeatures: ["Todo lo de Starter"],
+      buttonText: "Empezar a crear",
       onClick: navigate,
     },
     {
       id: "studio",
       name: "Studio",
       price: "99",
-      subText: "/month",
+      subText: "/mes",
       currency: "$",
       features: [
-        "30,000 bricks per month",
-        "Team collaboration (up to 5 seats)",
-        "Batch rendering (up to 20 at once)",
-        "Custom brand presets",
-        "API access for integrations",
-        "White-label exports",
+        "30,000 bricks al mes",
+        "Colaboracion en equipo (hasta 5 plazas)",
+        "Renderizado por lotes (hasta 20 a la vez)",
+        "Presets de marca personalizados",
+        "Acceso API para integraciones",
+        "Exportaciones white-label",
       ],
-      additionalFeatures: ["Everything in Pro"],
-      buttonText: "Start with BrickEx",
+      additionalFeatures: ["Todo lo de Pro"],
+      buttonText: "Empezar con BrickEx",
       onClick: navigate,
     },
   ];
@@ -91,12 +91,13 @@ export default function PricingGrid() {
           <div className="text-center mb-12">
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
               <span className="bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-                Simple pricing for every project
+                Menos que un solo render de estudio. Cada mes.
               </span>
             </h2>
             <p className="text-zinc-500 mt-3 text-sm sm:text-base max-w-lg mx-auto">
-              Start free with 100 bricks. Upgrade when your clients start asking
-              "who's your 3D studio?"
+              Empieza gratis con 100 bricks, sin tarjeta. Mejora cuando tus
+              clientes empiecen a preguntar: "quien es tu estudio 3D?" Cancela
+              cuando quieras.
             </p>
           </div>
         </BlurFade>
@@ -114,7 +115,9 @@ export default function PricingGrid() {
 
         <BlurFade inView delay={0.3}>
           <p className="text-center text-xs text-zinc-600 mt-8">
-            All plans include SSL encryption, GDPR compliance, and 99.9% uptime. Cancel anytime.
+            Cancela cuando quieras: sin contratos ni permanencia. Todos los
+            planes incluyen cifrado SSL, cumplimiento GDPR y 99.9% de uptime.
+            Tus renders siempre son tuyos.
           </p>
         </BlurFade>
       </div>

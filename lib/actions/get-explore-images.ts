@@ -55,10 +55,10 @@ const VARIANT_ORDER: ExploreVariant[] = [
 ];
 
 const VARIANT_LABELS: Record<ExploreVariant, string> = {
-  morning: "Morning",
-  night: "Night",
-  overcast: "Overcast",
-  lifestyle: "Lifestyle",
+  morning: "Manana",
+  night: "Noche",
+  overcast: "Nublado",
+  lifestyle: "Con vida",
 };
 
 const FULL_VARIATION_NAMES = [
@@ -85,23 +85,23 @@ const PRESET_VARIATION_NAMES = [
 const INTERIOR_VARIATION_ENTRIES = [
   {
     slug: "modern-minimalist",
-    title: "Modern Minimal Interior",
-    description: "Landing interior variation with a clean contemporary furniture scheme.",
+    title: "Interior moderno minimal",
+    description: "Variacion interior con mobiliario contemporaneo limpio.",
   },
   {
     slug: "art-deco",
-    title: "Art Deco Interior",
-    description: "Landing interior variation with Deco lighting, pattern, and material direction.",
+    title: "Interior art deco",
+    description: "Variacion interior con luz, patron y materiales de direccion deco.",
   },
   {
     slug: "scandinavian",
-    title: "Scandinavian Interior",
-    description: "Landing interior variation with pale timber, soft daylight, and Nordic styling.",
+    title: "Interior escandinavo",
+    description: "Variacion interior con madera clara, luz suave y styling nordico.",
   },
   {
     slug: "industrial",
-    title: "Industrial Interior",
-    description: "Landing interior variation with darker finishes, metal accents, and loft character.",
+    title: "Interior industrial",
+    description: "Variacion interior con acabados oscuros, acentos metalicos y caracter loft.",
   },
 ] as const;
 
@@ -113,7 +113,84 @@ const CATEGORY_COVER_OVERRIDES: Record<ExploreCategoryId, string> = {
   "regional-styles": assetUrl("real-estate-full/swiss-mountain-chalet.png"),
 };
 
+const DISPLAY_TITLES: Record<string, string> = {
+  "alpine-chalet-front": "Chalet alpino frontal",
+  "amalfi-coast-villa": "Villa en la costa Amalfi",
+  "bali-resort-villa": "Villa resort en Bali",
+  "beach-house-timber": "Casa de playa en madera",
+  "big-sur-mobile-home": "Vivienda movil de lujo en Big Sur",
+  "brownstone-townhouse": "Townhouse brownstone",
+  "cape-town-clifftop": "Residencia en acantilado de Ciudad del Cabo",
+  "caribbean-plantation": "Estate colonial caribeno",
+  "classic-white-mansion": "Mansion blanca clasica",
+  "concrete-brutalist-house": "Casa brutalista de hormigon",
+  "desert-modern-house": "Casa desert modern",
+  "glass-skyscraper-penthouse": "Penthouse en rascacielos de vidrio",
+  "hollywood-hills-modern": "Casa moderna en Hollywood Hills",
+  industrial: "Industrial",
+  japanese: "Japones",
+  "japanese-minimalist-home": "Casa japonesa minimalista",
+  "japanese-zen-house": "Casa japonesa zen",
+  "joshua-tree-retreat": "Retiro desertico en Joshua Tree",
+  "lake-como-palazzo": "Palazzo en Lago Como",
+  "luxury-glass-skyscraper": "Rascacielos residencial de vidrio",
+  "luxury-mobile-home": "Vivienda movil de lujo",
+  "maldives-overwater": "Villa sobre el agua en Maldivas",
+  "malibu-beach-mansion": "Mansion de playa en Malibu",
+  "mediterranean-villa": "Villa mediterranea",
+  "miami-condo-tower": "Torre residencial en Miami",
+  "miami-penthouse": "Penthouse en Miami",
+  "modern-glass-villa": "Villa moderna de vidrio",
+  "modern-white-villa": "Villa blanca moderna",
+  "mykonos-cycladic": "Casa cicladica en Mykonos",
+  "norwegian-fjord-glass": "Casa de vidrio en fiordo noruego",
+  "provence-farmhouse": "Casa rural en Provenza",
+  "scandinavian-lakehouse": "Casa de lago escandinava",
+  "spanish-colonial-mansion": "Mansion colonial espanola",
+  "swiss-chalet": "Chalet suizo",
+  "swiss-mountain-chalet": "Chalet suizo de montana",
+  "tropical-overwater-villa": "Villa tropical sobre el agua",
+  "tropical-villa-pool": "Villa tropical con piscina",
+  "tulum-treehouse": "Casa arbol en Tulum",
+  "tuscan-hilltop-villa": "Villa toscana en colina",
+  "tuscan-stone-farmhouse": "Casa toscana de piedra",
+  "tuscan-villa-estate": "Estate de villa toscana",
+};
+
+const STYLE_LABELS: Record<string, string> = {
+  "Art Deco": "Art deco",
+  Auto: "Auto",
+  Bohemian: "Bohemio",
+  Brutalist: "Brutalista",
+  Coastal: "Costero",
+  Colonial: "Colonial",
+  Contemporary: "Contemporaneo",
+  Farmhouse: "Casa rural",
+  Industrial: "Industrial",
+  Japandi: "Japandi",
+  Japanese: "Japones",
+  Luxury: "Lujo",
+  Mediterranean: "Mediterraneo",
+  "Mid-Century": "Medio siglo",
+  Minimal: "Minimal",
+  Modern: "Moderno",
+  "Neo-Classical": "Neoclasico",
+  Parametric: "Parametrico",
+  Rustic: "Rustico",
+  Scandinavian: "Escandinavo",
+  Tropical: "Tropical",
+};
+
+function translateStyleLabel(label: string) {
+  return STYLE_LABELS[label] ?? label;
+}
+
 function titleize(value: string) {
+  const title = DISPLAY_TITLES[value];
+  if (title) {
+    return title;
+  }
+
   return value
     .split("-")
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
@@ -230,9 +307,7 @@ function buildPropertyCollection(
         url: assetUrl(relativePath),
         name: titleize(record.name),
         description:
-          record.desc ??
-          record.property ??
-          `${titleize(record.name)} architecture reference from the BrickEx landing library.`,
+          `Referencia arquitectonica de ${titleize(record.name)} de la biblioteca BrickEx.`,
         packSlug,
         packTitle,
         category: getPropertyCategory(record.name),
@@ -242,7 +317,7 @@ function buildPropertyCollection(
 }
 
 function buildVariationCollection(
-  records: PropertyPromptRecord[],
+  _records: PropertyPromptRecord[],
   names: readonly string[],
   {
     basePath,
@@ -254,12 +329,9 @@ function buildVariationCollection(
     packTitle: string;
   },
 ) {
-  const recordMap = new Map(records.map((record) => [record.name, record]));
-
   return names.flatMap((name) =>
     VARIANT_ORDER.flatMap((variant) => {
       const relativePath = `${basePath}/${name}/${variant}.png`;
-      const record = recordMap.get(name);
       const baseTitle = titleize(name);
 
       return [
@@ -268,9 +340,7 @@ function buildVariationCollection(
           url: assetUrl(relativePath),
           name: `${baseTitle} ${VARIANT_LABELS[variant]}`,
           description:
-            record?.desc ??
-            record?.property ??
-            `${VARIANT_LABELS[variant]} lighting and lifestyle study for ${baseTitle}.`,
+            `Estudio de ${VARIANT_LABELS[variant].toLowerCase()} para ${baseTitle}, listo para comparar luz, atmosfera y uso.`,
           packSlug,
           packTitle,
           category: getPropertyCategory(name),
@@ -304,8 +374,8 @@ function buildStyleCollection(
       createExploreImage({
         id: `${packSlug}:${record.value}`,
         url: assetUrl(relativePath),
-        name: `${record.label} ${titleSuffix}`,
-        description: `${record.label} style reference from the BrickEx landing showcase.`,
+        name: `${translateStyleLabel(record.label)} ${titleSuffix}`,
+        description: `Referencia de estilo ${translateStyleLabel(record.label).toLowerCase()} de la biblioteca BrickEx.`,
         packSlug,
         packTitle,
         category: "regional-styles",
@@ -324,7 +394,7 @@ function buildInteriorVariationCollection() {
         name: entry.title,
         description: entry.description,
         packSlug: "landing-interior-variations",
-        packTitle: "Landing: Interior Variations",
+        packTitle: "Landing: variaciones interiores",
         category: "regional-styles",
       }),
     ];
@@ -337,7 +407,7 @@ const LANDING_IMAGES = [
   ...buildPropertyCollection(fullPrompts as PropertyPromptRecord[], {
     basePath: "real-estate-full",
     packSlug: "landing-real-estate-full",
-    packTitle: "Landing: Full Property Renders",
+    packTitle: "Landing: renders completos de propiedad",
   }),
   ...buildVariationCollection(
     fullPrompts as PropertyPromptRecord[],
@@ -345,18 +415,18 @@ const LANDING_IMAGES = [
     {
       basePath: "real-estate-full-variations",
       packSlug: "landing-real-estate-full-variations",
-      packTitle: "Landing: Full Property Variations",
+      packTitle: "Landing: variaciones completas de propiedad",
     },
   ),
   ...buildPropertyCollection(frontPrompts as PropertyPromptRecord[], {
     basePath: "real-estate-front",
     packSlug: "landing-real-estate-front",
-    packTitle: "Landing: Sketch-to-Render Exteriors",
+    packTitle: "Landing: exteriores sketch-to-render",
   }),
   ...buildPropertyCollection(presetPrompts as PropertyPromptRecord[], {
     basePath: "real-estate-presets",
     packSlug: "landing-real-estate-presets",
-    packTitle: "Landing: Property Presets",
+    packTitle: "Landing: presets de propiedad",
   }),
   ...buildVariationCollection(
     presetPrompts as PropertyPromptRecord[],
@@ -364,19 +434,19 @@ const LANDING_IMAGES = [
     {
       basePath: "real-estate-variations",
       packSlug: "landing-real-estate-variations",
-      packTitle: "Landing: Preset Variations",
+      packTitle: "Landing: variaciones de presets",
     },
   ),
   ...buildStyleCollection(architectureStylePrompts as StylePromptRecord[], {
     basePath: "architecture-styles",
     packSlug: "landing-architecture-styles",
-    packTitle: "Landing: Architecture Styles",
-    titleSuffix: "Architecture",
+    packTitle: "Landing: estilos arquitectonicos",
+    titleSuffix: "Arquitectura",
   }),
   ...buildStyleCollection(interiorStylePrompts as StylePromptRecord[], {
     basePath: "interior-styles",
     packSlug: "landing-interior-styles",
-    packTitle: "Landing: Interior Styles",
+    packTitle: "Landing: estilos interiores",
     titleSuffix: "Interior",
   }),
   ...buildInteriorVariationCollection(),
@@ -390,7 +460,7 @@ const EXPLORE_IMAGES: ExploreImage[] = IDEA_CATEGORY_ORDER.flatMap((category) =>
 const EXPLORE_CATEGORIES: ExploreCategory[] = [
   {
     id: "all",
-    label: "All Architecture",
+    label: "Toda la arquitectura",
     cover: CATEGORY_COVER_OVERRIDES.all,
     count: EXPLORE_IMAGES.length,
   },

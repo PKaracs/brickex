@@ -35,8 +35,8 @@ export async function setupAvatar(
         success: false,
         error:
           response.status === 401
-            ? "Session expired. Please refresh."
-            : data.error || "Failed to set up avatar",
+            ? "La sesion expiro. Actualiza la pagina."
+            : data.error || "No se pudo preparar el avatar",
       };
     }
 
@@ -48,7 +48,7 @@ export async function setupAvatar(
     };
   } catch (error) {
     console.error("[AvatarService] setupAvatar error:", error);
-    return { success: false, error: "Network error. Please try again." };
+    return { success: false, error: "Error de red. Intentalo de nuevo." };
   }
 }
 
@@ -68,7 +68,7 @@ export async function uploadAvatarImages(
     // Step 1: Setup avatar + get upload URLs (one call)
     const setup = await setupAvatar(files.length);
     if (!setup.success || !setup.avatarId || !setup.uploadUrls) {
-      return { success: false, error: setup.error || "Setup failed" };
+      return { success: false, error: setup.error || "No se pudo preparar la subida" };
     }
 
     console.log(
@@ -103,7 +103,7 @@ export async function uploadAvatarImages(
 
     const failed = results.filter((r) => !r.ok);
     if (failed.length > 0) {
-      return { success: false, error: `${failed.length} upload(s) failed` };
+      return { success: false, error: `${failed.length} subida(s) fallaron` };
     }
 
     // Step 3: Confirm uploads
@@ -122,13 +122,13 @@ export async function uploadAvatarImages(
 
     if (!confirmRes.ok) {
       const data = await confirmRes.json().catch(() => ({}));
-      return { success: false, error: data.error || "Confirm failed" };
+      return { success: false, error: data.error || "No se pudo confirmar la subida" };
     }
 
     console.log(`[AvatarService] Total time: ${Date.now() - startTime}ms`);
     return { success: true, avatarId: setup.avatarId };
   } catch (error) {
     console.error("[AvatarService] Error:", error);
-    return { success: false, error: "Network error. Please try again." };
+    return { success: false, error: "Error de red. Intentalo de nuevo." };
   }
 }

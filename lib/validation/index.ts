@@ -34,7 +34,7 @@ export function validateInput<T>(
         details: error.issues,
       };
     }
-    return { success: false, error: "Invalid input" };
+    return { success: false, error: "Entrada no valida" };
   }
 }
 
@@ -54,7 +54,7 @@ export function formatZodError(error: ZodError): {
   details: { path: string; message: string }[];
 } {
   return {
-    error: "Invalid input",
+    error: "Entrada no valida",
     details: error.issues.map((e) => ({
       path: e.path.join("."),
       message: e.message,
@@ -66,7 +66,7 @@ export function formatZodError(error: ZodError): {
  * Create a standard 400 error response for API routes
  */
 export function invalidInputResponse(
-  message: string = "Invalid input",
+  message: string = "Entrada no valida",
   details?: z.ZodIssue[]
 ): Response {
   return new Response(

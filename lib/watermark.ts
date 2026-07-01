@@ -17,7 +17,7 @@ function loadImage(url: string): Promise<HTMLImageElement> {
     img.onload = () => resolve(img);
     img.onerror = (error) => {
       console.error("Failed to load image:", url, error);
-      reject(new Error(`Failed to load image: ${url}`));
+      reject(new Error(`No se pudo cargar la imagen: ${url}`));
     };
     img.src = url;
   });
@@ -47,7 +47,7 @@ export async function addWatermark(
     const ctx = canvas.getContext("2d");
 
     if (!ctx) {
-      throw new Error("Failed to get canvas context");
+      throw new Error("No se pudo obtener el contexto del canvas");
     }
 
     ctx.drawImage(mainImage, 0, 0);
@@ -92,7 +92,7 @@ export async function addWatermark(
           if (blob) {
             resolve(blob);
           } else {
-            reject(new Error("Failed to create blob from canvas"));
+            reject(new Error("No se pudo crear el blob desde el canvas"));
           }
         },
         "image/png",

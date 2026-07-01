@@ -34,13 +34,13 @@ export async function POST(request: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      return NextResponse.json({ error: "Usuario no encontrado" }, { status: 404 });
     }
 
     const purchaseEventId = input.purchaseEventId || user.metaPurchaseEventId;
     if (!purchaseEventId) {
       return NextResponse.json(
-        { error: "Missing purchase event id for Meta deduplication" },
+        { error: "Falta el ID de evento de compra para deduplicacion de Meta" },
         { status: 400 },
       );
     }
@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
     });
   } catch (error) {
     const message =
-      error instanceof Error ? error.message : "Failed to track checkout";
+      error instanceof Error ? error.message : "No se pudo registrar el checkout";
 
     return NextResponse.json({ error: message }, { status: 400 });
   }

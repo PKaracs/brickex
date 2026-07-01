@@ -60,11 +60,11 @@ export default function FAQSection() {
         {/* Header */}
         <div className="text-center mb-10 sm:mb-14">
           <p className="text-xs sm:text-sm font-medium text-zinc-500 uppercase tracking-wider mb-2 sm:mb-3">
-            FAQs
+            Preguntas frecuentes
           </p>
           <h2 className="text-2xl sm:text-3xl lg:text-4xl font-semibold tracking-tight">
             <span className="bg-gradient-to-b from-white via-neutral-100 to-neutral-400 bg-clip-text text-transparent">
-              Questions? We got answers.
+              Todo lo que necesitas saber antes de empezar
             </span>
           </h2>
         </div>

@@ -41,17 +41,17 @@ export interface Tool {
 export const TOOLS: Tool[] = [
   {
     id: "image-to-3d",
-    label: "Image to 3D Object",
-    labelItalic: "Object",
+    label: "Imagen a objeto 3D",
+    labelItalic: "Objeto",
     description:
-      "Convert any 2D image into a detailed 3D object model with realistic depth and geometry.",
+      "Convierte cualquier imagen 2D en un modelo de objeto 3D detallado, con profundidad y geometria realistas.",
     icon: Box,
-    tags: ["3D", "Modeling"],
-    placeholder: "Upload an image of an object to convert to 3D",
+    tags: ["3D", "Modelado"],
+    placeholder: "Sube una imagen de un objeto para convertirlo a 3D",
     coverImage: "/tools/image-to-3d-cover.jpg",
     sampleInputImage: "/tools/image-to-3d-input.jpg",
-    readyTitle: "Upload an image to get started",
-    readySubtitle: "Transform photos into 3D object models",
+    readyTitle: "Sube una imagen para empezar",
+    readySubtitle: "Transforma fotos en modelos de objeto 3D",
     inputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/image-to-3d-input.png",
     outputPreview:
@@ -61,17 +61,17 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "exploded-diagram",
-    label: "Exploded Diagram",
-    labelItalic: "Diagram",
+    label: "Diagrama explotado",
+    labelItalic: "Diagrama",
     description:
-      "Generate exploded assembly diagrams that show how components fit together.",
+      "Genera diagramas de ensamblaje explotado que muestran como encajan los componentes.",
     icon: Layers,
-    tags: ["Architecture", "Technical"],
-    placeholder: "Upload an image to create an exploded diagram",
+    tags: ["Arquitectura", "Tecnico"],
+    placeholder: "Sube una imagen para crear un diagrama explotado",
     coverImage: "/tools/exploded-diagram-cover.jpg",
     sampleInputImage: "/tools/exploded-diagram-input.jpg",
-    readyTitle: "Upload an image to get started",
-    readySubtitle: "Break down structures into exploded views",
+    readyTitle: "Sube una imagen para empezar",
+    readySubtitle: "Descompone estructuras en vistas explotadas",
     creditCost: 80,
     inputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/exploded-diagram-input.png",
@@ -81,17 +81,17 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "floorplan-to-furnished",
-    label: "Empty Floorplan to Furnished",
-    labelItalic: "Furnished",
+    label: "Plano vacio a amueblado",
+    labelItalic: "Amueblado",
     description:
-      "Transform empty floor plans into fully furnished, photorealistic interior renders.",
+      "Transforma planos vacios en renders interiores fotorrealistas totalmente amueblados.",
     icon: Home,
-    tags: ["Interior", "Floorplan"],
-    placeholder: "Upload an empty floor plan to furnish",
+    tags: ["Interior", "Plano"],
+    placeholder: "Sube un plano vacio para amueblarlo",
     coverImage: "/tools/floorplan-furnished-cover.jpg",
     sampleInputImage: "/tools/floorplan-furnished-input.jpg",
-    readyTitle: "Upload a floorplan to get started",
-    readySubtitle: "Transform empty rooms into furnished interiors",
+    readyTitle: "Sube un plano para empezar",
+    readySubtitle: "Transforma habitaciones vacias en interiores amueblados",
     inputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-furnished-input.png",
     outputPreview:
@@ -101,17 +101,17 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "upholstery-change",
-    label: "Upholstery Change",
-    labelItalic: "Change",
+    label: "Cambio de tapiceria",
+    labelItalic: "Tapiceria",
     description:
-      "Swap fabrics, textures, and materials on furniture with AI-powered precision.",
+      "Cambia telas, texturas y materiales de muebles con precision impulsada por IA.",
     icon: Sofa,
     tags: ["Interior", "Material"],
-    placeholder: "Upload a furniture image to change its upholstery",
+    placeholder: "Sube una imagen de mueble para cambiar su tapiceria",
     coverImage: "/tools/upholstery-change-cover.jpg",
     sampleInputImage: "/tools/upholstery-change-input.jpg",
-    readyTitle: "Upload furniture to get started",
-    readySubtitle: "Swap fabrics and materials on any piece",
+    readyTitle: "Sube un mueble para empezar",
+    readySubtitle: "Cambia telas y materiales en cualquier pieza",
     inputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/upholstery-change-input.png",
     outputPreview:
@@ -121,17 +121,17 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "moodboard-to-render",
-    label: "Moodboard to Render",
+    label: "Moodboard a render",
     labelItalic: "Render",
     description:
-      "Transform moodboard concepts into realistic interior renders with AI-powered visualization.",
+      "Transforma conceptos de moodboard en renders interiores realistas con visualizacion impulsada por IA.",
     icon: ImageIcon,
     tags: ["Interior"],
-    placeholder: "Upload a moodboard to transform into a render",
+    placeholder: "Sube un moodboard para transformarlo en render",
     coverImage: "/tools/moodboard-render-cover.jpg",
     sampleInputImage: "/tools/moodboard-render-input.jpg",
-    readyTitle: "Upload moodboard images to get started",
-    readySubtitle: "Turn inspiration boards into photorealistic renders",
+    readyTitle: "Sube imagenes de moodboard para empezar",
+    readySubtitle: "Convierte boards de inspiracion en renders fotorrealistas",
     multiUpload: true,
     inputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/moodboard-input.png",
@@ -142,17 +142,17 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "render-to-isometric",
-    label: "Render to Isometric Diagram",
-    labelItalic: "Diagram",
+    label: "Render a diagrama isometrico",
+    labelItalic: "Diagrama",
     description:
-      "Convert architectural renders into clean isometric diagrams for presentations.",
+      "Convierte renders arquitectonicos en diagramas isometricos limpios para presentaciones.",
     icon: Rotate3d,
-    tags: ["Architecture", "Technical"],
-    placeholder: "Upload a render to convert to isometric",
+    tags: ["Arquitectura", "Tecnico"],
+    placeholder: "Sube un render para convertirlo a isometrico",
     coverImage: "/tools/render-isometric-cover.jpg",
     sampleInputImage: "/tools/render-isometric-input.jpg",
-    readyTitle: "Upload a render to get started",
-    readySubtitle: "Transform renders into isometric diagrams",
+    readyTitle: "Sube un render para empezar",
+    readySubtitle: "Transforma renders en diagramas isometricos",
     inputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/render-to-isometric-input.png",
     outputPreview:
@@ -162,17 +162,17 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "floorplan-to-3d",
-    label: "Floorplan to 3D Diagram",
-    labelItalic: "Diagram",
+    label: "Plano a diagrama 3D",
+    labelItalic: "Diagrama",
     description:
-      "Transform 2D floor plans into immersive 3D spatial diagrams and axonometric views.",
+      "Transforma planos 2D en diagramas espaciales 3D inmersivos y vistas axonometricas.",
     icon: Map,
-    tags: ["Architecture", "3D"],
-    placeholder: "Upload a floor plan to convert to 3D",
+    tags: ["Arquitectura", "3D"],
+    placeholder: "Sube un plano para convertirlo a 3D",
     coverImage: "/tools/floorplan-3d-cover.jpg",
     sampleInputImage: "/tools/floorplan-3d-input.jpg",
-    readyTitle: "Upload a floorplan to get started",
-    readySubtitle: "Convert 2D plans into 3D spatial views",
+    readyTitle: "Sube un plano para empezar",
+    readySubtitle: "Convierte planos 2D en vistas espaciales 3D",
     inputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/floorplan-to-3d-input.png",
     outputPreview:
@@ -182,17 +182,17 @@ export const TOOLS: Tool[] = [
   },
   {
     id: "landscape-generator",
-    label: "Landscape Generator",
-    labelItalic: "Generator",
+    label: "Generador de paisajismo",
+    labelItalic: "Paisajismo",
     description:
-      "Generate stunning landscape designs and outdoor environments from sketches or descriptions.",
+      "Genera disenos de paisaje y entornos exteriores a partir de bocetos o descripciones.",
     icon: Trees,
-    tags: ["Landscape", "Architecture"],
-    placeholder: "Upload a sketch or site photo for landscape generation",
+    tags: ["Paisajismo", "Arquitectura"],
+    placeholder: "Sube un boceto o foto del sitio para generar paisajismo",
     coverImage: "/tools/landscape-gen-cover.jpg",
     sampleInputImage: "/tools/landscape-gen-input.jpg",
-    readyTitle: "Upload a sketch to get started",
-    readySubtitle: "Generate landscape designs from sketches or photos",
+    readyTitle: "Sube un boceto para empezar",
+    readySubtitle: "Genera disenos de paisaje desde bocetos o fotos",
     inputPreview:
       "https://fgqxhvrvzrzqhofqbmdp.supabase.co/storage/v1/object/public/public-assets/tools/landscape-generator-input.png",
     outputPreview:

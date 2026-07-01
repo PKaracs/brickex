@@ -23,260 +23,260 @@ export interface ToolGenerationSpec {
 
 export const TOOL_GENERATION_SPECS = {
   "exploded-diagram": {
-    label: "Exploded Diagram",
-    outputTitle: "Exploded diagram",
+    label: "Diagrama explotado",
+    outputTitle: "Diagrama explotado",
     aspectRatio: "square",
     maxInputImages: 1,
-    referenceInstruction: `REFERENCE IMAGE - SUBJECT FIDELITY IS MANDATORY:
+    referenceInstruction: `IMAGEN DE REFERENCIA - LA FIDELIDAD AL SUJETO ES OBLIGATORIA:
 
-Use the uploaded image as the exact source of truth. Identify the primary subject and preserve its true geometry, proportions, design language, and assembly logic.
+Usa la imagen subida como fuente exacta de verdad. Identifica el sujeto principal y conserva su geometria real, proporciones, lenguaje de diseno y logica de ensamblaje.
 
-Rules:
-- The generated diagram must be immediately recognizable as the same subject shown in the reference
-- Ignore incidental background clutter and isolate the main subject cleanly
-- Do not redesign, restyle, or replace the subject
-- Only separate parts that are visible or strongly implied by the source image`,
-    prompt: `Create a premium exploded axonometric diagram of the exact main subject from the reference image.
+Reglas:
+- El diagrama generado debe reconocerse de inmediato como el mismo sujeto de la referencia
+- Ignora el ruido accidental del fondo y aisla limpiamente el sujeto principal
+- No redisenes, reestilices ni sustituyas el sujeto
+- Separa solo piezas visibles o fuertemente inferidas por la imagen fuente`,
+    prompt: `Crea un diagrama axonometrico explotado premium del sujeto principal exacto de la imagen de referencia.
 
-VISUAL GOAL
-- Show how the subject is assembled by separating it into clean, readable layers
-- The result should feel like a gallery-grade architecture or industrial design presentation board
+OBJETIVO VISUAL
+- Muestra como se ensambla el sujeto separandolo en capas limpias y legibles
+- El resultado debe sentirse como una lamina de presentacion de arquitectura o diseno industrial de nivel galeria
 
-STRUCTURAL FIDELITY
-- Preserve the exact silhouette, footprint, proportions, massing, openings, structural rhythm, roof or top profile, and key detailing
-- Keep the same material identity and formal language as the reference
-- Break apart only logical real assemblies; do not invent fantasy fragments, extra floors, or decorative pieces
+FIDELIDAD ESTRUCTURAL
+- Conserva la silueta, huella, proporciones, masa, aberturas, ritmo estructural, perfil de cubierta o remate superior y detalles clave exactos
+- Mantiene la misma identidad material y lenguaje formal que la referencia
+- Separa solo ensamblajes logicos reales; no inventes fragmentos fantasticos, plantas extra ni piezas decorativas
 
-EXPLODED COMPOSITION
-- Use a centered 3/4 axonometric or isometric view with the entire subject visible
-- Separate the subject into logical components in correct reassembly order
-- Use clean vertical spacing between layers so the assembly sequence is obvious
-- Keep all layers aligned on one central axis; no chaotic drifting or random scattering
-- If the subject is a building, think in systems such as site/base, podium, slabs or floor plates, structural core, facade shell, roof, crown, and attached volumes
-- If the subject is a product or object, think in systems such as base, chassis, shell, internal modules, covers, and top elements
+COMPOSICION EXPLOTADA
+- Usa una vista axonometrica o isometrica centrada a 3/4 con el sujeto completo visible
+- Separa el sujeto en componentes logicos en el orden correcto de reensamblaje
+- Usa espaciado vertical limpio entre capas para que la secuencia sea evidente
+- Mantiene todas las capas alineadas en un eje central; sin dispersion caotica ni desplazamientos aleatorios
+- Si el sujeto es un edificio, piensa en sistemas como emplazamiento/base, podio, losas o placas de piso, nucleo estructural, envolvente de fachada, cubierta, coronacion y volumenes anexos
+- Si el sujeto es un producto u objeto, piensa en sistemas como base, chasis, carcasa, modulos internos, cubiertas y elementos superiores
 
-STYLE
-- Refined technical illustration, not a photograph
-- Crisp contour lines, disciplined edges, subtle tonal shading, and restrained material cues
-- Clean off-white background with soft studio shadow and premium negative space
-- Elegant, precise, legible, luxurious, and presentation-ready
+ESTILO
+- Ilustracion tecnica refinada, no fotografia
+- Lineas de contorno nitidas, bordes disciplinados, sombreado tonal sutil y senales materiales contenidas
+- Fondo blanco roto limpio con sombra de estudio suave y espacio negativo premium
+- Elegante, preciso, legible, lujoso y listo para presentacion
 
-NEGATIVE RULES
-- No text, no labels, no arrows, no numbers, no callouts, no watermark, no logo
-- No people, no busy environment, no decorative scenery unless it is integral to the subject
-- No cartoon style, no messy sketchbook look, no surreal fragmentation, no dramatic perspective distortion
+REGLAS NEGATIVAS
+- Sin texto, etiquetas, flechas, numeros, llamadas, marca de agua ni logotipo
+- Sin personas, entorno ocupado ni escenografia decorativa salvo que sea integral al sujeto
+- Sin estilo de caricatura, sin aspecto de cuaderno desordenado, sin fragmentacion surrealista ni distorsion dramatica de perspectiva
 
-LIGHTING AND COLOR
-- Soft neutral studio daylight from upper left
-- Gentle contact shadows and high clarity
-- Faithful neutralized material palette derived from the reference
+ILUMINACION Y COLOR
+- Luz de estudio diurna, neutra y suave desde arriba a la izquierda
+- Sombras de contacto delicadas y alta claridad
+- Paleta material neutralizada y fiel derivada de la referencia
 
-Output one polished exploded diagram of the exact subject.`,
+Devuelve un unico diagrama explotado pulido del sujeto exacto.`,
   },
   "floorplan-to-furnished": {
-    label: "Empty Floorplan to Furnished",
-    outputTitle: "Furnished floorplan",
+    label: "Plano vacio a amueblado",
+    outputTitle: "Plano amueblado",
     aspectRatio: "square",
     maxInputImages: 1,
-    referenceInstruction: `REFERENCE IMAGE - FLOORPLAN FIDELITY IS MANDATORY:
+    referenceInstruction: `IMAGEN DE REFERENCIA - LA FIDELIDAD AL PLANO ES OBLIGATORIA:
 
-Use the uploaded plan as the exact spatial source of truth. Preserve wall geometry, doors, windows, stairs, plumbing zones, fixed cores, circulation, and room proportions exactly.
+Usa el plano subido como fuente espacial exacta. Conserva exactamente la geometria de muros, puertas, ventanas, escaleras, zonas humedas, nucleos fijos, circulacion y proporciones de estancias.
 
-Rules:
-- Do not move walls, resize rooms, or invent extra spaces
-- Keep all furniture at believable real-world scale
-- Furnish only within valid usable areas and maintain clear circulation`,
-    prompt: `Create a premium furnished architectural plan from the exact reference layout.
+Reglas:
+- No muevas muros, no cambies tamanos de estancias ni inventes espacios extra
+- Mantiene todo el mobiliario a una escala realista
+- Amuebla solo dentro de areas validas y manten una circulacion clara`,
+    prompt: `Crea un plano arquitectonico amueblado premium a partir del trazado exacto de referencia.
 
-OUTPUT TYPE
-- Top-down interior designer presentation plan, not a perspective render
-- The underlying plan geometry must remain precise, clean, and easy to read
+TIPO DE SALIDA
+- Plano de presentacion cenital de interiorista, no render en perspectiva
+- La geometria base del plano debe permanecer precisa, limpia y facil de leer
 
-FURNISHING
-- Populate each room with coherent modern furniture layouts appropriate to its function
-- Add beds, bedside tables, sofas, coffee tables, dining arrangements, kitchen cabinetry, rugs, bathroom fixtures, storage, and lighting symbols where appropriate
-- Respect door swings, window positions, circulation clearances, and realistic spacing
-- Make the result feel intentionally designed, elegant, and professionally resolved
+MOBILIARIO
+- Rellena cada estancia con distribuciones modernas coherentes y apropiadas para su funcion
+- Anade camas, mesillas, sofas, mesas de centro, comedores, mobiliario de cocina, alfombras, sanitarios, almacenaje y simbolos de iluminacion cuando corresponda
+- Respeta giros de puertas, posiciones de ventanas, holguras de circulacion y separaciones realistas
+- Haz que el resultado se sienta disenado con intencion, elegante y profesionalmente resuelto
 
-VISUAL STYLE
-- Refined presentation-board aesthetic
-- Crisp linework, subtle shadows, soft neutral palette, gentle material blocking, and clean negative space
-- Premium architecture and interior design studio quality
+ESTILO VISUAL
+- Estetica refinada de lamina de presentacion
+- Linea nitida, sombras sutiles, paleta neutra suave, bloques materiales delicados y espacio negativo limpio
+- Calidad premium de estudio de arquitectura e interiorismo
 
-NEGATIVE RULES
-- No text, room labels, dimensions, arrows, legends, watermark, or logo
-- No perspective view, no cutaway walls, no exterior scenery, no people
-- No cluttered overfurnishing or impossible furniture scale`,
+REGLAS NEGATIVAS
+- Sin texto, nombres de estancias, cotas, flechas, leyendas, marca de agua ni logotipo
+- Sin vista en perspectiva, sin muros seccionados, sin escenografia exterior, sin personas
+- Sin exceso de muebles ni escala imposible`,
   },
   "upholstery-change": {
-    label: "Upholstery Change",
-    outputTitle: "Upholstery variation",
+    label: "Cambio de tapiceria",
+    outputTitle: "Variacion de tapiceria",
     aspectRatio: "cinema",
     maxInputImages: 1,
-    referenceInstruction: `REFERENCE IMAGE - SCENE LOCK IS MANDATORY:
+    referenceInstruction: `IMAGEN DE REFERENCIA - LA ESCENA DEBE QUEDAR BLOQUEADA:
 
-Use the uploaded room or furniture photo as the exact source of truth. Preserve the camera angle, crop, lighting, architecture, surrounding objects, and the exact silhouette of the main upholstered furniture piece.
+Usa la foto subida de la estancia o mueble como fuente exacta de verdad. Conserva el angulo de camara, encuadre, iluminacion, arquitectura, objetos alrededor y la silueta exacta de la pieza tapizada principal.
 
-Rules:
-- The same room must remain immediately recognizable
-- Keep the furniture shape, seams, cushions, stitching, tufting, and proportions intact
-- Only the upholstery material and color should change in a believable way`,
-    prompt: `Create a premium furniture-material edit of the exact same scene.
+Reglas:
+- La misma estancia debe seguir siendo reconocible de inmediato
+- Mantiene intactos forma, costuras, cojines, pespuntes, capitone y proporciones del mueble
+- Solo deben cambiar el material y color de la tapiceria de forma creible`,
+    prompt: `Crea una edicion premium de material de mobiliario sobre la misma escena exacta.
 
-EDIT GOAL
-- Change only the upholstery on the main upholstered furniture piece
-- Keep everything else in the room essentially identical
-- The result should feel like a high-end interior design material upgrade, not a redesign
+OBJETIVO DE EDICION
+- Cambia solo la tapiceria de la pieza principal tapizada
+- Mantiene todo lo demas de la estancia practicamente identico
+- El resultado debe sentirse como una mejora de material de interiorismo de alta gama, no como un rediseno
 
-MATERIAL RESULT
-- Replace the original upholstery with a tasteful luxury finish selected to suit the existing palette, such as refined boucle, textured linen, velvet, leather, or performance weave
-- Render realistic fibers, nap, stitching, folds, compression, and light response
-- The new material should look physically plausible and professionally selected for the room
+RESULTADO MATERIAL
+- Sustituye la tapiceria original por un acabado lujoso y sobrio elegido para encajar con la paleta existente, como boucle refinado, lino texturizado, terciopelo, piel o tejido tecnico
+- Representa fibras, pelo, costuras, pliegues, compresion y respuesta a la luz de forma realista
+- El nuevo material debe verse fisicamente plausible y profesionalmente seleccionado para la estancia
 
-SCENE PRESERVATION
-- Keep the same camera position, perspective, decor, windows, flooring, wall color, and lighting direction
-- Match the original shadows, reflections, and overall exposure
+PRESERVACION DE ESCENA
+- Mantiene la misma posicion de camara, perspectiva, decoracion, ventanas, suelo, color de pared y direccion de luz
+- Igualar sombras, reflejos y exposicion general originales
 
-NEGATIVE RULES
-- No new furniture, no changed room layout, no altered architecture
-- No moving objects around the room
-- No text, watermark, logo, or split-screen comparison`,
+REGLAS NEGATIVAS
+- Sin muebles nuevos, sin cambios de distribucion, sin arquitectura alterada
+- No muevas objetos por la estancia
+- Sin texto, marca de agua, logotipo ni comparacion en pantalla dividida`,
   },
   "moodboard-to-render": {
-    label: "Moodboard to Render",
-    outputTitle: "Moodboard render",
+    label: "Moodboard a render",
+    outputTitle: "Render de moodboard",
     aspectRatio: "cinema",
     maxInputImages: 4,
-    referenceImageLabel: "MOODBOARD IMAGE",
-    referenceInstruction: `REFERENCE IMAGES - STYLE SYNTHESIS IS MANDATORY:
+    referenceImageLabel: "IMAGEN DE MOODBOARD",
+    referenceInstruction: `IMAGENES DE REFERENCIA - LA SINTESIS DE ESTILO ES OBLIGATORIA:
 
-Treat all uploaded images as one combined moodboard. Extract their shared direction: palette, materials, furniture language, styling cues, lighting mood, and overall design personality.
+Trata todas las imagenes subidas como un unico moodboard combinado. Extrae su direccion compartida: paleta, materiales, lenguaje de mobiliario, claves de estilismo, ambiente de iluminacion y personalidad general del diseno.
 
-Rules:
-- Use all references together to build one coherent design language
-- Do not create a collage, pinboard, or split-screen composition
-- Synthesize the references into one resolved interior scene that feels intentional and believable`,
-    prompt: `Create one photorealistic interior render distilled from the uploaded moodboard.
+Reglas:
+- Usa todas las referencias juntas para construir un lenguaje de diseno coherente
+- No crees un collage, tablero ni composicion dividida
+- Sintetiza las referencias en una escena interior resuelta que se sienta intencional y creible`,
+    prompt: `Crea un render interior fotorealista destilado del moodboard subido.
 
-DESIGN SYNTHESIS
-- Infer a single cohesive room concept from all of the references
-- Merge the strongest recurring cues into one polished interior rather than copying any one image literally
-- Keep the design elevated, consistent, and editorial, never chaotic or overdecorated
+SINTESIS DE DISENO
+- Infiere un unico concepto de estancia cohesivo a partir de todas las referencias
+- Fusiona las senales recurrentes mas fuertes en un interior pulido en lugar de copiar literalmente una sola imagen
+- Mantiene el diseno elevado, consistente y editorial; nunca caotico ni sobredecorado
 
-SCENE
-- Show a complete professionally designed interior that clearly reflects the moodboard through architecture, furniture, materials, textiles, decor, and lighting
-- Make every piece feel curated and consistent with the same design story
-- Use believable spatial composition and realistic full-scale furniture
+ESCENA
+- Muestra un interior completo y profesionalmente disenado que refleje claramente el moodboard mediante arquitectura, muebles, materiales, textiles, decoracion e iluminacion
+- Haz que cada pieza se sienta curada y coherente con la misma historia de diseno
+- Usa composicion espacial creible y mobiliario a escala real
 
-VISUAL STYLE
-- Architectural Digest quality interior photography
-- Rich tactile materials, subtle lived-in styling, clean composition, natural depth, premium residential or hospitality feel
-- Use daylight, soft sun, or moody ambient lighting only if it matches the moodboard
+ESTILO VISUAL
+- Fotografia interior de calidad Architectural Digest
+- Materiales tactiles ricos, estilismo sutilmente habitado, composicion limpia, profundidad natural y sensacion premium residencial u hotelera
+- Usa luz de dia, sol suave o iluminacion ambiental atmosferica solo si encaja con el moodboard
 
-NEGATIVE RULES
-- No paper texture, no collage, no moodboard layout, no text, no watermark, no brand marks
-- No surreal objects, mixed unrelated styles, or inconsistent room geometry`,
+REGLAS NEGATIVAS
+- Sin textura de papel, collage, layout de moodboard, texto, marca de agua ni marcas
+- Sin objetos surrealistas, estilos mezclados sin relacion ni geometria de estancia inconsistente`,
   },
   "render-to-isometric": {
-    label: "Render to Isometric Diagram",
-    outputTitle: "Isometric diagram",
+    label: "Render a diagrama isometrico",
+    outputTitle: "Diagrama isometrico",
     aspectRatio: "square",
     maxInputImages: 1,
-    referenceInstruction: `REFERENCE IMAGE - BUILDING FIDELITY IS MANDATORY:
+    referenceInstruction: `IMAGEN DE REFERENCIA - LA FIDELIDAD AL EDIFICIO ES OBLIGATORIA:
 
-Use the uploaded architectural render as the exact source of truth for the building's massing, footprint, openings, terraces, facade rhythm, roof profile, and site organization.
+Usa el render arquitectonico subido como fuente exacta de verdad para la volumetria, huella, aberturas, terrazas, ritmo de fachada, perfil de cubierta y organizacion del sitio.
 
-Rules:
-- Preserve the subject so it remains instantly recognizable as the same project
-- Simplify the rendering style, not the architecture itself
-- Keep only essential context tied to the building and site`,
-    prompt: `Create a clean isometric presentation diagram of the exact same architecture.
+Reglas:
+- Conserva el sujeto para que siga siendo reconocible al instante como el mismo proyecto
+- Simplifica el estilo de representacion, no la arquitectura en si
+- Mantiene solo el contexto esencial vinculado al edificio y al sitio`,
+    prompt: `Crea un diagrama isometrico limpio de presentacion de la misma arquitectura exacta.
 
-TRANSFORMATION GOAL
-- Convert the photoreal render into a faithful isometric or axonometric architectural illustration
-- Preserve the building identity while simplifying the scene into a clear presentation graphic
+OBJETIVO DE TRANSFORMACION
+- Convierte el render fotorealista en una ilustracion arquitectonica isometrica o axonometrica fiel
+- Conserva la identidad del edificio mientras simplificas la escena en un grafico de presentacion claro
 
-STYLE
-- Crisp contour lines, flat-shaded masses, restrained material differentiation, soft ambient shadow, and premium presentation-board clarity
-- Refined palette of warm neutrals, muted glass blues, stone tones, and subdued greenery
-- Elegant, minimal, legible, and professional
+ESTILO
+- Lineas de contorno nitidas, masas con sombreado plano, diferenciacion material contenida, sombra ambiental suave y claridad premium de lamina de presentacion
+- Paleta refinada de neutros calidos, azules de vidrio apagados, tonos piedra y vegetacion sobria
+- Elegante, minimo, legible y profesional
 
-COMPOSITION
-- Use a stable isometric angle with the full building visible
-- Show major terraces, podium elements, roof features, and key landscape or hardscape pieces when relevant
-- Clean off-white or pale warm gray background with generous negative space
+COMPOSICION
+- Usa un angulo isometrico estable con el edificio completo visible
+- Muestra terrazas principales, elementos de podio, rasgos de cubierta y piezas clave de paisaje o pavimento cuando sean relevantes
+- Fondo blanco roto o gris calido palido con generoso espacio negativo
 
-NEGATIVE RULES
-- No labels, no arrows, no annotations, no watermark, no logo
-- No people, no dramatic sky, no messy sketch effect, no exploded parts
-- No photoreal camera artifacts or cinematic depth of field`,
+REGLAS NEGATIVAS
+- Sin etiquetas, flechas, anotaciones, marca de agua ni logotipo
+- Sin personas, cielo dramatico, efecto de boceto desordenado ni partes explotadas
+- Sin artefactos de camara fotorealistas ni profundidad de campo cinematica`,
   },
   "floorplan-to-3d": {
-    label: "Floorplan to 3D Diagram",
-    outputTitle: "3D floorplan diagram",
+    label: "Plano a diagrama 3D",
+    outputTitle: "Diagrama 3D de plano",
     aspectRatio: "square",
     maxInputImages: 1,
-    referenceInstruction: `REFERENCE IMAGE - PLAN FIDELITY IS MANDATORY:
+    referenceInstruction: `IMAGEN DE REFERENCIA - LA FIDELIDAD AL PLANO ES OBLIGATORIA:
 
-Use the uploaded floor plan as the exact source of truth. Preserve room arrangement, wall positions, openings, stairs, shafts, structural elements, and circulation exactly.
+Usa el plano subido como fuente exacta de verdad. Conserva exactamente la distribucion de estancias, posiciones de muros, aberturas, escaleras, patinillos, elementos estructurales y circulacion.
 
-Rules:
-- Do not invent extra rooms, change adjacencies, or distort the footprint
-- The resulting diagram must remain traceable back to the original floor plan
-- Add furniture or program elements only to clarify room use`,
-    prompt: `Create a clean 3D axonometric cutaway diagram from the exact floor plan.
+Reglas:
+- No inventes estancias extra, no cambies adyacencias ni distorsiones la huella
+- El diagrama resultante debe poder rastrearse hasta el plano original
+- Anade mobiliario o elementos de programa solo para aclarar el uso de las estancias`,
+    prompt: `Crea un diagrama axonometrico 3D seccionado y limpio a partir del plano exacto.
 
-SPATIAL GOAL
-- Translate the flat plan into a readable three-dimensional spatial diagram
-- Keep the layout exact while making the rooms instantly understandable in 3D
+OBJETIVO ESPACIAL
+- Traduce el plano plano en un diagrama espacial tridimensional legible
+- Mantiene el trazado exacto mientras haces que las estancias se entiendan de inmediato en 3D
 
-OUTPUT
-- Use a 45-degree axonometric or isometric cutaway view
-- Show walls partially cut down or lifted just enough to reveal the interior organization
-- Add believable program elements and furniture only where they help explain the layout
+SALIDA
+- Usa una vista axonometrica o isometrica seccionada a 45 grados
+- Muestra muros parcialmente cortados o levantados solo lo necesario para revelar la organizacion interior
+- Anade elementos de programa y mobiliario creibles solo cuando ayuden a explicar el trazado
 
-STYLE
-- Architectural model aesthetic with soft daylight, subtle shadows, restrained material hints, and a warm neutral palette
-- Presentation-ready, elegant, professional, and easy to read
-- Clean background and balanced composition with the full plan visible
+ESTILO
+- Estetica de maqueta arquitectonica con luz diurna suave, sombras sutiles, senales materiales contenidas y paleta neutra calida
+- Listo para presentacion, elegante, profesional y facil de leer
+- Fondo limpio y composicion equilibrada con el plano completo visible
 
-NEGATIVE RULES
-- No text, labels, dimensions, people, watermark, or logo
-- No dramatic perspective distortion, no photoreal lifestyle scene, no sketchy doodle style
-- No altered room arrangement or speculative extra levels`,
+REGLAS NEGATIVAS
+- Sin texto, etiquetas, cotas, personas, marca de agua ni logotipo
+- Sin distorsion dramatica de perspectiva, sin escena lifestyle fotorealista, sin estilo de garabato
+- Sin alterar la distribucion de estancias ni anadir niveles especulativos`,
   },
   "landscape-generator": {
-    label: "Landscape Generator",
-    outputTitle: "Landscape visualization",
+    label: "Generador de paisajismo",
+    outputTitle: "Visualizacion de paisaje",
     aspectRatio: "cinema",
     maxInputImages: 1,
-    referenceInstruction: `REFERENCE IMAGE - SITE LAYOUT FIDELITY IS MANDATORY:
+    referenceInstruction: `IMAGEN DE REFERENCIA - LA FIDELIDAD AL TRAZADO DEL SITIO ES OBLIGATORIA:
 
-Use the uploaded sketch, site image, or concept drawing as the exact guide for the site's geometry, hardscape zones, planting beds, path alignment, water features, and major landscape masses.
+Usa el boceto, imagen del sitio o dibujo conceptual subido como guia exacta para la geometria del sitio, zonas duras, parterres, alineacion de caminos, elementos de agua y masas principales de paisaje.
 
-Rules:
-- If the input is a sketch, preserve the sketched layout while elevating it into a resolved design
-- If the input is an existing site photo, redesign within the same footprint and viewpoint
-- Keep the landscape believable, buildable, and scaled correctly`,
-    prompt: `Create a premium landscape design visualization of the exact site from the reference.
+Reglas:
+- Si la entrada es un boceto, conserva el trazado dibujado mientras lo elevas a un diseno resuelto
+- Si la entrada es una foto de sitio existente, redisena dentro de la misma huella y punto de vista
+- Mantiene el paisaje creible, construible y correctamente escalado`,
+    prompt: `Crea una visualizacion premium de paisajismo del sitio exacto de la referencia.
 
-DESIGN GOAL
-- Turn the reference into a fully resolved outdoor environment with coherent hardscape, layered planting, elegant circulation, and balanced composition
-- Make the result feel contemporary, intentional, and luxurious without overfilling the site
+OBJETIVO DE DISENO
+- Convierte la referencia en un entorno exterior plenamente resuelto con pavimentos coherentes, plantacion por capas, circulacion elegante y composicion equilibrada
+- Haz que el resultado se sienta contemporaneo, intencional y lujoso sin sobrellenar el sitio
 
-SCENE
-- Include believable paving, planting beds, trees, shrubs, lawn or gravel areas, seating zones, feature lighting, and water elements when supported by the reference
-- Keep all design moves aligned with the reference layout and scale
-- Ensure the spatial organization remains clear and professionally planned
+ESCENA
+- Incluye pavimentos creibles, parterres, arboles, arbustos, cesped o grava, zonas de asiento, iluminacion puntual y elementos de agua cuando la referencia lo permita
+- Mantiene todas las decisiones de diseno alineadas con el trazado y escala de la referencia
+- Asegura que la organizacion espacial siga siendo clara y profesionalmente planificada
 
-VISUAL STYLE
-- High-end landscape photography or premium aerial/site visualization depending on the input viewpoint
-- Rich vegetation texture, realistic shadows, clean daylight or warm golden hour, refined residential or hospitality quality
+ESTILO VISUAL
+- Fotografia de paisajismo de alta gama o visualizacion aerea/de sitio premium segun el punto de vista de entrada
+- Textura vegetal rica, sombras realistas, luz diurna limpia u hora dorada calida, calidad residencial u hotelera refinada
 
-NEGATIVE RULES
-- No text, handwritten notes, paper background, watermark, or logo
-- No fantasy scenery unrelated to the site
-- No impossible plant scale, overgrown chaos, or theme-park effects`,
+REGLAS NEGATIVAS
+- Sin texto, notas manuscritas, fondo de papel, marca de agua ni logotipo
+- Sin escenografia fantastica ajena al sitio
+- Sin escala vegetal imposible, caos sobrecrecido ni efectos de parque tematico`,
   },
 } as const satisfies Record<string, ToolGenerationSpec>;
 

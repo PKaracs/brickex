@@ -34,18 +34,18 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: {
-    default: "BrickEx - AI Visualization for Real Estate",
+    default: "BrickEx - Visualizacion con IA para Real Estate",
     template: "%s | BrickEx",
   },
   description:
-    "Transform architectural plans, sketches, and 3D models into photorealistic renders with AI. Create marketing-ready visualizations in minutes, not weeks.",
+    "Convierte planos, bocetos y modelos 3D en renders fotorrealistas con IA. Crea visuales listos para marketing en minutos, no en semanas.",
   keywords: [
-    "AI rendering",
-    "real estate visualization",
-    "architectural rendering",
-    "AI image generator",
-    "property visualization",
-    "3D rendering",
+    "renderizado con IA",
+    "visualizacion inmobiliaria",
+    "render arquitectonico",
+    "generador de imagenes con IA",
+    "visualizacion de propiedades",
+    "render 3D",
   ],
   authors: [{ name: "BrickEx" }],
   creator: "BrickEx",
@@ -56,26 +56,26 @@ export const metadata: Metadata = {
   },
   openGraph: {
     type: "website",
-    locale: "en_US",
+    locale: "es_ES",
     url: "https://www.brickex.co",
     siteName: "BrickEx",
-    title: "BrickEx - AI Visualization for Real Estate",
+    title: "BrickEx - Visualizacion con IA para Real Estate",
     description:
-      "Transform architectural plans into photorealistic renders with AI.",
+      "Convierte planos arquitectonicos en renders fotorrealistas con IA.",
     images: [
       {
         url: "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Capture-2026-01-24-165455.png",
         width: 1200,
         height: 630,
-        alt: "BrickEx - AI-Powered Real Estate Visualization",
+        alt: "BrickEx - Visualizacion inmobiliaria con IA",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "BrickEx - AI Visualization for Real Estate",
+    title: "BrickEx - Visualizacion con IA para Real Estate",
     description:
-      "Transform architectural plans into photorealistic renders with AI.",
+      "Convierte planos arquitectonicos en renders fotorrealistas con IA.",
     images: [
       "https://bnibtqjlriohmuacvjmf.supabase.co/storage/v1/object/public/objects/Capture-2026-01-24-165455.png",
     ],
@@ -128,7 +128,7 @@ export default function RootLayout({
   };
 
   return (
-    <html lang="en">
+    <html lang="es">
       <head>
         <JsonLd data={organizationJsonLd} />
         <JsonLd data={webSiteJsonLd} />

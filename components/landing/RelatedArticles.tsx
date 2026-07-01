@@ -36,10 +36,10 @@ export default function RelatedArticles({
     <section className={cn("py-12 sm:py-16", className)} aria-labelledby="related-articles-heading">
       <div className="mb-8">
         <h2 id="related-articles-heading" className="text-2xl font-bold text-gray-900 sm:text-3xl">
-          Continue Reading
+          Sigue leyendo
         </h2>
         <p className="mt-1 text-sm text-gray-500">
-          More articles you might enjoy
+          Mas articulos que podrian interesarte
         </p>
       </div>
 
@@ -74,7 +74,7 @@ export default function RelatedArticles({
                 
                 {/* Read more indicator */}
                 <div className="mt-4 flex items-center gap-1 text-sm font-medium text-blue-600">
-                  <span>Read article</span>
+                  <span>Leer articulo</span>
                   <ChevronRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </div>
               </div>
@@ -85,4 +85,3 @@ export default function RelatedArticles({
     </section>
   );
 }
-

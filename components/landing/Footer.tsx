@@ -9,7 +9,7 @@ export default function Footer() {
           <div className="flex items-center gap-2.5">
             <Image
               src="/brickex-logo.png"
-              alt="BrickEx Logo"
+              alt="Logo de BrickEx"
               width={36}
               height={36}
               className="w-9 h-9"
@@ -21,13 +21,13 @@ export default function Footer() {
               href="/legal/privacy"
               className="min-h-[44px] flex items-center hover:text-white transition-colors active:text-zinc-200"
             >
-              Privacy Policy
+              Politica de privacidad
             </Link>
             <Link
               href="/legal/terms"
               className="min-h-[44px] flex items-center hover:text-white transition-colors active:text-zinc-200"
             >
-              Terms of Service
+              Terminos del servicio
             </Link>
             <Link
               href="/ideas"
@@ -39,7 +39,7 @@ export default function Footer() {
               href="mailto:hello@brickex.co"
               className="min-h-[44px] flex items-center hover:text-white transition-colors active:text-zinc-200"
             >
-              Contact
+              Contacto
             </a>
           </nav>
         </div>

@@ -52,7 +52,7 @@ export async function generateVideo(
       finalPrompt = motionPreset.prompt;
     } else {
       finalPrompt =
-        "Smooth cinematic camera movement, high quality, photorealistic, professional cinematography";
+        "Movimiento de camara cinematografico suave, alta calidad, fotorrealista, cinematografia profesional";
     }
 
     const safeImageMimeType =
@@ -76,7 +76,7 @@ export async function generateVideo(
     return { videoUrl, requestId };
   } catch (error: unknown) {
     const message =
-      error instanceof Error ? error.message : "Something went wrong";
+      error instanceof Error ? error.message : "Algo salio mal";
     console.error("[BrickEx:Video] Generation error:", message);
     return { error: message };
   }

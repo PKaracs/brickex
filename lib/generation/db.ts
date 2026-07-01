@@ -61,7 +61,7 @@ export async function createGeneration(projectId: string) {
   });
 
   if (!project) {
-    throw new Error("Project not found");
+    throw new Error("Proyecto no encontrado");
   }
 
   const [run] = await db
@@ -140,7 +140,7 @@ export async function createOutput(
   });
 
   if (!run) {
-    throw new Error("Generation not found");
+    throw new Error("Generacion no encontrada");
   }
 
   const { bucket, path } = parseStorageKey(storageKey);
@@ -176,7 +176,7 @@ export async function createOutput(
     toolRunId: generationId,
     type: "hero_render",
     status: "draft",
-    title: "Generated output",
+    title: "Resultado generado",
   });
 
   return { flexWorth: 0, flexBreakdown: {} };

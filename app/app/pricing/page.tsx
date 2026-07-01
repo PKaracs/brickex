@@ -2,8 +2,8 @@ import { getUserSubscription } from "@/lib/actions/get-user-subscription";
 import PricingPageClient from "./pricing-client";
 
 export const metadata = {
-  title: "Choose Your Plan | BrickEx",
-  description: "Unlock unlimited AI real estate renders with BrickEx Pro",
+  title: "Elige tu plan | BrickEx",
+  description: "Desbloquea renders inmobiliarios con IA en BrickEx",
 };
 
 export default async function PricingPage() {

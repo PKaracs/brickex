@@ -71,7 +71,7 @@ export default function GoogleOAuthForm() {
           fill="#EA4335"
         />
       </svg>
-      Continue with Google
+      Continuar con Google
     </Button>
   );
 }

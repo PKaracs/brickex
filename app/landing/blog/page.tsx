@@ -9,14 +9,14 @@ import Link from "next/link";
 export const metadata: Metadata = {
   title: "Blog | BrickEx",
   description:
-    "Tactical SEO, rendering, and real estate marketing playbooks for developers, architects, and visualization teams.",
+    "Guias tacticas de SEO, renderizado y marketing inmobiliario para promotores, arquitectos y equipos de visualizacion.",
   alternates: {
     canonical: "https://www.brickex.co/blog",
   },
   openGraph: {
     title: "BrickEx Blog",
     description:
-      "SEO, rendering, and architectural storytelling strategies built for real estate demand capture.",
+      "Estrategias de SEO, renderizado y storytelling arquitectonico para captar demanda inmobiliaria.",
     type: "website",
     url: "https://www.brickex.co/blog",
     siteName: "BrickEx",
@@ -49,8 +49,9 @@ export default function BlogPage() {
               Blog
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Search-led content, rendering systems, and visual strategy for
-              real estate launches that need traffic and qualified inquiries.
+              Contenido guiado por busqueda, sistemas de render y estrategia
+              visual para lanzamientos inmobiliarios que necesitan trafico y
+              leads cualificados.
             </p>
           </div>
 
@@ -78,7 +79,7 @@ export default function BlogPage() {
                     {/* Content */}
                     <div className="p-6 sm:p-8 lg:p-10 flex flex-col justify-center">
                       <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700 w-fit mb-4">
-                        Featured
+                        Destacado
                       </span>
                       <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3 group-hover:text-gray-600 transition-colors">
                         {featuredPost.title}
@@ -103,7 +104,7 @@ export default function BlogPage() {
           {remainingPosts.length > 0 && (
             <section>
               <h2 className="text-xl font-semibold text-gray-900 mb-8">
-                {featuredPost ? "More Articles" : "All Articles"}
+                {featuredPost ? "Mas articulos" : "Todos los articulos"}
               </h2>
               <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                 {remainingPosts.map((post) => (
@@ -149,7 +150,7 @@ export default function BlogPage() {
           {posts.length === 0 && (
             <div className="text-center py-16">
               <p className="text-gray-600">
-                No blog posts yet. Check back soon!
+                Aun no hay articulos. Vuelve pronto.
               </p>
             </div>
           )}

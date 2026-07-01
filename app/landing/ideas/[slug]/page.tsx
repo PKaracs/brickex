@@ -46,7 +46,7 @@ export async function generateMetadata({
       type: "website",
       url: canonicalUrl,
       siteName: "BrickEx",
-      locale: "en_US",
+      locale: "es_ES",
       ...(image && {
         images: [
           {
@@ -107,7 +107,7 @@ export default async function IdeaPageRoute({ params }: IdeaPageProps) {
       {
         "@type": "ListItem",
         position: 1,
-        name: "Home",
+        name: "Inicio",
         item: SITE_URL,
       },
       {
@@ -138,7 +138,7 @@ export default async function IdeaPageRoute({ params }: IdeaPageProps) {
   const imageObjectsJsonLd = {
     "@context": "https://schema.org",
     "@type": "ImageGallery",
-    name: `${page.content.headline} Gallery`,
+    name: `Galeria de ${page.content.headline}`,
     url: canonicalUrl,
     image: page.gallery.map((img) => ({
       "@type": "ImageObject",

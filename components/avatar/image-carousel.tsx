@@ -54,7 +54,7 @@ export function ImageCarousel({
               ? "bg-neutral-700/50"
               : "bg-black/60 hover:bg-black/80"
           )}
-          title={!canDelete ? "You must keep at least one avatar image" : undefined}
+          title={!canDelete ? "Debes conservar al menos una imagen de avatar" : undefined}
         >
           {isDeleting ? (
             <Loader2 className="w-4 h-4 text-white animate-spin" />
@@ -94,7 +94,7 @@ export function ImageCarousel({
         <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
           <div className="flex flex-col items-center gap-2">
             <Loader2 className="w-8 h-8 text-white animate-spin" />
-            <p className="text-sm text-white">Uploading...</p>
+            <p className="text-sm text-white">Subiendo...</p>
           </div>
         </div>
       )}

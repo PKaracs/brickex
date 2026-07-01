@@ -12,16 +12,16 @@ function textureImg(file: string) {
 }
 
 export const INTERIOR_TEXTURES: InteriorTexture[] = [
-  { id: "marble-012", label: "Marble 012", image: textureImg("marble-012.webp"), preRenderedSphere: true },
-  { id: "concrete-smooth", label: "Smooth Concrete", image: textureImg("concrete-smooth.webp"), preRenderedSphere: true },
-  { id: "concrete-rough", label: "Rough Concrete", image: textureImg("concrete-rough.webp"), preRenderedSphere: true },
-  { id: "oak-wood", label: "Oak Wood", image: textureImg("oak-wood.webp"), preRenderedSphere: true },
-  { id: "brick-herringbone", label: "Brick Herringbone", image: textureImg("brick-herringbone.webp"), preRenderedSphere: true },
-  { id: "polished-metal", label: "Polished Metal", image: textureImg("polished-metal.webp"), preRenderedSphere: true },
+  { id: "marble-012", label: "Marmol 012", image: textureImg("marble-012.webp"), preRenderedSphere: true },
+  { id: "concrete-smooth", label: "Hormigon liso", image: textureImg("concrete-smooth.webp"), preRenderedSphere: true },
+  { id: "concrete-rough", label: "Hormigon rugoso", image: textureImg("concrete-rough.webp"), preRenderedSphere: true },
+  { id: "oak-wood", label: "Madera de roble", image: textureImg("oak-wood.webp"), preRenderedSphere: true },
+  { id: "brick-herringbone", label: "Ladrillo en espiga", image: textureImg("brick-herringbone.webp"), preRenderedSphere: true },
+  { id: "polished-metal", label: "Metal pulido", image: textureImg("polished-metal.webp"), preRenderedSphere: true },
   { id: "terracotta", label: "Terracotta", image: textureImg("terracotta.webp"), preRenderedSphere: true },
-  { id: "stone-gravel", label: "Stone Gravel", image: textureImg("stone-gravel.webp"), preRenderedSphere: true },
-  { id: "white-plaster", label: "White Plaster", image: textureImg("white-plaster.webp"), preRenderedSphere: true },
-  { id: "grey-paver", label: "Grey Paver", image: textureImg("grey-paver.webp"), preRenderedSphere: true },
-  { id: "moss-stone", label: "Moss Stone", image: textureImg("moss-stone.webp"), preRenderedSphere: true },
-  { id: "rust-metal", label: "Rust Metal", image: textureImg("rust-metal.webp"), preRenderedSphere: true },
+  { id: "stone-gravel", label: "Grava de piedra", image: textureImg("stone-gravel.webp"), preRenderedSphere: true },
+  { id: "white-plaster", label: "Yeso blanco", image: textureImg("white-plaster.webp"), preRenderedSphere: true },
+  { id: "grey-paver", label: "Adoquin gris", image: textureImg("grey-paver.webp"), preRenderedSphere: true },
+  { id: "moss-stone", label: "Piedra con musgo", image: textureImg("moss-stone.webp"), preRenderedSphere: true },
+  { id: "rust-metal", label: "Metal oxidado", image: textureImg("rust-metal.webp"), preRenderedSphere: true },
 ];

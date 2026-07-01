@@ -6,7 +6,7 @@ function getKlingToken(): string {
   const ak = process.env.KLING_ACCESS_KEY;
   const sk = process.env.KLING_SECRET_KEY;
   if (!ak || !sk) {
-    throw new Error("KLING_ACCESS_KEY and KLING_SECRET_KEY must be set");
+    throw new Error("KLING_ACCESS_KEY y KLING_SECRET_KEY deben estar configuradas");
   }
 
   const now = Math.floor(Date.now() / 1000);
@@ -69,7 +69,7 @@ export async function submitVideoGeneration(
     mode: params.mode ?? "pro",
     image: params.image,
     prompt: params.prompt || "",
-    negative_prompt: params.negativePrompt ?? "blur, distort, and low quality",
+    negative_prompt: params.negativePrompt ?? "borroso, distorsionado y baja calidad",
     duration: String(params.duration ?? 5),
   };
 
@@ -93,13 +93,13 @@ export async function submitVideoGeneration(
   if (!response.ok) {
     const text = await response.text();
     console.error(`[BrickEx:Kling] Submit failed (${response.status}):`, text);
-    throw new Error(`Video API error: ${response.status}`);
+    throw new Error(`Error de API de video: ${response.status}`);
   }
 
   const result: KlingSubmitResponse = await response.json();
   if (result.code !== 0) {
     console.error(`[BrickEx:Kling] API error:`, result.message);
-    throw new Error(result.message || "Video API returned an error");
+    throw new Error(result.message || "La API de video devolvio un error");
   }
 
   console.log(`[BrickEx:Kling] Task submitted: ${result.data.task_id}`);
@@ -125,12 +125,12 @@ export async function getVideoStatus(
   if (!response.ok) {
     const text = await response.text();
     console.error(`[BrickEx:Kling] Status check failed (${response.status}):`, text);
-    throw new Error(`Video status check error: ${response.status}`);
+    throw new Error(`Error al consultar el estado del video: ${response.status}`);
   }
 
   const result: KlingStatusResponse = await response.json();
   if (result.code !== 0) {
-    throw new Error(result.message || "Video status check error");
+    throw new Error(result.message || "Error al consultar el estado del video");
   }
 
   return result.data;
@@ -148,7 +148,7 @@ export async function pollForVideoResult(taskId: string): Promise<string> {
     if (status.task_status === "succeed") {
       const videoUrl = status.task_result?.videos?.[0]?.url;
       if (!videoUrl) {
-        throw new Error("Video completed but no URL returned");
+        throw new Error("El video termino, pero no devolvio URL");
       }
       console.log(`[BrickEx:Kling] Video ready: ${videoUrl}`);
       return videoUrl;
@@ -156,7 +156,7 @@ export async function pollForVideoResult(taskId: string): Promise<string> {
 
     if (status.task_status === "failed") {
       console.error(`[BrickEx:Kling] Task failed:`, status.task_status_msg);
-      throw new Error(status.task_status_msg || "Video generation failed");
+      throw new Error(status.task_status_msg || "La generacion de video fallo");
     }
 
     console.log(
@@ -166,5 +166,5 @@ export async function pollForVideoResult(taskId: string): Promise<string> {
     await new Promise((r) => setTimeout(r, POLL_INTERVAL_MS));
   }
 
-  throw new Error("Video generation timed out — the video may still be processing. Try again in a few minutes.");
+  throw new Error("La generacion de video agoto el tiempo de espera. El video podria seguir procesandose; intentalo de nuevo en unos minutos.");
 }

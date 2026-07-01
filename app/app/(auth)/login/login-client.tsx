@@ -1,14 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import Image from "next/image";
 import { AnimatePresence, motion } from "motion/react";
 import {
   ArrowRight,
   CheckCircle2,
   KeyRound,
-  Link as LinkIcon,
   Mail,
 } from "lucide-react";
 
@@ -22,27 +20,27 @@ import { Input } from "@/components/ui/input";
 const VILLA_IMAGES = [
   {
     src: assetUrl("real-estate-presets/maldives-overwater.png"),
-    label: "Maldives Overwater Villa",
+    label: "Villa sobre el agua en Maldivas",
   },
   {
     src: assetUrl("real-estate-presets/tuscan-hilltop-villa.png"),
-    label: "Tuscan Hilltop Villa",
+    label: "Villa toscana en colina",
   },
   {
     src: assetUrl("real-estate-presets/cape-town-clifftop.png"),
-    label: "Cape Town Clifftop",
+    label: "Acantilado en Ciudad del Cabo",
   },
   {
     src: assetUrl("real-estate-presets/miami-penthouse.png"),
-    label: "Miami Penthouse",
+    label: "Penthouse en Miami",
   },
   {
     src: assetUrl("real-estate-presets/mykonos-cycladic.png"),
-    label: "Mykonos Cycladic",
+    label: "Casa cicladica en Mykonos",
   },
   {
     src: assetUrl("real-estate-presets/scandinavian-lakehouse.png"),
-    label: "Scandinavian Lakehouse",
+    label: "Casa escandinava junto al lago",
   },
 ];
 
@@ -56,13 +54,13 @@ interface LoginPageClientProps {
 function toErrorMessage(error?: string | null) {
   switch (error) {
     case "INVALID_TOKEN":
-      return "That sign-in link is invalid. Request a new one.";
+      return "Ese enlace de acceso no es valido. Solicita uno nuevo.";
     case "EXPIRED_TOKEN":
-      return "That sign-in link has expired. Request a new one.";
+      return "Ese enlace de acceso ha caducado. Solicita uno nuevo.";
     case "new_user_signup_disabled":
-      return "New user sign-in is currently disabled.";
+      return "El acceso de nuevos usuarios esta desactivado.";
     default:
-      return error ? "Sign-in failed. Request a new link." : null;
+      return error ? "No se pudo iniciar sesion. Solicita un enlace nuevo." : null;
   }
 }
 
@@ -97,6 +95,7 @@ export default function LoginPageClient({
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
   const [error, setError] = useState<string | null>(toErrorMessage(authError));
+  const [marketingSiteUrl, setMarketingSiteUrl] = useState("/");
   const [mode, setMode] = useState<AuthMode>(
     magicLinkEnabled ? "magic" : "password",
   );
@@ -113,6 +112,10 @@ export default function LoginPageClient({
   useEffect(() => {
     setError(toErrorMessage(authError));
   }, [authError]);
+
+  useEffect(() => {
+    setMarketingSiteUrl(getMarketingSiteUrl());
+  }, []);
 
   const handlePasswordSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -131,7 +134,7 @@ export default function LoginPageClient({
         });
 
         if (result.error) {
-          throw new Error(result.error.message || "Sign-up failed");
+          throw new Error(result.error.message || "No se pudo crear la cuenta");
         }
       } else {
         const result = await authClient.signIn.email({
@@ -141,7 +144,7 @@ export default function LoginPageClient({
         });
 
         if (result.error) {
-          throw new Error(result.error.message || "Invalid email or password");
+          throw new Error(result.error.message || "Correo o contrasena incorrectos");
         }
       }
 
@@ -151,8 +154,8 @@ export default function LoginPageClient({
         err instanceof Error
           ? err.message
           : passwordIntent === "signup"
-            ? "Sign-up failed"
-            : "Sign-in failed",
+            ? "No se pudo crear la cuenta"
+            : "No se pudo iniciar sesion",
       );
     } finally {
       setIsPasswordLoading(false);
@@ -168,7 +171,7 @@ export default function LoginPageClient({
 
     try {
       if (!magicLinkEnabled) {
-        throw new Error("Magic link is not configured");
+        throw new Error("El acceso por email no esta configurado");
       }
 
       const result = await authClient.signIn.magicLink({
@@ -180,12 +183,12 @@ export default function LoginPageClient({
       });
 
       if (result.error) {
-        throw new Error(result.error.message || "Failed to send magic link");
+        throw new Error(result.error.message || "No se pudo enviar el enlace");
       }
 
       setIsSubmitted(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong");
+      setError(err instanceof Error ? err.message : "Algo salio mal");
     } finally {
       setIsLoading(false);
     }
@@ -258,7 +261,7 @@ export default function LoginPageClient({
 
         <div className="relative z-10 w-full max-w-md">
           <BlurFade delay={0.1}>
-            <Link href="/" className="mb-14 flex items-center gap-2.5">
+            <a href={marketingSiteUrl} className="mb-14 flex items-center gap-2.5">
               <Image
                 src="/brickex-logo.png"
                 alt="BrickEx"
@@ -268,28 +271,35 @@ export default function LoginPageClient({
                 priority
               />
               <span className="text-xl font-semibold text-white">BrickEx</span>
-            </Link>
+            </a>
           </BlurFade>
 
           <BlurFade delay={0.15}>
             <div className="rounded-2xl border border-neutral-800 bg-neutral-900/50 p-8 backdrop-blur-sm">
               <div className="mb-6 space-y-2">
-                <div className="mb-4 flex items-center gap-2">
-                  <div className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1">
-                    <span className="text-xs font-medium text-white/60">
-                      {magicLinkEnabled ? "Magic Link Ready" : "Google Login Ready"}
-                    </span>
-                  </div>
-                </div>
                 <h1 className="text-2xl font-semibold text-white">
-                  Sign in to BrickEx
+                  Inicia sesion en BrickEx
                 </h1>
                 <p className="text-sm text-neutral-500">
                   {magicLinkEnabled
-                    ? "Use a magic link or continue with Google."
-                    : "Magic link email is not configured yet, so continue with Google for now."}
+                    ? "Continua con Google, email o contrasena."
+                    : "Continua con Google o contrasena."}
                 </p>
               </div>
+
+              {!isSubmitted ? (
+                <>
+                  <GoogleOAuthForm />
+
+                  <div className="my-6 flex items-center gap-3">
+                    <div className="h-px flex-1 bg-neutral-800" />
+                    <span className="text-xs uppercase tracking-[0.18em] text-neutral-500">
+                      O
+                    </span>
+                    <div className="h-px flex-1 bg-neutral-800" />
+                  </div>
+                </>
+              ) : null}
 
               {magicLinkEnabled && !isSubmitted ? (
                 <div className="mb-4 flex rounded-xl border border-neutral-800 bg-black/20 p-1">
@@ -305,8 +315,8 @@ export default function LoginPageClient({
                         : "text-neutral-400 hover:text-white"
                     }`}
                   >
-                    <LinkIcon className="mr-1.5 inline h-3.5 w-3.5" />
-                    Magic link
+                    <Mail className="mr-1.5 inline h-3.5 w-3.5" />
+                    Correo
                   </button>
                   <button
                     type="button"
@@ -321,7 +331,7 @@ export default function LoginPageClient({
                     }`}
                   >
                     <KeyRound className="mr-1.5 inline h-3.5 w-3.5" />
-                    Password
+                    Contrasena
                   </button>
                 </div>
               ) : null}
@@ -333,15 +343,15 @@ export default function LoginPageClient({
                   </div>
                   <div className="space-y-2">
                     <h2 className="text-3xl font-semibold text-white">
-                      Check your inbox
+                      Revisa tu bandeja
                     </h2>
                     <p className="text-base leading-relaxed text-neutral-400">
-                      We sent a secure Brickex sign-in link to{" "}
+                      Enviamos un enlace seguro de acceso a BrickEx a{" "}
                       <span className="font-medium text-white">{email}</span>.
                     </p>
                     <p className="text-sm text-neutral-500">
-                      Your first successful magic-link sign-in will create your
-                      Brickex account and workspace automatically.
+                      Si es tu primer acceso, crearemos tu cuenta y tu espacio
+                      de trabajo automaticamente.
                     </p>
                   </div>
                   <Button
@@ -350,7 +360,7 @@ export default function LoginPageClient({
                     className="border-neutral-800 bg-transparent text-white hover:bg-neutral-900 hover:text-white"
                     onClick={() => setIsSubmitted(false)}
                   >
-                    Send another link
+                    Enviar otro enlace
                   </Button>
                 </div>
               ) : null}
@@ -361,8 +371,8 @@ export default function LoginPageClient({
                     <div className="flex items-start gap-2">
                       <Mail className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
                       <p>
-                        First-time magic-link login creates the user and workspace
-                        automatically.
+                        Te enviaremos un enlace a tu email. Si es tu primer
+                        acceso, tambien crearemos tu cuenta automaticamente.
                       </p>
                     </div>
                   </div>
@@ -370,7 +380,7 @@ export default function LoginPageClient({
                   <div className="space-y-2">
                     <Input
                       type="text"
-                      placeholder="Your name (optional on first sign-in)"
+                      placeholder="Tu nombre (opcional en el primer acceso)"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="h-11 border-neutral-800 bg-neutral-900 text-white placeholder:text-neutral-600 focus:border-neutral-600 focus:ring-0"
@@ -401,8 +411,8 @@ export default function LoginPageClient({
                     className="w-full"
                     isLoading={isLoading}
                   >
-                    Email me a magic link
-                    <LinkIcon className="ml-2 h-4 w-4" />
+                    Enviar enlace al email
+                    <Mail className="ml-2 h-4 w-4" />
                   </Button>
                 </form>
               ) : null}
@@ -414,8 +424,8 @@ export default function LoginPageClient({
                       <KeyRound className="mt-0.5 h-4 w-4 flex-shrink-0 text-neutral-400" />
                       <p>
                         {passwordIntent === "signup"
-                          ? "Create an account with your email and a password. Your workspace will be set up automatically."
-                          : "Sign in with your email and password. Account must already exist."}
+                          ? "Crea una cuenta con tu email y una contrasena. Tu espacio de trabajo se configurara automaticamente."
+                          : "Inicia sesion con tu email y contrasena. La cuenta ya debe existir."}
                       </p>
                     </div>
                   </div>
@@ -424,7 +434,7 @@ export default function LoginPageClient({
                     <div className="space-y-2">
                       <Input
                         type="text"
-                        placeholder="Your name (optional)"
+                        placeholder="Tu nombre (opcional)"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         className="h-11 border-neutral-800 bg-neutral-900 text-white placeholder:text-neutral-600 focus:border-neutral-600 focus:ring-0"
@@ -450,8 +460,8 @@ export default function LoginPageClient({
                       type="password"
                       placeholder={
                         passwordIntent === "signup"
-                          ? "Choose a password (min. 8 characters)"
-                          : "Password"
+                          ? "Elige una contrasena (min. 8 caracteres)"
+                          : "Contrasena"
                       }
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
@@ -480,15 +490,15 @@ export default function LoginPageClient({
                     isLoading={isPasswordLoading}
                   >
                     {passwordIntent === "signup"
-                      ? "Create account"
-                      : "Sign in"}
+                      ? "Crear cuenta"
+                      : "Iniciar sesion"}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
 
                   <div className="pt-1 text-center text-xs text-neutral-500">
                     {passwordIntent === "signup" ? (
                       <>
-                        Already have an account?{" "}
+                        Ya tienes cuenta?{" "}
                         <button
                           type="button"
                           onClick={() => {
@@ -497,12 +507,12 @@ export default function LoginPageClient({
                           }}
                           className="font-medium text-white hover:underline"
                         >
-                          Sign in
+                          Iniciar sesion
                         </button>
                       </>
                     ) : (
                       <>
-                        No account yet?{" "}
+                        Aun no tienes cuenta?{" "}
                         <button
                           type="button"
                           onClick={() => {
@@ -511,30 +521,13 @@ export default function LoginPageClient({
                           }}
                           className="font-medium text-white hover:underline"
                         >
-                          Create one
+                          Crear una
                         </button>
                       </>
                     )}
                   </div>
                 </form>
               ) : null}
-
-              <div className="my-6 flex items-center gap-3">
-                <div className="h-px flex-1 bg-neutral-800" />
-                <span className="text-xs uppercase tracking-[0.18em] text-neutral-500">
-                  Or
-                </span>
-                <div className="h-px flex-1 bg-neutral-800" />
-              </div>
-
-              <div className="space-y-4">
-                {!magicLinkEnabled ? (
-                  <div className="rounded-xl border border-amber-500/20 bg-amber-500/10 p-3 text-sm text-amber-100">
-                    Magic-link email is not configured. Google sign-in is still available.
-                  </div>
-                ) : null}
-                <GoogleOAuthForm />
-              </div>
 
               <div className="mt-6 border-t border-neutral-800 pt-6">
                 <Button
@@ -544,7 +537,7 @@ export default function LoginPageClient({
                   className="w-full border-neutral-800 bg-transparent text-white hover:bg-neutral-900 hover:text-white"
                   onClick={() => window.location.assign(getMarketingSiteUrl())}
                 >
-                  Back to site
+                  Volver al sitio
                   <ArrowRight className="ml-2 h-4 w-4" />
                 </Button>
               </div>
