@@ -5,7 +5,6 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { Canvas } from "@/components/dashboard/canvas";
 import { Sidebar, MobileBottomBar } from "@/components/dashboard/sidebar";
 import { SubscriptionModal } from "@/components/modals/subscription-modal";
-import { Project } from "@/db/schema";
 import { createProject } from "@/lib/actions/create-project";
 import { useRouter } from "next/navigation";
 import type { SubscriptionData } from "@/lib/actions/get-user-subscription";
@@ -55,7 +54,7 @@ function haptic(type: "light" | "medium" | "success" | "error") {
 const MAX_SLOTS = 5;
 
 interface ProjectDashboardProps {
-  project: Project;
+  projectId: string;
   replaceUrl?: boolean;
   initialOutputUrl?: string | null;
   subscription?: SubscriptionData | null;
@@ -65,7 +64,7 @@ interface ProjectDashboardProps {
 }
 
 export function ProjectDashboard({
-  project,
+  projectId,
   replaceUrl,
   initialOutputUrl,
   subscription: initialSubscription,
@@ -145,9 +144,9 @@ export function ProjectDashboard({
 
   useEffect(() => {
     if (replaceUrl) {
-      window.history.replaceState(null, "", `/app/dashboard/${project.id}`);
+      window.history.replaceState(null, "", `/app/dashboard/${projectId}`);
     }
-  }, [replaceUrl, project.id]);
+  }, [replaceUrl, projectId]);
 
   useEffect(() => {
     if (initialSubscription) setSubscription(initialSubscription);
@@ -208,7 +207,7 @@ export function ProjectDashboard({
       SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT,
     );
 
-    if (returnProjectId && returnProjectId !== project.id) {
+    if (returnProjectId && returnProjectId !== projectId) {
       sessionStorage.removeItem(SESSION_STORAGE_KEYS.CHECKOUT_RETURN_PROJECT);
       router.replace(`/app/dashboard/${returnProjectId}?checkout=success`);
       return;
@@ -251,7 +250,7 @@ export function ProjectDashboard({
 
       sessionStorage.removeItem(SESSION_STORAGE_KEYS.META_PURCHASE_EVENT_ID);
       sessionStorage.removeItem(SESSION_STORAGE_KEYS.META_PURCHASE_VALUE);
-      window.history.replaceState(null, "", `/app/dashboard/${project.id}`);
+      window.history.replaceState(null, "", `/app/dashboard/${projectId}`);
       toast.success("Suscripcion activa. Tu saldo de BrickEx esta actualizado.");
     })();
 
@@ -260,7 +259,7 @@ export function ProjectDashboard({
     };
   }, [
     checkoutSuccess,
-    project.id,
+    projectId,
     resolvePurchaseValue,
     router,
     subscription?.plan,
@@ -474,7 +473,7 @@ export function ProjectDashboard({
 
       if (activeMode.id === "interior-render") {
         batchResults = await generateInteriorBatch(
-          project.id,
+          projectId,
           imageBase64,
           mimeType,
           slotInputs,
@@ -482,7 +481,7 @@ export function ProjectDashboard({
         );
       } else {
         batchResults = await generateRenderBatch(
-          project.id,
+          projectId,
           imageBase64,
           mimeType,
           activeMode.id,
@@ -562,7 +561,7 @@ export function ProjectDashboard({
     globalValues,
     objectFiles,
     slots,
-    project.id,
+    projectId,
     syncSubscription,
   ]);
 
@@ -597,7 +596,7 @@ export function ProjectDashboard({
       setIsEditGenerating(true);
       try {
         const result = await editRenderRegion(
-          project.id,
+          projectId,
           annotatedImageBase64,
           prompt,
         );
@@ -618,7 +617,7 @@ export function ProjectDashboard({
         await syncSubscription();
       }
     },
-    [pushToHistory, project.id, syncSubscription],
+    [pushToHistory, projectId, syncSubscription],
   );
 
   const handleGlobalEditSubmit = useCallback(async () => {
@@ -658,7 +657,7 @@ export function ProjectDashboard({
         .split(",")[1];
 
       const result = await editRenderGlobal(
-        project.id,
+        projectId,
         currentBase64,
         editPrompt.trim(),
       );
@@ -683,7 +682,7 @@ export function ProjectDashboard({
     editPrompt,
     generatedImageUrl,
     pushToHistory,
-    project.id,
+    projectId,
     syncSubscription,
   ]);
 
@@ -783,7 +782,7 @@ export function ProjectDashboard({
           {/* Main canvas area */}
           <div className="flex-1 flex flex-col min-h-0 overflow-hidden transition-all duration-500 p-2 sm:p-4 pb-24 md:pb-4">
             <Canvas
-              projectId={project.id}
+              projectId={projectId}
               uploadedFiles={uploadedFiles}
               sourceUrl={sourceUrl}
               generatedImageUrl={generatedImageUrl}
@@ -884,7 +883,7 @@ export function ProjectDashboard({
           open={subscriptionModalOpen}
           onOpenChange={setSubscriptionModalOpen}
           subscription={subscription}
-          projectId={project.id}
+          projectId={projectId}
         />
       </div>
     </TooltipProvider>

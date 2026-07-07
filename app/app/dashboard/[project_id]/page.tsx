@@ -39,7 +39,7 @@ async function ProjectContent({
 
   return (
     <ProjectDashboard
-      project={projectResult.project}
+      projectId={projectResult.project.id}
       initialOutputUrl={initialOutputUrl}
       subscription={subscription}
       checkoutSuccess={checkoutSuccess}
