@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 
-import { createProject } from "@/lib/actions/create-project";
+import { getOrCreateDraftProject } from "@/lib/actions/create-project";
 
 interface NewDashboardPageProps {
   searchParams: Promise<{
@@ -12,7 +12,7 @@ export default async function NewDashboardPage({
   searchParams,
 }: NewDashboardPageProps) {
   const query = await searchParams;
-  const result = await createProject();
+  const result = await getOrCreateDraftProject();
 
   if ("error" in result) {
     redirect("/app/gallery");

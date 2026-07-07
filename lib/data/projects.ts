@@ -71,6 +71,26 @@ export async function listProjectsForOrganization(organizationId: string) {
   });
 }
 
+/**
+ * Find the most recent draft project that has never produced any output,
+ * so repeated visits to /app/dashboard/new don't accumulate empty projects.
+ */
+export async function getReusableDraftProjectForOrganization(
+  organizationId: string,
+) {
+  return db.query.projects.findFirst({
+    where: and(
+      eq(schema.projects.organizationId, organizationId),
+      eq(schema.projects.status, "draft"),
+      isNull(schema.projects.latestRunId),
+      isNull(schema.projects.heroAssetId),
+      isNull(schema.projects.archivedAt),
+    ),
+    columns: { id: true },
+    orderBy: (projects, { desc }) => [desc(projects.createdAt)],
+  });
+}
+
 export async function getLatestProjectForOrganization(organizationId: string) {
   return db.query.projects.findFirst({
     where: and(

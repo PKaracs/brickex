@@ -3,7 +3,11 @@
 import { db } from "@/lib/db";
 import * as schema from "@/db/schema";
 import { requireWorkspaceContext } from "@/lib/auth-guard";
-import { ensureUniqueProjectSlug, getLatestProjectForOrganization } from "@/lib/data/projects";
+import {
+  ensureUniqueProjectSlug,
+  getLatestProjectForOrganization,
+  getReusableDraftProjectForOrganization,
+} from "@/lib/data/projects";
 
 export interface CreateProjectInput {
   sourceType?: typeof schema.projectSourceTypeEnum.enumValues[number];
@@ -47,6 +51,31 @@ export async function createProject(
       error instanceof Error ? error.message : "No se pudo crear el proyecto";
     return { error: message };
   }
+}
+
+/**
+ * Reuse the most recent empty draft project if one exists, otherwise create
+ * a new one. Used by /app/dashboard/new so that repeated logins don't pile
+ * up untitled empty projects.
+ */
+export async function getOrCreateDraftProject(): Promise<
+  { projectId: string } | { error: string }
+> {
+  try {
+    const { organizationId } = await requireWorkspaceContext();
+    const reusable =
+      await getReusableDraftProjectForOrganization(organizationId);
+
+    if (reusable) {
+      return { projectId: reusable.id };
+    }
+  } catch (error) {
+    const message =
+      error instanceof Error ? error.message : "No se pudo cargar el proyecto";
+    return { error: message };
+  }
+
+  return createProject();
 }
 
 export async function getLatestProject(): Promise<
