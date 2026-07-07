@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 import type { SubscriptionData } from "@/lib/actions/get-user-subscription";
 import { getUserSubscription } from "@/lib/actions/get-user-subscription";
 import { addWatermark } from "@/lib/watermark";
+import { seline } from "@/lib/seline";
 import { toast } from "sonner";
 import { fireFirstGenConfetti } from "@/components/ui/confetti";
 import {
@@ -245,6 +246,14 @@ export function ProjectDashboard({
             value: purchaseValue,
           },
           purchaseEventId,
+        );
+      }
+
+      if (purchaseValue > 0) {
+        seline.checkout.purchaseCompleted(
+          updatedSubscription?.plan ?? subscription?.plan ?? "unknown",
+          purchaseValue,
+          "USD",
         );
       }
 
@@ -884,6 +893,7 @@ export function ProjectDashboard({
           onOpenChange={setSubscriptionModalOpen}
           subscription={subscription}
           projectId={projectId}
+          trigger="generate_paywall"
         />
       </div>
     </TooltipProvider>

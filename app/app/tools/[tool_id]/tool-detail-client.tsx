@@ -779,6 +779,7 @@ export function ToolDetailClient() {
         onOpenChange={setSubscriptionModalOpen}
         subscription={subscription}
         projectId={projectId ?? undefined}
+        trigger="tools_paywall"
       />
     </>
   );

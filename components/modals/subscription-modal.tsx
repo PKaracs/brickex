@@ -30,6 +30,7 @@ interface SubscriptionModalProps {
   onOpenChange: (open: boolean) => void;
   subscription: SubscriptionData | null;
   projectId?: string;
+  trigger?: string;
 }
 
 type PaidPlan = "starter" | "pro" | "studio";
@@ -97,6 +98,7 @@ export function SubscriptionModal({
   onOpenChange,
   subscription,
   projectId,
+  trigger = "subscription_modal",
 }: SubscriptionModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPlan, setLoadingPlan] = useState<PaidPlan | null>(null);
@@ -124,10 +126,12 @@ export function SubscriptionModal({
       });
 
       posthog.capture("subscription_modal_viewed", {
-        source: "bricks_click",
+        source: trigger,
       });
+
+      seline.engagement.upgradeModalViewed(trigger);
     }
-  }, [open, isPaidUser]);
+  }, [open, isPaidUser, trigger]);
 
   const handleUpgrade = async (plan: PaidPlan) => {
     setIsLoading(true);
@@ -180,7 +184,7 @@ export function SubscriptionModal({
         initiateCheckoutEventId,
       );
 
-      seline.checkout.started(planConfig.slug, "subscription_modal");
+      seline.checkout.started(planConfig.slug, trigger);
 
       posthog.capture("checkout_initiated", {
         plan,

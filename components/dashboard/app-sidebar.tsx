@@ -353,6 +353,7 @@ export function AppSidebarLayout({ subscription, children }: AppSidebarProps) {
         open={subscriptionModalOpen}
         onOpenChange={setSubscriptionModalOpen}
         subscription={subscription ?? null}
+        trigger="sidebar_bricks"
       />
       <ProfileSettingsModal
         open={profileModalOpen}
