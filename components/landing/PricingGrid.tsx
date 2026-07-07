@@ -15,17 +15,17 @@ export default function PricingGrid() {
   const plans: Plan[] = [
     {
       id: "free",
-      name: "Gratis",
+      name: "Subida gratis",
       price: 0,
       currency: "$",
       features: [
-        "100 bricks para probar BrickEx",
-        "Modo de render exterior",
-        "Salida en resolucion 2K",
+        "Crea tu cuenta y sube archivos",
+        "Prepara bocetos, planos y modelos",
+        "Vista previa del flujo de render",
         "Soporte para SketchUp, AutoCAD y PDF",
-        "Estilos arquitectonicos basicos",
+        "Generacion disponible en planes de pago",
       ],
-      buttonText: "Empezar gratis",
+      buttonText: "Subir archivo",
       onClick: navigate,
     },
     {
@@ -40,9 +40,10 @@ export default function PricingGrid() {
         "Todos los estilos arquitectonicos",
         "Todas las variaciones de luz y clima",
         "Exportaciones 4K sin marcas de agua",
+        "Licencia de uso comercial incluida",
         "Generacion en 30 segundos",
       ],
-      additionalFeatures: ["Todo lo de Gratis"],
+      additionalFeatures: ["Todo lo de Subida gratis"],
       buttonText: "Empezar",
       onClick: navigate,
     },
@@ -58,6 +59,7 @@ export default function PricingGrid() {
         "Generacion de video (recorridos y timelapses)",
         "Edicion y refinamiento por zonas",
         "Procesamiento prioritario",
+        "Licencia de uso comercial incluida",
         "Todas las herramientas incluidas",
       ],
       additionalFeatures: ["Todo lo de Starter"],
@@ -76,6 +78,7 @@ export default function PricingGrid() {
         "Renderizado por lotes (hasta 20 a la vez)",
         "Presets de marca personalizados",
         "Acceso API para integraciones",
+        "Licencia de uso comercial incluida",
         "Exportaciones white-label",
       ],
       additionalFeatures: ["Todo lo de Pro"],
@@ -95,9 +98,9 @@ export default function PricingGrid() {
               </span>
             </h2>
             <p className="text-zinc-500 mt-3 text-sm sm:text-base max-w-lg mx-auto">
-              Empieza gratis con 100 bricks, sin tarjeta. Mejora cuando tus
-              clientes empiecen a preguntar: "quien es tu estudio 3D?" Cancela
-              cuando quieras.
+              Sube tu archivo gratis. Desbloquea la generacion cuando quieras
+              crear renders listos para clientes, presentaciones y marketing.
+              Cancela cuando quieras.
             </p>
           </div>
         </BlurFade>
@@ -117,7 +120,8 @@ export default function PricingGrid() {
           <p className="text-center text-xs text-zinc-600 mt-8">
             Cancela cuando quieras: sin contratos ni permanencia. Todos los
             planes incluyen cifrado SSL, cumplimiento GDPR y 99.9% de uptime.
-            Tus renders siempre son tuyos.
+            Tus renders siempre son tuyos y los planes de pago incluyen uso
+            comercial.
           </p>
         </BlurFade>
       </div>

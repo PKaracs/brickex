@@ -16,8 +16,8 @@ export default function CTABanner() {
           </h2>
           <p className="text-zinc-400 text-sm sm:text-base mb-6 sm:mb-8 max-w-md mx-auto">
             Sube un boceto, plano o modelo 3D y mira como se vuelve
-            fotorrealista. Empieza gratis con 100 bricks, sin tarjeta y con
-            cancelacion cuando quieras.
+            fotorrealista. Puedes subir tu archivo gratis y desbloquear la
+            generacion cuando estes listo.
           </p>
           <Button
             size="lg"
@@ -25,7 +25,7 @@ export default function CTABanner() {
             asChild
           >
             <a href={signupUrl}>
-              Empieza a renderizar gratis
+              Subir archivo
               <ArrowRight className="w-4 h-4" />
             </a>
           </Button>

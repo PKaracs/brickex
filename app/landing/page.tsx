@@ -20,7 +20,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 export const metadata: Metadata = {
   title: "BrickEx — Convierte bocetos en renders fotorrealistas en segundos",
   description:
-    "Sube un boceto, modelo de SketchUp o plano y consigue renders arquitectonicos de calidad editorial en segundos. Creado para arquitectos, promotores y equipos de marketing inmobiliario. Empieza gratis, sin tarjeta.",
+    "Sube un boceto, modelo de SketchUp o plano y consigue renders arquitectonicos de calidad editorial en segundos. Creado para arquitectos, promotores y equipos de marketing inmobiliario. Sube tu archivo gratis y genera con un plan.",
 };
 
 export default function LandingPage() {

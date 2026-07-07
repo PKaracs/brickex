@@ -68,6 +68,9 @@ export default function TermsOfServicePage() {
             <p className="text-zinc-500">
               Otorgas a Brickex una licencia limitada para procesar el contenido subido solo con el fin de prestar el servicio.
             </p>
+            <p className="text-zinc-500 mt-3">
+              Los planes de pago incluyen una licencia de uso comercial para los resultados generados con Brickex, siempre que tengas los derechos necesarios sobre el contenido de entrada y cumplas estos terminos.
+            </p>
           </section>
 
           <section>

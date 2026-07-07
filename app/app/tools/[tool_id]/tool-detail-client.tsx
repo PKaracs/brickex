@@ -12,6 +12,11 @@ import {
 } from "@/lib/constants/tools";
 import { createProject } from "@/lib/actions/create-project";
 import { generateToolImage } from "@/lib/actions/generate-tool-image";
+import {
+  getUserSubscription,
+  type SubscriptionData,
+} from "@/lib/actions/get-user-subscription";
+import { SubscriptionModal } from "@/components/modals/subscription-modal";
 import { uploadProjectImagesDirect } from "@/lib/project-images-service";
 import {
   ArrowLeft,
@@ -440,6 +445,8 @@ export function ToolDetailClient() {
   const [generatedAsset, setGeneratedAsset] = useState<GeneratedAsset | null>(null);
   const [projectId, setProjectId] = useState<string | null>(null);
   const [sourceUploaded, setSourceUploaded] = useState(false);
+  const [subscription, setSubscription] = useState<SubscriptionData | null>(null);
+  const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const activeSlotRef = useRef<number>(0);
 
@@ -449,6 +456,18 @@ export function ToolDetailClient() {
     setProjectId(null);
     setSourceUploaded(false);
   }, [maxSlots, toolId]);
+
+  const syncSubscription = useCallback(async () => {
+    const result = await getUserSubscription();
+    if ("error" in result) return null;
+
+    setSubscription(result);
+    return result;
+  }, []);
+
+  useEffect(() => {
+    void syncSubscription();
+  }, [syncSubscription]);
 
   const handleFileSelect = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -506,6 +525,12 @@ export function ToolDetailClient() {
       return;
     }
 
+    const currentSubscription = subscription ?? (await syncSubscription());
+    if ((currentSubscription?.creationsRemaining ?? 0) < tool.creditCost) {
+      setSubscriptionModalOpen(true);
+      return;
+    }
+
     setIsGenerating(true);
     setGeneratedAsset(null);
 
@@ -556,12 +581,28 @@ export function ToolDetailClient() {
     } catch (error) {
       const message =
         error instanceof Error ? error.message : "La generacion fallo.";
-      toast.error(message);
+      if (message.includes("No hay suficientes bricks")) {
+        await syncSubscription();
+        setSubscriptionModalOpen(true);
+      } else {
+        toast.error(message);
+      }
     } finally {
       setIsGenerating(false);
       setIsUploadingSource(false);
+      void syncSubscription();
     }
-  }, [disabledReason, files, isLiveTool, projectId, sourceUploaded, tool, toolId]);
+  }, [
+    disabledReason,
+    files,
+    isLiveTool,
+    projectId,
+    sourceUploaded,
+    subscription,
+    syncSubscription,
+    tool,
+    toolId,
+  ]);
 
   const handleDownload = useCallback(async () => {
     if (!generatedAsset) return;
@@ -618,7 +659,8 @@ export function ToolDetailClient() {
     .join(" ");
 
   return (
-    <div className="h-full bg-black overflow-y-auto">
+    <>
+      <div className="h-full bg-black overflow-y-auto">
       <div className="h-full flex flex-col px-5 sm:px-8 pt-5 sm:pt-6 pb-6">
         {/* Back */}
         <Link
@@ -731,6 +773,13 @@ export function ToolDetailClient() {
           </div>
         </div>
       </div>
-    </div>
+      </div>
+      <SubscriptionModal
+        open={subscriptionModalOpen}
+        onOpenChange={setSubscriptionModalOpen}
+        subscription={subscription}
+        projectId={projectId ?? undefined}
+      />
+    </>
   );
 }

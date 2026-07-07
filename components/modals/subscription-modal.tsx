@@ -51,11 +51,11 @@ const PLAN_TIERS: {
     featured: false,
     buttonVariant: "default",
     benefits: [
-      `${SUBSCRIPTION_PLANS.STARTER.bricks.toLocaleString()} bricks al mes`,
-      "Modos exterior e interior",
-      "Todos los estilos arquitectonicos",
-      "Exportaciones 4K, sin marcas de agua",
-      "Cancela cuando quieras",
+      `${SUBSCRIPTION_PLANS.STARTER.bricks.toLocaleString()} bricks per month`,
+      "Photorealistic renders from sketches, plans, and model screenshots",
+      "Commercial usage license included",
+      "4K exports without watermark",
+      "Cancel anytime",
     ],
   },
   {
@@ -66,12 +66,12 @@ const PLAN_TIERS: {
     featured: true,
     buttonVariant: "white",
     benefits: [
-      `${SUBSCRIPTION_PLANS.PRO.bricks.toLocaleString()} bricks al mes`,
-      "Todo lo de Starter",
-      "Generacion de video",
-      "Edicion por region y refinado",
-      "Procesamiento prioritario",
-      "Cancela cuando quieras",
+      `${SUBSCRIPTION_PLANS.PRO.bricks.toLocaleString()} bricks per month`,
+      "Everything in Starter",
+      "Architectural video generation",
+      "Region editing and render refinement",
+      "Priority processing",
+      "Commercial usage license included",
     ],
   },
   {
@@ -82,12 +82,12 @@ const PLAN_TIERS: {
     featured: false,
     buttonVariant: "default",
     benefits: [
-      `${SUBSCRIPTION_PLANS.STUDIO.bricks.toLocaleString()} bricks al mes`,
-      "Todo lo de Pro",
-      "Renderizado por lotes",
-      "Acceso a la API",
-      "Gestor de cuenta dedicado",
-      "Cancela cuando quieras",
+      `${SUBSCRIPTION_PLANS.STUDIO.bricks.toLocaleString()} bricks per month`,
+      "Everything in Pro",
+      "Batch rendering for multiple angles",
+      "API access",
+      "Dedicated account support",
+      "Commercial usage license included",
     ],
   },
 ];
@@ -344,11 +344,13 @@ export function SubscriptionModal({
             <div>
               <div className="flex items-center gap-2.5 mb-2">
                 <h2 className="text-lg font-semibold text-white tracking-tight">
-                  Mejora tu plan
+                  Unlock your AI render
                 </h2>
               </div>
               <p className="text-sm text-neutral-500">
-                Desbloquea mas bricks y funciones premium.
+                Your file is uploaded and ready. Choose a plan to generate
+                client-ready architectural visuals with a commercial usage
+                license.
               </p>
             </div>
             <button
@@ -404,7 +406,7 @@ export function SubscriptionModal({
                     <span className="text-xs text-neutral-500 ml-1">/mes</span>
                   </div>
                   <p className="text-[11px] text-neutral-500 mt-1.5 tracking-wide">
-                    {tier.config.bricks.toLocaleString()} bricks incluidos
+                    {tier.config.bricks.toLocaleString()} bricks included
                   </p>
                 </div>
 
@@ -418,7 +420,7 @@ export function SubscriptionModal({
                   {isLoading && loadingPlan === tier.key ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
                   ) : (
-                    `Obtener ${tier.config.name}`
+                    `Start with ${tier.config.name}`
                   )}
                 </Button>
 
@@ -452,13 +454,13 @@ export function SubscriptionModal({
         {/* Footer */}
         <div className="flex-shrink-0 px-8 py-4 border-t border-neutral-800/40 flex items-center justify-between">
           <p className="text-[11px] text-neutral-600 tracking-wide">
-            Pago seguro &middot; Cancela cuando quieras
+            Secure checkout &middot; Cancel anytime &middot; Commercial use included
           </p>
           <button
             onClick={handleClose}
             className="text-[11px] text-neutral-600 hover:text-neutral-400 transition-colors py-1.5 px-3 rounded-lg hover:bg-neutral-800/50"
           >
-            Quiza despues
+            Maybe later
           </button>
         </div>
       </DialogContent>

@@ -156,11 +156,11 @@ export default function Hero({ headline = DEFAULT_HEADLINE }: HeroProps) {
                 href={signupUrl}
                 className="inline-flex min-h-[52px] items-center justify-center rounded-full border border-white/20 bg-white px-8 py-3.5 text-sm font-semibold text-zinc-950 shadow-[0_12px_40px_rgba(0,0,0,0.35)] transition-colors duration-200 hover:bg-zinc-100 sm:text-base"
               >
-                Empieza a renderizar gratis
+                Sube tu archivo
                 <ArrowRight className="ml-2 h-4 w-4" />
               </a>
               <p className="text-xs sm:text-sm text-white/40">
-                Sin tarjeta · 100 bricks gratis para empezar
+                Sube gratis · Genera renders profesionales con un plan
               </p>
             </div>
           </BlurFade>

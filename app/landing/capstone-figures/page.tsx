@@ -155,7 +155,7 @@ function GarrettFivePlanes() {
         "ICP 1: agentes y promotoras inmobiliarias",
         "ICP 2: estudiantes de arquitectura",
         "ICP 3: profesionales de arquitectura",
-        "Modelo freemium - 100 bricks gratis (wow moment primero)",
+        "Modelo paywall fijo - subida gratis, generacion con plan",
         'Marca: "BrickEx" - ve tu proyecto antes de construirlo',
         "Adquisicion: SEO programatico + anuncios estaticos Meta",
         "North star: ingresos por visitante (RPV)",
@@ -611,7 +611,7 @@ function UserJourney() {
           type: "action" as const,
         },
         {
-          label: "Generar -> primer render (wow moment)",
+          label: "Generar -> paywall",
           type: "milestone" as const,
         },
       ],
@@ -751,7 +751,7 @@ function InformationArchitecture() {
       children: [
         "Flujo de bienvenida",
         "Playground asignado",
-        "100 bricks gratis",
+        "Paywall al generar",
       ],
       childColor: "border-green-500/30 bg-green-500/10 text-green-300",
     },

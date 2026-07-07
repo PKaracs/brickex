@@ -234,6 +234,7 @@ async function syncUserBillingFromPolarState(customerState: CustomerState) {
     columns: {
       id: true,
       subscriptionPlan: true,
+      creationsLimit: true,
       subscriptionCurrentPeriodEnd: true,
     },
   });
@@ -247,6 +248,11 @@ async function syncUserBillingFromPolarState(customerState: CustomerState) {
   );
 
   if (!primarySubscription) {
+    const legacyFreeCreationLimit =
+      !user.subscriptionPlan && user.creationsLimit > 0
+        ? user.creationsLimit
+        : SUBSCRIPTION_PLANS.FREE.creationLimit;
+
     await db
       .update(schema.users)
       .set({
@@ -255,7 +261,7 @@ async function syncUserBillingFromPolarState(customerState: CustomerState) {
         subscriptionPlan: null,
         subscriptionStatus: null,
         subscriptionCurrentPeriodEnd: null,
-        creationsLimit: SUBSCRIPTION_PLANS.FREE.creationLimit,
+        creationsLimit: legacyFreeCreationLimit,
         updatedAt: new Date(),
       })
       .where(eq(schema.users.id, user.id));

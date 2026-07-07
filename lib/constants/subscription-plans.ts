@@ -8,9 +8,9 @@
 export const SUBSCRIPTION_PLANS = {
   FREE: {
     slug: "free",
-    name: "Gratis",
-    creationLimit: 100,
-    bricks: 100,
+    name: "Free upload",
+    creationLimit: 0,
+    bricks: 0,
     price: 0,
     billingPeriod: null,
     resetPeriod: null,

@@ -38,11 +38,11 @@ const PLAN_TIERS: {
     badge: null,
     featured: false,
     benefits: [
-      `${SUBSCRIPTION_PLANS.STARTER.bricks.toLocaleString()} bricks al mes`,
-      "Modos exterior e interior",
-      "Todos los estilos arquitectonicos",
-      "Exportaciones 4K, sin marcas de agua",
-      "Cancela cuando quieras",
+      `${SUBSCRIPTION_PLANS.STARTER.bricks.toLocaleString()} bricks per month`,
+      "Photorealistic renders from sketches, plans, and model screenshots",
+      "Commercial usage license included",
+      "4K exports without watermark",
+      "Cancel anytime",
     ],
   },
   {
@@ -52,12 +52,12 @@ const PLAN_TIERS: {
     badge: "Popular",
     featured: true,
     benefits: [
-      `${SUBSCRIPTION_PLANS.PRO.bricks.toLocaleString()} bricks al mes`,
-      "Todo lo de Starter",
-      "Generacion de video",
-      "Edicion por region y refinado",
-      "Procesamiento prioritario",
-      "Cancela cuando quieras",
+      `${SUBSCRIPTION_PLANS.PRO.bricks.toLocaleString()} bricks per month`,
+      "Everything in Starter",
+      "Architectural video generation",
+      "Region editing and render refinement",
+      "Priority processing",
+      "Commercial usage license included",
     ],
   },
   {
@@ -67,12 +67,12 @@ const PLAN_TIERS: {
     badge: "Equipos",
     featured: false,
     benefits: [
-      `${SUBSCRIPTION_PLANS.STUDIO.bricks.toLocaleString()} bricks al mes`,
-      "Todo lo de Pro",
-      "Renderizado por lotes",
-      "Acceso a la API",
-      "Gestor de cuenta dedicado",
-      "Cancela cuando quieras",
+      `${SUBSCRIPTION_PLANS.STUDIO.bricks.toLocaleString()} bricks per month`,
+      "Everything in Pro",
+      "Batch rendering for multiple angles",
+      "API access",
+      "Dedicated account support",
+      "Commercial usage license included",
     ],
   },
 ];
@@ -205,7 +205,7 @@ export default function PricingPageClient({
         <p className="text-sm text-neutral-500">
           {isPaidUser
             ? `Estas en el plan ${subscription?.plan} con ${subscription?.creationsRemaining} bricks disponibles.`
-            : "Desbloquea mas bricks y funciones premium para impulsar tus renders."}
+            : "Your file is ready. Choose a plan to generate client-ready architectural visuals with a commercial usage license."}
         </p>
       </div>
 
@@ -264,7 +264,7 @@ export default function PricingPageClient({
                   <span className="text-xs text-neutral-500 ml-1">/mes</span>
                 </div>
                 <p className="text-[11px] text-neutral-500 mt-1.5 tracking-wide">
-                  {tier.config.bricks.toLocaleString()} bricks incluidos
+                  {tier.config.bricks.toLocaleString()} bricks included
                 </p>
               </div>
 
@@ -279,7 +279,7 @@ export default function PricingPageClient({
                 ) : isCurrentPlan ? (
                   "Plan actual"
                 ) : (
-                  `Obtener ${tier.config.name}`
+                  `Start with ${tier.config.name}`
                 )}
               </Button>
 
@@ -300,7 +300,7 @@ export default function PricingPageClient({
       </div>
 
       <p className="text-[11px] text-neutral-600 tracking-wide mt-8">
-        Pago seguro &middot; Cancela cuando quieras
+        Secure checkout &middot; Cancel anytime &middot; Commercial use included
       </p>
     </div>
   );

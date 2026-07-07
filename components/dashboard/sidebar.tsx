@@ -379,7 +379,7 @@ export const Sidebar = memo(function Sidebar({
           {subscription && (
             <p className="text-[10px] text-neutral-500 text-center">
               {subscription.creationsRemaining.toLocaleString()} bricks disponibles
-              {subscription.plan === "free" && " · Mejora cuando quieras"}
+              {subscription.plan === "free" && " · Mejora para generar"}
             </p>
           )}
         </div>
@@ -555,7 +555,7 @@ export const MobileBottomBar = memo(function MobileBottomBar({
           {subscription && (
             <p className="text-[10px] text-neutral-500 text-center">
               {subscription.creationsRemaining.toLocaleString()} bricks disponibles
-              {subscription.plan === "free" && " · Mejora cuando quieras"}
+              {subscription.plan === "free" && " · Mejora para generar"}
             </p>
           )}
         </div>
